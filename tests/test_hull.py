@@ -1,3 +1,5 @@
+from math import pi
+
 import pytest
 
 import cadquery as cq
@@ -30,3 +32,25 @@ def test_validation():
         e1 = cq.Edge.makeEllipse(2, 1)
         c1 = cq.Edge.makeCircle(0.5, (-1.5, 0.5, 0))
         hull.find_hull([c1, e1])
+
+
+def test_collinear():
+
+    r = 2.5
+    spacing = 8.0
+
+    # collinear centres: the tangent line touches every circle in between
+    for n in (3, 4, 5):
+
+        expected = spacing * (n - 1) * 2 * r + pi * r ** 2
+
+        # arc order follows id(), so repeat to hit the failing orders
+        for _ in range(20):
+
+            edges = [cq.Edge.makeCircle(r, (i * spacing, 0, 0)) for i in range(n)]
+
+            h = hull.find_hull(edges)
+
+            assert h.IsClosed()
+            assert h.isValid()
+            assert cq.Face.makeFromWires(h).Area() == pytest.approx(expected)

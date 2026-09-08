@@ -18,6 +18,9 @@ Points = List["Point"]
 Entity = Union["Arc", "Point"]
 Hull = List[Union["Arc", "Point", "Segment"]]
 
+# minimum arc span; below this makeCircle would return a full circle
+TOL = 1e-9
+
 
 class Point:
 
@@ -348,9 +351,10 @@ def finalize_hull(hull: Hull) -> Wire:
             a1 = degrees(atan2p(el_p.b.x - el.c.x, el_p.b.y - el.c.y))
             a2 = degrees(atan2p(el_n.a.x - el.c.x, el_n.a.y - el.c.y))
 
-            rv.append(
-                Edge.makeCircle(el.r, Vector(el.c.x, el.c.y), angle1=a1, angle2=a2)
-            )
+            if abs(a2 - a1) > TOL:
+                rv.append(
+                    Edge.makeCircle(el.r, Vector(el.c.x, el.c.y), angle1=a1, angle2=a2)
+                )
 
     el1 = hull[1]
     if isinstance(el, Segment) and isinstance(el_n, Arc) and isinstance(el1, Segment):
