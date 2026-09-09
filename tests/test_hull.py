@@ -1,3 +1,4 @@
+from itertools import permutations
 from math import pi
 
 import pytest
@@ -39,18 +40,34 @@ def test_collinear():
     r = 2.5
     spacing = 8.0
 
-    # collinear centres: the tangent line touches every circle in between
+    # collinear centres let an inner circle enter the hull as a zero span arc;
+    # only some traversal orders reach it, so permute the input
     for n in (3, 4, 5):
 
         expected = spacing * (n - 1) * 2 * r + pi * r ** 2
 
-        # arc order follows id(), so repeat to hit the failing orders
-        for _ in range(20):
+        for order in permutations(range(n)):
 
-            edges = [cq.Edge.makeCircle(r, (i * spacing, 0, 0)) for i in range(n)]
+            edges = [cq.Edge.makeCircle(r, (i * spacing, 0, 0)) for i in order]
 
             h = hull.find_hull(edges)
 
             assert h.IsClosed()
             assert h.isValid()
             assert cq.Face.makeFromWires(h).Area() == pytest.approx(expected)
+
+
+def test_eq():
+
+    a = hull.Arc(hull.Point(0.0, 0.0), 1.0, 0.0, 2 * pi)
+    b = hull.Arc(hull.Point(0.0, 0.0), 1.0, 0.0, 2 * pi)
+    p = hull.Point(0.0, 0.0)
+
+    assert a == b
+    assert hash(a) == hash(b)
+    assert p == hull.Point(0.0, 0.0)
+
+    assert a != hull.Arc(hull.Point(0.0, 0.0), 2.0, 0.0, 2 * pi)
+    assert a != p
+    assert p != a
+    assert a != None

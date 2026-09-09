@@ -42,7 +42,7 @@ class Point:
 
     def __eq__(self, other):
 
-        return (self.x, self.y) == (other.x, other.y)
+        return type(self) == type(other) and (self.x, self.y) == (other.x, other.y)
 
 
 class Segment:
@@ -76,6 +76,16 @@ class Arc:
         self.s = Point(r * cos(a1), r * sin(a1))
         self.e = Point(r * cos(a2), r * sin(a2))
         self.ac = 2 * pi - (a1 - a2)
+
+    def __hash__(self):
+
+        return hash((self.c, self.r, self.a1, self.a2))
+
+    def __eq__(self, other):
+
+        return type(self) == type(other) and (
+            (self.c, self.r, self.a1, self.a2) == (other.c, other.r, other.a1, other.a2)
+        )
 
 
 def atan2p(x, y):
