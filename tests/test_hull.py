@@ -103,15 +103,16 @@ def test_single_circle():
     assert area([cq.Edge.makeCircle(5.0, (0, 0, 0))]) == pytest.approx(25 * pi)
 
 
-def test_stalled_march():
-    # valid input the march cannot close; it used to loop forever
+def test_march_closes():
     edges = [
         cq.Edge.makeCircle(6.0, (0, 12, 0)),
         cq.Edge.makeLine(cq.Vector(-2, 5), cq.Vector(9, 10)),
     ]
 
-    with pytest.raises(ValueError):
-        hull.find_hull(edges)
+    h = cq.Face.makeFromWires(hull.find_hull(edges))
+
+    for v in edges[1].Vertices():
+        assert h.distance(v) == pytest.approx(0.0)
 
 
 def test_arc_endpoints():
@@ -121,7 +122,6 @@ def test_arc_endpoints():
     assert (a.e.x, a.e.y) == pytest.approx((9.0, 20.0))
 
 
-@pytest.mark.xfail(strict=True, raises=AssertionError, reason="wrong tangent picked")
 def test_hull_contains_input():
     # the line end at (20, 0) lies exactly on the +x axis of the circle, where
     # pt_arc/arc_pt pick the tangent by raw angle across the 0/2pi seam
@@ -160,7 +160,7 @@ def test_partial_arc():
     assert h.BoundingBox().ymin == pytest.approx(0.0)
 
 
-@pytest.mark.xfail(strict=True, raises=AssertionError, reason="bounds are in the arc frame")
+@pytest.mark.xfail(strict=True, raises=AssertionError, reason="bounds in the arc frame")
 def test_three_point_arc_endpoints():
     e = cq.Sketch().arc((10, 20), 5, 180, 90)._edges[0]
     (a,), _ = hull.convert_and_validate([e])
