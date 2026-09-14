@@ -123,8 +123,7 @@ def test_arc_endpoints():
 
 
 def test_hull_contains_input():
-    # the line end at (20, 0) lies exactly on the +x axis of the circle, where
-    # pt_arc/arc_pt pick the tangent by raw angle across the 0/2pi seam
+    # the line end at (20, 0) lies on the +x axis of the circle, the 0/2pi seam
     edges = [
         cq.Edge.makeCircle(5.0, (0, 0, 0)),
         cq.Edge.makeLine(cq.Vector(20, 0), cq.Vector(20, 10)),
@@ -135,7 +134,6 @@ def test_hull_contains_input():
     assert h.distance(cq.Vertex.makeVertex(20, 0, 0)) == pytest.approx(0.0)
 
 
-@pytest.mark.xfail(strict=True, raises=AssertionError, reason="march ends too early")
 def test_rotation_invariance():
     def shape(dx, dy):
         return [
