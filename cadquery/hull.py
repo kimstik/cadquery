@@ -323,7 +323,7 @@ def update_hull(
     angles: List[float],
     segments: List[Segment],
     hull: Hull,
-) -> Tuple[Entity, float, bool]:
+) -> Tuple[Entity, float]:
 
     next_e = entities[ix]
     connecting_seg = segments[ix]
@@ -333,7 +333,7 @@ def update_hull(
 
     hull.extend((connecting_seg, next_e))
 
-    return next_e, angles[ix], next_e is hull[0]
+    return next_e, angles[ix]
 
 
 def finalize_hull(hull: Hull) -> Wire:
@@ -393,10 +393,9 @@ def find_hull(edges: Iterable[Edge]) -> Wire:
 
     current_e = start
     current_angle = 0.0
-    finished = False
 
     # march around
-    while not finished:
+    while True:
 
         angles = []
         segments = []
@@ -406,12 +405,14 @@ def find_hull(edges: Iterable[Edge]) -> Wire:
             angles.append(angle if angle >= current_angle else inf)
             segments.append(segment)
 
+        # nothing left to reach: closed if back at the start, stuck otherwise
+        if min(angles, default=inf) == inf:
+            if current_e is not start or len(rv) == 1:
+                raise ValueError("Hull could not be closed")
+            break
+
         next_ix = int(argmin(angles))
-
-        if angles[next_ix] == inf:
-            raise ValueError("Hull could not be closed")
-
-        current_e, current_angle, finished = update_hull(
+        current_e, current_angle = update_hull(
             current_e, next_ix, entities, angles, segments, rv
         )
 
