@@ -119,3 +119,50 @@ def test_arc_endpoints():
 
     assert (a.s.x, a.s.y) == pytest.approx((11.0, 20.0))
     assert (a.e.x, a.e.y) == pytest.approx((9.0, 20.0))
+
+
+@pytest.mark.xfail(strict=True, raises=AssertionError, reason="wrong tangent picked")
+def test_hull_contains_input():
+    # the line end at (20, 0) lies exactly on the +x axis of the circle, where
+    # pt_arc/arc_pt pick the tangent by raw angle across the 0/2pi seam
+    edges = [
+        cq.Edge.makeCircle(5.0, (0, 0, 0)),
+        cq.Edge.makeLine(cq.Vector(20, 0), cq.Vector(20, 10)),
+    ]
+
+    h = cq.Face.makeFromWires(hull.find_hull(edges))
+
+    assert h.distance(cq.Vertex.makeVertex(20, 0, 0)) == pytest.approx(0.0)
+
+
+@pytest.mark.xfail(strict=True, raises=AssertionError, reason="march ends too early")
+def test_rotation_invariance():
+    def shape(dx, dy):
+        return [
+            cq.Edge.makeCircle(20.0, (0, 0, 0)),
+            cq.Edge.makeCircle(10.0, (dx, dy, 0)),
+            cq.Edge.makeCircle(10.0, (-dx, -dy, 0)),
+        ]
+
+    assert area(shape(0, 40)) == pytest.approx(area(shape(40, 0)))
+
+
+@pytest.mark.xfail(strict=True, raises=AssertionError, reason="arc acts as a circle")
+def test_partial_arc():
+    edges = [
+        cq.Edge.makeCircle(10.0, (0, 0, 0), angle1=0, angle2=180),
+        cq.Edge.makeLine(cq.Vector(-30, 20), cq.Vector(30, 20)),
+    ]
+
+    h = cq.Face.makeFromWires(hull.find_hull(edges))
+
+    # the hull of a half disc and a line above it cannot dip below y = 0
+    assert h.BoundingBox().ymin == pytest.approx(0.0)
+
+
+@pytest.mark.xfail(strict=True, raises=AssertionError, reason="bounds are in the arc frame")
+def test_three_point_arc_endpoints():
+    e = cq.Sketch().arc((10, 20), 5, 180, 90)._edges[0]
+    (a,), _ = hull.convert_and_validate([e])
+
+    assert (a.s.x, a.s.y) == pytest.approx((e.startPoint().x, e.startPoint().y))
