@@ -205,7 +205,6 @@ def test_partial_arc():
     assert h.BoundingBox().ymin == pytest.approx(0.0)
 
 
-@pytest.mark.xfail(strict=True, raises=AssertionError, reason="bounds in the arc frame")
 def test_three_point_arc_endpoints():
     e = cq.Sketch().arc((10, 20), 5, 180, 90)._edges[0]
     (a,), _ = hull.convert_and_validate([e])
