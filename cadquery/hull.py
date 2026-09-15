@@ -1,4 +1,4 @@
-from typing import Dict, List, Tuple, Union, Iterable, Optional
+from typing import List, Tuple, Union, Iterable, Optional
 from math import pi, sin, cos, atan2, sqrt, inf, degrees
 from numpy import argmin
 
@@ -154,7 +154,7 @@ def add_point(points: Points, x: float, y: float) -> Point:
 
 def convert_and_validate(edges: Iterable[Edge]) -> Tuple[List[Arc], List[Point]]:
 
-    spans: Dict[Tuple[Point, float], List[Tuple[float, float]]] = {}
+    circles: List[Tuple[Point, float, List[Tuple[float, float]]]] = []
     points: Points = []
 
     for e in edges:
@@ -167,17 +167,27 @@ def convert_and_validate(edges: Iterable[Edge]) -> Tuple[List[Arc], List[Point]]
         elif gt == "CIRCLE":
             c = e.arcCenter()
             r = e.radius()
-            p = Point(c.x, c.y)
 
-            spans.setdefault((p, r), []).append(arc_bounds(e, p))
+            for p, r0, spans in circles:
+                if (
+                    abs(p.x - c.x) <= EPS
+                    and abs(p.y - c.y) <= EPS
+                    and abs(r0 - r) <= EPS
+                ):
+                    break
+            else:
+                p, spans = Point(c.x, c.y), []
+                circles.append((p, r, spans))
+
+            spans.append(arc_bounds(e, p))
 
         else:
             raise ValueError("Unsupported geometry {gt}")
 
     arcs = [
         Arc(c, r, a1, a2)
-        for (c, r), ss in spans.items()
-        for a1, a2 in merge_spans(sorted(ss))
+        for c, r, spans in circles
+        for a1, a2 in merge_spans(sorted(spans))
     ]
 
     # the ends of an arc are entities of their own; a point on an arc adds nothing
