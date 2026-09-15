@@ -140,15 +140,27 @@ def test_circle_with_nested_only():
     assert area(edges) == pytest.approx(400 * pi)
 
 
-def test_coincident_arcs():
+@pytest.mark.parametrize(
+    "pieces",
+    [
+        [
+            cq.Edge.makeCircle(5.0, (0, 0, 0), angle1=0, angle2=180),
+            cq.Edge.makeCircle(5.0, (0, 0, 0), angle1=180, angle2=360),
+        ],
+        [
+            cq.Edge.makeThreePointArc(
+                cq.Vector(5, 0), cq.Vector(0, 5), cq.Vector(-5, 0)
+            ),
+            cq.Edge.makeCircle(5.0, (0, 0, 0)),
+        ],
+    ],
+    ids=["halves", "three-point arc over a circle"],
+)
+def test_coincident_arcs(pieces):
     # the start is the circle's bottom only if the halves are read as one circle
-    halves = [
-        cq.Edge.makeCircle(5.0, (0, 0, 0), angle1=0, angle2=180),
-        cq.Edge.makeCircle(5.0, (0, 0, 0), angle1=180, angle2=360),
-    ]
     segment = cq.Edge.makeLine(cq.Vector(-2, -3), cq.Vector(2, -3))
 
-    for order in permutations(halves):
+    for order in permutations(pieces):
         assert area(list(order) + [segment]) == pytest.approx(25 * pi)
 
 
