@@ -5,6 +5,7 @@ import pytest
 
 import cadquery as cq
 from cadquery import hull
+from cadquery.func import face
 
 
 def area(edges):
@@ -99,15 +100,16 @@ def test_single_circle():
     assert area([cq.Edge.makeCircle(5.0, (0, 0, 0))]) == pytest.approx(25 * pi)
 
 
-def test_stalled_march():
-    # valid input the march cannot close; it used to loop forever
+def test_march_closes():
     edges = [
         cq.Edge.makeCircle(6.0, (0, 12, 0)),
         cq.Edge.makeLine(cq.Vector(-2, 5), cq.Vector(9, 10)),
     ]
 
-    with pytest.raises(ValueError):
-        hull.find_hull(edges)
+    h = cq.Face.makeFromWires(hull.find_hull(edges))
+
+    for v in edges[1].Vertices():
+        assert h.distance(v) == pytest.approx(0.0)
 
 
 def test_arc_endpoints():
@@ -156,3 +158,56 @@ def test_intersecting_circles():
 
     assert len(edges) == 6
     assert area(edges) == pytest.approx(38 * 70 + pi * 35 ** 2)
+def test_hull_contains_input():
+    # the line end at (20, 0) lies on the +x axis of the circle, the 0/2pi seam
+    edges = [
+        cq.Edge.makeCircle(5.0, (0, 0, 0)),
+        cq.Edge.makeLine(cq.Vector(20, 0), cq.Vector(20, 10)),
+    ]
+
+    h = cq.Face.makeFromWires(hull.find_hull(edges))
+
+    assert h.distance(cq.Vertex.makeVertex(20, 0, 0)) == pytest.approx(0.0)
+
+
+def test_rotation_invariance():
+    def shape(dx, dy):
+        return [
+            cq.Edge.makeCircle(20.0, (0, 0, 0)),
+            cq.Edge.makeCircle(10.0, (dx, dy, 0)),
+            cq.Edge.makeCircle(10.0, (-dx, -dy, 0)),
+        ]
+
+    assert area(shape(0, 40)) == pytest.approx(area(shape(40, 0)))
+
+
+def test_hull_face_normal():
+    # #1891: func.face reads the edges in storage order - keep the march order
+    edges = [
+        cq.Edge.makeLine(cq.Vector(0, 0), cq.Vector(4, 0)),
+        cq.Edge.makeLine(cq.Vector(4, 0), cq.Vector(0, 3)),
+        cq.Edge.makeLine(cq.Vector(0, 3), cq.Vector(0, 0)),
+    ]
+
+    assert face(hull.find_hull(edges)).normalAt().z == pytest.approx(1)
+
+
+@pytest.mark.xfail(strict=True, raises=AssertionError, reason="arc acts as a circle")
+def test_partial_arc():
+    edges = [
+        cq.Edge.makeCircle(10.0, (0, 0, 0), angle1=0, angle2=180),
+        cq.Edge.makeLine(cq.Vector(-30, 20), cq.Vector(30, 20)),
+    ]
+
+    h = cq.Face.makeFromWires(hull.find_hull(edges))
+
+    # the hull of a half disc and a line above it cannot dip below y = 0
+    assert h.BoundingBox().ymin == pytest.approx(0.0)
+
+
+@pytest.mark.xfail(strict=True, raises=AssertionError, reason="bounds in the arc frame")
+def test_three_point_arc_endpoints():
+    e = cq.Sketch().arc((10, 20), 5, 180, 90)._edges[0]
+    (a,), _ = hull.convert_and_validate([e])
+
+    assert (a.s.x, a.s.y) == pytest.approx((e.startPoint().x, e.startPoint().y))
