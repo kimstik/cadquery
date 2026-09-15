@@ -1,6 +1,6 @@
-from typing import Dict, List, Tuple, Union, Iterable, Set
+from typing import Dict, List, Tuple, Union, Iterable, Optional
 from math import pi, sin, cos, atan2, sqrt, inf, degrees
-from numpy import lexsort, argmin
+from numpy import argmin
 
 from .occ_impl.shapes import Edge, Wire, wire
 from .occ_impl.geom import Vector
@@ -20,6 +20,8 @@ Hull = List[Union["Arc", "Point", "Segment"]]
 
 # minimum arc span; below this makeCircle would return a full circle
 TOL = 1e-9
+# distance below which two points coincide and a point lies on a circle
+EPS = 1e-7
 
 
 class Point:
@@ -77,6 +79,18 @@ class Arc:
         self.e = Point(c.x + r * cos(a2), c.y + r * sin(a2))
         self.ac = 2 * pi - (a1 - a2)
 
+    def covers(self, angle: float) -> bool:
+
+        return (angle - self.a1) % (2 * pi) <= self.a2 - self.a1 + TOL
+
+    def passes(self, p: Point) -> bool:
+
+        dx, dy = p.x - self.c.x, p.y - self.c.y
+
+        return abs(sqrt(dx ** 2 + dy ** 2) - self.r) <= EPS and self.covers(
+            atan2p(dx, dy)
+        )
+
 
 def atan2p(x, y):
 
@@ -104,71 +118,104 @@ def arc_bounds(e: Edge, c: Point) -> Tuple[float, float]:
     return t1, t1 + (t2 - t1) % (2 * pi)
 
 
+def merge_spans(spans: List[Tuple[float, float]]) -> List[Tuple[float, float]]:
+
+    rv = [spans[0]]
+
+    for a1, a2 in spans[1:]:
+        b1, b2 = rv[-1]
+
+        if a1 <= b2 + TOL:
+            rv[-1] = b1, max(a2, b2)
+        else:
+            rv.append((a1, a2))
+
+    if len(rv) > 1 and rv[0][0] + 2 * pi <= rv[-1][1] + TOL:
+        a1, a2 = rv.pop()
+        rv[0] = a1, max(a2, rv[0][1] + 2 * pi)
+
+    if rv[0][1] - rv[0][0] >= 2 * pi - TOL:
+        return [(0.0, 2 * pi)]
+
+    return rv
+
+
+def add_point(points: Points, x: float, y: float) -> Point:
+
+    for p in points:
+        if abs(p.x - x) <= EPS and abs(p.y - y) <= EPS:
+            return p
+
+    p = Point(x, y)
+    points.append(p)
+
+    return p
+
+
 def convert_and_validate(edges: Iterable[Edge]) -> Tuple[List[Arc], List[Point]]:
 
-    arcs: Dict[Tuple[Point, float], Arc] = {}
-    points: Set[Point] = set()
+    spans: Dict[Tuple[Point, float], List[Tuple[float, float]]] = {}
+    points: Points = []
 
     for e in edges:
         gt = e.geomType()
 
         if gt == "LINE":
-            p1 = e.startPoint()
-            p2 = e.endPoint()
-
-            points.update((Point(p1.x, p1.y), Point(p2.x, p2.y)))
+            for v in (e.startPoint(), e.endPoint()):
+                add_point(points, v.x, v.y)
 
         elif gt == "CIRCLE":
             c = e.arcCenter()
             r = e.radius()
             p = Point(c.x, c.y)
-            a1, a2 = arc_bounds(e, p)
 
-            if (p, r) in arcs:
-                a = arcs[p, r]
-                a1, a2 = min(a.a1, a1), max(a.a2, a2)
-
-            arcs[p, r] = Arc(p, r, a1, a2)
+            spans.setdefault((p, r), []).append(arc_bounds(e, p))
 
         else:
             raise ValueError("Unsupported geometry {gt}")
 
-    return list(arcs.values()), list(points)
+    arcs = [
+        Arc(c, r, a1, a2)
+        for (c, r), ss in spans.items()
+        for a1, a2 in merge_spans(sorted(ss))
+    ]
+
+    # the ends of an arc are entities of their own; a point on an arc adds nothing
+    for a in arcs:
+        if a.a2 - a.a1 < 2 * pi:
+            a.s = add_point(points, a.s.x, a.s.y)
+            a.e = add_point(points, a.e.x, a.e.y)
+
+    points = [
+        p
+        for p in points
+        if not any(p is not a.s and p is not a.e and a.passes(p) for a in arcs)
+    ]
+
+    return arcs, points
 
 
 def select_lowest_point(points: Points) -> Tuple[Point, int]:
 
-    x = []
-    y = []
+    y_min = min(p.y for p in points)
+    ix = min(
+        (i for i, p in enumerate(points) if p.y <= y_min + EPS),
+        key=lambda i: points[i].x,
+    )
 
-    for p in points:
-        x.append(p.x)
-        y.append(p.y)
-
-    # select the lowest point
-    ixs = lexsort((x, y))
-
-    return points[ixs[0]], ixs[0]
+    return points[ix], ix
 
 
-def select_lowest_arc(arcs: Arcs) -> Tuple[Point, Arc]:
+def select_lowest_arc(arcs: Arcs) -> Optional[Tuple[Point, Arc]]:
 
-    x = []
-    y = []
+    arcs = [a for a in arcs if a.covers(1.5 * pi)]
 
-    for a in arcs:
+    if not arcs:
+        return None
 
-        if a.a1 < 1.5 * pi and a.a2 > 1.5 * pi:
-            x.append(a.c.x)
-            y.append(a.c.y - a.r)
-        else:
-            p, _ = select_lowest_point([a.s, a.e])
-            x.append(p.x)
-            y.append(p.y)
+    p, ix = select_lowest_point([Point(a.c.x, a.c.y - a.r) for a in arcs])
 
-    ixs = lexsort((x, y))
-
-    return Point(x[ixs[0]], y[ixs[0]]), arcs[ixs[0]]
+    return p, arcs[ix]
 
 
 def select_lowest(arcs: Arcs, points: Points) -> Entity:
@@ -216,7 +263,7 @@ def _pt_arc(p: Point, a: Arc) -> Tuple[float, float, float, float]:
     dx, dy = x - xc, y - yc
     l = sqrt(dx ** 2 + dy ** 2)
 
-    if l <= r:
+    if l <= r + EPS:
         raise NoTangent
 
     x1 = r ** 2 / l ** 2 * dx - r / l ** 2 * sqrt(l ** 2 - r ** 2) * dy + xc
@@ -229,16 +276,28 @@ def _pt_arc(p: Point, a: Arc) -> Tuple[float, float, float, float]:
 
 def pt_arc(p: Point, a: Arc) -> Tuple[float, Segment]:
 
+    if p is a.s:
+        return (a.a1 + pi / 2) % (2 * pi), Segment(p, p)
+
     x, y = p.x, p.y
     x1, y1, _, _ = _pt_arc(p, a)
+
+    if not a.covers(atan2p(x1 - a.c.x, y1 - a.c.y)):
+        raise NoTangent
 
     return atan2p(x1 - x, y1 - y), Segment(p, Point(x1, y1))
 
 
 def arc_pt(a: Arc, p: Point) -> Tuple[float, Segment]:
 
+    if p is a.e:
+        return (a.a2 + pi / 2) % (2 * pi), Segment(p, p)
+
     x, y = p.x, p.y
     _, _, x2, y2 = _pt_arc(p, a)
+
+    if not a.covers(atan2p(x2 - a.c.x, y2 - a.c.y)):
+        raise NoTangent
 
     return atan2p(x - x2, y - y2), Segment(Point(x2, y2), p)
 
@@ -281,6 +340,10 @@ def arc_arc(a1: Arc, a2: Arc) -> Tuple[float, Segment]:
         dy = yc2 - yc1
         l = sqrt(dx ** 2 + dy ** 2)
 
+        # arcs of one circle: the hull crosses the gap between their ends
+        if l <= EPS:
+            raise NoTangent
+
         dx /= l
         dy /= l
 
@@ -314,7 +377,15 @@ def arc_arc(a1: Arc, a2: Arc) -> Tuple[float, Segment]:
         Segment(Point(x12, y12), Point(x22, y22)),
     )
 
-    return angles[ix], segments[ix]
+    seg = segments[ix]
+
+    if not (
+        a1.covers(atan2p(seg.a.x - xc1, seg.a.y - yc1))
+        and a2.covers(atan2p(seg.b.x - xc2, seg.b.y - yc2))
+    ):
+        raise NoTangent
+
+    return angles[ix], seg
 
 
 NO_TANGENT = inf, Segment(Point(inf, inf), Point(inf, inf))
@@ -367,7 +438,10 @@ def finalize_hull(hull: Hull) -> Wire:
     for el_p, el, el_n in zip(hull, hull[1:], hull[2:]):
 
         if isinstance(el, Segment):
-            rv.append(Edge.makeLine(Vector(el.a.x, el.a.y), Vector(el.b.x, el.b.y)))
+            if el.a is not el.b:
+                rv.append(
+                    Edge.makeLine(Vector(el.a.x, el.a.y), Vector(el.b.x, el.b.y))
+                )
         elif (
             isinstance(el, Arc)
             and isinstance(el_p, Segment)

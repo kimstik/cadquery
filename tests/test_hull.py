@@ -192,7 +192,6 @@ def test_hull_face_normal():
     assert face(hull.find_hull(edges)).normalAt().z == pytest.approx(1)
 
 
-@pytest.mark.xfail(strict=True, raises=AssertionError, reason="arc acts as a circle")
 def test_partial_arc():
     edges = [
         cq.Edge.makeCircle(10.0, (0, 0, 0), angle1=0, angle2=180),
@@ -210,3 +209,34 @@ def test_three_point_arc_endpoints():
     (a,), _ = hull.convert_and_validate([e])
 
     assert (a.s.x, a.s.y) == pytest.approx((e.startPoint().x, e.startPoint().y))
+
+
+@pytest.mark.parametrize(
+    "edges, expected",
+    [
+        (
+            [
+                cq.Edge.makeLine(cq.Vector(-1, 0), cq.Vector(1, 0)),
+                cq.Edge.makeCircle(1.0, (0, 0, 0), angle1=0, angle2=180),
+            ],
+            pi / 2,
+        ),
+        (
+            [
+                cq.Edge.makeLine(cq.Vector(2, 0), cq.Vector(0, 2)),
+                cq.Edge.makeCircle(0.5, (2, 2, 0), angle1=180, angle2=270),
+            ],
+            1.875,
+        ),
+        (
+            [
+                cq.Edge.makeLine(cq.Vector(2, 0), cq.Vector(0, 2)),
+                cq.Edge.makeCircle(0.5, (2, 2, 0), angle1=0, angle2=90),
+            ],
+            3 + pi / 16,
+        ),
+    ],
+    ids=["half disc", "concave arc", "convex arc"],
+)
+def test_arc_as_entity(edges, expected):
+    assert area(edges) == pytest.approx(expected)
