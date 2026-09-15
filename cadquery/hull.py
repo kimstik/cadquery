@@ -88,6 +88,22 @@ def atan2p(x, y):
     return rv
 
 
+def arc_bounds(e: Edge, c: Point) -> Tuple[float, float]:
+
+    if e.IsClosed():
+        return 0.0, 2 * pi
+
+    t1, tm, t2 = (
+        atan2p(v.x - c.x, v.y - c.y)
+        for v in (e.startPoint(), e.positionAt(0.5), e.endPoint())
+    )
+
+    if (tm - t1) % (2 * pi) > (t2 - t1) % (2 * pi):
+        t1, t2 = t2, t1
+
+    return t1, t1 + (t2 - t1) % (2 * pi)
+
+
 def convert_and_validate(edges: Iterable[Edge]) -> Tuple[List[Arc], List[Point]]:
 
     arcs: Dict[Tuple[Point, float], Arc] = {}
@@ -105,8 +121,8 @@ def convert_and_validate(edges: Iterable[Edge]) -> Tuple[List[Arc], List[Point]]
         elif gt == "CIRCLE":
             c = e.arcCenter()
             r = e.radius()
-            a1, a2 = e._bounds()
             p = Point(c.x, c.y)
+            a1, a2 = arc_bounds(e, p)
 
             if (p, r) in arcs:
                 a = arcs[p, r]
