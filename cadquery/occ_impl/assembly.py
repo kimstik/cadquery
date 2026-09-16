@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import (
     Union,
     Iterable,
@@ -15,20 +17,9 @@ from typing_extensions import Protocol, Self
 from math import degrees, radians
 
 from OCP.TCollection import TCollection_HAsciiString
-from OCP.TDocStd import TDocStd_Document
 from OCP.TCollection import TCollection_ExtendedString
-from OCP.XCAFDoc import (
-    XCAFDoc_DocumentTool,
-    XCAFDoc_ColorType,
-    XCAFDoc_ColorGen,
-    XCAFDoc_Material,
-    XCAFDoc_VisMaterial,
-)
-from OCP.XCAFApp import XCAFApp_Application
 from OCP.BinXCAFDrivers import BinXCAFDrivers
 from OCP.XmlXCAFDrivers import XmlXCAFDrivers
-from OCP.TDataStd import TDataStd_Name
-from OCP.TDF import TDF_Label
 from OCP.TopLoc import TopLoc_Location
 from OCP.Quantity import (
     Quantity_ColorRGBA,
@@ -50,6 +41,9 @@ from ..utils import BiDict
 
 if TYPE_CHECKING:
     from vtkmodules.vtkRenderingCore import vtkRenderer, vtkProp3D
+    from OCP.TDocStd import TDocStd_Document
+    from OCP.XCAFDoc import XCAFDoc_Material, XCAFDoc_VisMaterial
+    from OCP.TDF import TDF_Label
 
 # type definitions
 AssemblyObjects = Union[Shape, Workplane, None]
@@ -71,6 +65,8 @@ class Material(object):
         arguments defining some other characteristics of the material. If nothing is
         passed, arbitrary defaults are used.
         """
+
+        from OCP.XCAFDoc import XCAFDoc_Material, XCAFDoc_VisMaterial
 
         # Create the default material object and prepare to set a few defaults
         self.wrapped = XCAFDoc_Material()
@@ -168,6 +164,9 @@ class Material(object):
         """
         Allows pickling.
         """
+
+        from OCP.XCAFDoc import XCAFDoc_Material
+
         self.wrapped = XCAFDoc_Material()
         self.wrapped.Set(
             TCollection_HAsciiString(data[0]),
@@ -420,10 +419,14 @@ class AssemblyProtocol(Protocol):
 
 def setName(l: TDF_Label, name: str, tool):
 
+    from OCP.TDataStd import TDataStd_Name
+
     TDataStd_Name.Set_s(l, TCollection_ExtendedString(name))
 
 
 def setColor(l: TDF_Label, color: Color, tool):
+
+    from OCP.XCAFDoc import XCAFDoc_ColorType
 
     tool.SetColor(l, color.wrapped, XCAFDoc_ColorType.XCAFDoc_ColorSurf)
 
@@ -448,6 +451,12 @@ def toCAF(
     angularTolerance: float = 0.1,
     binary: bool = True,
 ) -> Tuple[TDF_Label, TDocStd_Document]:
+
+    from OCP.TDocStd import TDocStd_Document
+    from OCP.XCAFDoc import XCAFDoc_DocumentTool, XCAFDoc_ColorGen
+    from OCP.XCAFApp import XCAFApp_Application
+    from OCP.TDataStd import TDataStd_Name
+    from OCP.TDF import TDF_Label
 
     # prepare a doc
     app = XCAFApp_Application.GetApplication_s()
@@ -766,6 +775,11 @@ def toFusedCAF(
 
     :param assy: Assembly that is being converted to a fused compound for the document.
     """
+
+    from OCP.TDocStd import TDocStd_Document
+    from OCP.XCAFDoc import XCAFDoc_DocumentTool, XCAFDoc_ColorGen
+    from OCP.XCAFApp import XCAFApp_Application
+    from OCP.TDataStd import TDataStd_Name
 
     # Prepare the document
     app = XCAFApp_Application.GetApplication_s()

@@ -14,7 +14,6 @@ from typing import (
     runtime_checkable,
 )
 
-from OCP.GeomConvert import GeomConvert
 from OCP.gp import gp_Dir
 from OCP.GC import GC_MakeArcOfEllipse
 from typing_extensions import Self
@@ -332,6 +331,9 @@ class DxfDocument:
 
         :return: dictionary of ezdxf.math.BSpline parameters
         """
+
+        from OCP.GeomConvert import GeomConvert
+
         adaptor = edge._geomAdaptor()
         curve = GeomConvert.CurveToBSplineCurve_s(adaptor.Curve().Curve())
 

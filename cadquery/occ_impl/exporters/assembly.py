@@ -6,21 +6,6 @@ from shutil import make_archive
 from typing import Optional, TYPE_CHECKING
 from typing_extensions import Literal
 
-from OCP.XSControl import XSControl_WorkSession
-from OCP.STEPCAFControl import STEPCAFControl_Writer
-from OCP.STEPControl import STEPControl_StepModelType
-from OCP.STEPConstruct import STEPConstruct
-from OCP.StepShape import (
-    StepShape_AdvancedFace,
-    StepShape_GeometricCurveSet,
-)
-from OCP.StepGeom import StepGeom_TrimmedCurve
-from OCP.IFSelect import IFSelect_ReturnStatus
-from OCP.TDF import TDF_Label
-from OCP.TDataStd import TDataStd_Name
-from OCP.TDocStd import TDocStd_Document
-from OCP.XCAFApp import XCAFApp_Application
-from OCP.XCAFDoc import XCAFDoc_DocumentTool, XCAFDoc_ColorGen
 from OCP.XmlXCAFDrivers import (
     XmlXCAFDrivers_DocumentRetrievalDriver,
     XmlXCAFDrivers_DocumentStorageDriver,
@@ -37,12 +22,10 @@ from OCP.TCollection import (
     TCollection_HAsciiString,
 )
 from OCP.PCDM import PCDM_StoreStatus
-from OCP.RWGltf import RWGltf_CafWriter
 from OCP.collections import (
     IndexedDataMap_TCollection_AsciiString_TCollection_AsciiString as TColStd_IndexedDataMapOfStringString,
 )
 from OCP.Message import Message_ProgressRange
-from OCP.Interface import Interface_Static
 
 from ..assembly import AssemblyProtocol, toCAF, toVTK, toFusedCAF
 from ..geom import Location
@@ -100,6 +83,15 @@ def exportAssembly(
     :param name_geometries: Propagate subshape names to geometric STEP entities.
     :type name_geometries: bool
     """
+
+    from OCP.XSControl import XSControl_WorkSession
+    from OCP.STEPCAFControl import STEPCAFControl_Writer
+    from OCP.STEPControl import STEPControl_StepModelType
+    from OCP.STEPConstruct import STEPConstruct
+    from OCP.StepShape import StepShape_AdvancedFace, StepShape_GeometricCurveSet
+    from OCP.StepGeom import StepGeom_TrimmedCurve
+    from OCP.IFSelect import IFSelect_ReturnStatus
+    from OCP.Interface import Interface_Static
 
     # Handle the extra settings for the STEP export
     pcurves = 1
@@ -197,6 +189,17 @@ def exportStepMeta(
         for example to export a MM model as a STEP file declaring meters.
     :type outputUnit: UnitLiterals or None
     """
+
+    from OCP.XSControl import XSControl_WorkSession
+    from OCP.STEPCAFControl import STEPCAFControl_Writer
+    from OCP.STEPControl import STEPControl_StepModelType
+    from OCP.IFSelect import IFSelect_ReturnStatus
+    from OCP.TDF import TDF_Label
+    from OCP.TDataStd import TDataStd_Name
+    from OCP.TDocStd import TDocStd_Document
+    from OCP.XCAFApp import XCAFApp_Application
+    from OCP.XCAFDoc import XCAFDoc_DocumentTool, XCAFDoc_ColorGen
+    from OCP.Interface import Interface_Static
 
     pcurves = 1
     if not write_pcurves:
@@ -351,6 +354,8 @@ def exportCAF(assy: AssemblyProtocol, path: str, binary: bool = False) -> bool:
     Export an assembly to an XCAF xml or xbf file (internal OCCT formats).
     """
 
+    from OCP.XCAFApp import XCAFApp_Application
+
     folder, fname = os.path.split(path)
     name, ext = os.path.splitext(fname)
     ext = ext[1:] if ext[0] == "." else ext
@@ -455,6 +460,8 @@ def exportGLTF(
     """
     Export an assembly to a gltf file.
     """
+
+    from OCP.RWGltf import RWGltf_CafWriter
 
     # If the caller specified the binary option, respect it
     if binary is None:

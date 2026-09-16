@@ -9,7 +9,6 @@ from ..shapes import Shape, Edge, Face, sortWiresByBuildOrder
 from OCP.ShapeAnalysis import ShapeAnalysis_FreeBounds
 from OCP.collections import HSequence_TopoDS_Shape as TopTools_HSequenceOfShape
 from OCP.gp import gp_Pnt
-from OCP.Geom import Geom_BSplineCurve
 from OCP.collections import Array1_gp_Pnt as TColgp_Array1OfPnt
 from OCP.collections import (
     Array1_double as TColStd_Array1OfReal,
@@ -60,6 +59,8 @@ def _dxf_polyline(el):
 
 
 def _dxf_spline(el):
+
+    from OCP.Geom import Geom_BSplineCurve
 
     try:
         degree = el.dxf.degree

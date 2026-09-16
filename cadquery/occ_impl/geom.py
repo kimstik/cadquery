@@ -21,7 +21,6 @@ from OCP.gp import (
 )
 from OCP.Bnd import Bnd_Box
 from OCP.BRepBndLib import BRepBndLib
-from OCP.BRepMesh import BRepMesh_IncrementalMesh
 from OCP.TopoDS import TopoDS_Shape
 from OCP.TopLoc import TopLoc_Location
 from OCP.BinTools import BinTools_LocationSet
@@ -994,6 +993,9 @@ class BoundBox(object):
         """
         Constructs a bounding box from a TopoDS_Shape
         """
+
+        from OCP.BRepMesh import BRepMesh_IncrementalMesh
+
         tol = TOL if tol is None else tol  # tol = TOL (by default)
         bbox = Bnd_Box()
 

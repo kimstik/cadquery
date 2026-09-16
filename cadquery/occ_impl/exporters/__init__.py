@@ -1,8 +1,6 @@
 from typing import IO, Optional, Union, cast, Dict, Any, Iterable
 from typing_extensions import Literal
 
-from OCP.VrmlAPI import VrmlAPI
-
 from ..shapes import Shape, compound
 from ...types import UnitLiterals
 
@@ -43,6 +41,8 @@ def export(
     outputUnit: Optional[UnitLiterals] = None,
     opt: Optional[Dict[str, Any]] = None,
 ):
+
+    from OCP.VrmlAPI import VrmlAPI
 
     """
     Export Workplane or Shape to file. Multiple entities are converted to compound.

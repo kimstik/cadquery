@@ -1,27 +1,19 @@
-from typing import cast
+from __future__ import annotations
+
+from typing import cast, TYPE_CHECKING
 from pathlib import Path
+
+if TYPE_CHECKING:
+    from OCP.TDF import TDF_Label
+    from OCP.TDocStd import TDocStd_Document
+    from OCP.XCAFDoc import XCAFDoc_ColorTool
 
 from OCP.TopoDS import TopoDS_Shape
 from OCP.TCollection import TCollection_ExtendedString
 from OCP.Quantity import Quantity_ColorRGBA
-from OCP.TDF import TDF_Label
 from OCP.collections import Sequence_TDF_Label as TDF_LabelSequence
-from OCP.IFSelect import IFSelect_RetDone
-from OCP.TDocStd import TDocStd_Document
-from OCP.TDataStd import TDataStd_Name, TDataStd_TreeNode
-from OCP.STEPCAFControl import STEPCAFControl_Reader
-from OCP.XCAFDoc import (
-    XCAFDoc_ColorSurf,
-    XCAFDoc_DocumentTool,
-    XCAFDoc_ColorTool,
-    XCAFDoc,
-    XCAFDoc_ColorType,
-    XCAFDoc_Material,
-)
-from OCP.TDocStd import TDocStd_Application
 from OCP.XmlXCAFDrivers import XmlXCAFDrivers
 from OCP.BinXCAFDrivers import BinXCAFDrivers
-from OCP.Interface import Interface_Static
 from OCP.PCDM import PCDM_ReaderStatus
 
 from ..assembly import AssemblyProtocol, Color, Material
@@ -34,6 +26,8 @@ def _get_name(label: TDF_Label) -> str:
     """
     Helper to get the name of a given label.
     """
+
+    from OCP.TDataStd import TDataStd_Name
 
     rv = ""
 
@@ -49,6 +43,9 @@ def _get_material(label: TDF_Label) -> Material | None:
     """
     Helper to get the material for a given label.
     """
+
+    from OCP.TDataStd import TDataStd_TreeNode
+    from OCP.XCAFDoc import XCAFDoc, XCAFDoc_Material
 
     rv = None
 
@@ -81,6 +78,9 @@ def _get_ref_color(label: TDF_Label) -> Color | None:
     """
     Helper to get the instance color of a given label.
     """
+
+    from OCP.TDataStd import TDataStd_TreeNode
+    from OCP.XCAFDoc import XCAFDoc_ColorTool, XCAFDoc, XCAFDoc_ColorType
 
     color_ref_guid = XCAFDoc.ColorRefGUID_s(XCAFDoc_ColorType.XCAFDoc_ColorSurf)
 
@@ -119,6 +119,8 @@ def _get_shape_color(s: TopoDS_Shape, color_tool: XCAFDoc_ColorTool) -> Color | 
     Helper to get the shape color of a given shape.
     """
 
+    from OCP.XCAFDoc import XCAFDoc_ColorSurf
+
     color = Quantity_ColorRGBA()
 
     # Extract the color, if present on the shape
@@ -143,6 +145,11 @@ def importStep(assy: AssemblyProtocol, path: str, unit: UnitLiterals = "MM"):
 
     :return: None
     """
+
+    from OCP.IFSelect import IFSelect_RetDone
+    from OCP.TDocStd import TDocStd_Document
+    from OCP.STEPCAFControl import STEPCAFControl_Reader
+    from OCP.Interface import Interface_Static
 
     # Create and configure a STEP reader
     step_reader = STEPCAFControl_Reader()
@@ -178,6 +185,8 @@ def importXbf(assy: AssemblyProtocol, path: str):
     :return: None
     """
 
+    from OCP.TDocStd import TDocStd_Document, TDocStd_Application
+
     app = TDocStd_Application()
     BinXCAFDrivers.DefineFormat_s(app)
 
@@ -208,6 +217,8 @@ def importXml(assy: AssemblyProtocol, path: str):
     :return: None
     """
 
+    from OCP.TDocStd import TDocStd_Document, TDocStd_Application
+
     app = TDocStd_Application()
     XmlXCAFDrivers.DefineFormat_s(app)
 
@@ -229,6 +240,10 @@ def importXml(assy: AssemblyProtocol, path: str):
 
 
 def _importDoc(doc: TDocStd_Document, assy: AssemblyProtocol):
+
+    from OCP.TDF import TDF_Label
+    from OCP.XCAFDoc import XCAFDoc_DocumentTool
+
     def _process_label(lbl: TDF_Label, parent: AssemblyProtocol):
         """
         Recursive method to process the assembly in a top-down manner.

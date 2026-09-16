@@ -36,10 +36,13 @@ from ..types import UnitLiterals
 
 if TYPE_CHECKING:
     from vtkmodules.vtkCommonDataModel import vtkPolyData
+    from OCP.Geom import Geom_Surface, Geom_BSplineCurve, Geom_Curve
+    from OCP.IFSelect import IFSelect_ReturnStatus
 
 # change default OCCT logging level
 from OCP.Message import Message, Message_Gravity
 
+# NOTE: Printers() pulls in the huge OCP.collections, about 150 ms at import; consider splitting it on the OCP side
 for printer in Message.DefaultMessenger_s().Printers():
     printer.SetTraceLevel(Message_Gravity.Message_Fail)
 
@@ -143,7 +146,6 @@ from OCP.TopoDS import (
 )
 
 from OCP.GC import GC_MakeArcOfCircle, GC_MakeArcOfEllipse, GC_MakeSegment2d
-from OCP.gce import gce_MakeLin, gce_MakeDir
 from OCP.GeomAPI import (
     GeomAPI_Interpolate,
     GeomAPI_ProjectPointOnSurf,
@@ -151,8 +153,6 @@ from OCP.GeomAPI import (
     GeomAPI_PointsToBSpline,
     GeomAPI_PointsToBSplineSurface,
 )
-
-from OCP.BRepFill import BRepFill
 
 from OCP.BRepAlgoAPI import (
     BRepAlgoAPI_Common,
@@ -162,20 +162,6 @@ from OCP.BRepAlgoAPI import (
     BRepAlgoAPI_Splitter,
     BRepAlgoAPI_Check,
 )
-
-from OCP.HLRAlgo import HLRAlgo_Projector
-from OCP.HLRBRep import HLRBRep_Algo, HLRBRep_HLRToShape
-
-from OCP.Geom import (
-    Geom_BezierCurve,
-    Geom_ConicalSurface,
-    Geom_CylindricalSurface,
-    Geom_Surface,
-    Geom_Plane,
-    Geom_BSplineCurve,
-    Geom_Curve,
-)
-from OCP.Geom2d import Geom2d_Line
 
 from OCP.Geom2dAPI import Geom2dAPI_Interpolate
 
@@ -202,43 +188,13 @@ from OCP.collections import (
 )
 
 
-from OCP.ShapeFix import ShapeFix_Shape, ShapeFix_Solid, ShapeFix_Face
-
-from OCP.STEPControl import STEPControl_Writer, STEPControl_AsIs
-
-from OCP.BRepMesh import BRepMesh_IncrementalMesh
 from OCP.StlAPI import StlAPI_Writer
-
-from OCP.ShapeUpgrade import ShapeUpgrade_UnifySameDomain
 
 from OCP.BRepTools import (
     BRepTools,
     BRepTools_History,
     BRepTools_WireExplorer,
     BRepTools_ReShape,
-)
-
-from OCP.LocOpe import LocOpe_DPrism
-
-from OCP.BRepCheck import BRepCheck_Analyzer
-
-from OCP.Font import (
-    Font_FontMgr,
-    Font_FA_Regular,
-    Font_FA_Italic,
-    Font_FA_Bold,
-    Font_SystemFont,
-    Font_StrictLevel_Aliases,
-)
-
-from OCP.StdPrs import StdPrs_BRepFont, StdPrs_BRepTextBuilder as Font_BRepTextBuilder
-from OCP.Graphic3d import (
-    Graphic3d_HTA_LEFT,
-    Graphic3d_HTA_CENTER,
-    Graphic3d_HTA_RIGHT,
-    Graphic3d_VTA_BOTTOM,
-    Graphic3d_VTA_CENTER,
-    Graphic3d_VTA_TOP,
 )
 
 from OCP.NCollection import NCollection_String as NCollection_Utf8String
@@ -262,7 +218,6 @@ from OCP.GeomAbs import (
     GeomAbs_CurveType,
 )
 from OCP.BRepOffsetAPI import BRepOffsetAPI_MakeFilling
-from OCP.BRepOffset import BRepOffset_MakeOffset, BRepOffset_Mode
 
 from OCP.BOPAlgo import (
     BOPAlgo_GlueEnum,
@@ -274,8 +229,6 @@ from OCP.BOPAlgo import (
     BOPAlgo_MakerVolume,
     BOPAlgo_Splitter,
 )
-
-from OCP.IFSelect import IFSelect_ReturnStatus
 
 from OCP.TopAbs import TopAbs_ShapeEnum, TopAbs_Orientation
 
@@ -295,34 +248,15 @@ from OCP.GCPnts import (
     GCPnts_QuasiUniformDeflection,
 )
 
-from OCP.GeomFill import (
-    GeomFill_Frenet,
-    GeomFill_CorrectedFrenet,
-    GeomFill_TrihedronLaw,
-)
-
 from OCP.BRepProj import BRepProj_Projection
 from OCP.BRepExtrema import BRepExtrema_DistShapeShape
-
-from OCP.IVtkOCC import IVtkOCC_Shape, IVtkOCC_ShapeMesher
-from OCP.IVtkVTK import IVtkVTK_ShapeData
 
 # for catching exceptions
 from OCP.Standard import Standard_NoSuchObject, Standard_Failure, Standard_TypeMismatch
 
-from OCP.Prs3d import Prs3d_IsoAspect
 from OCP.Quantity import Quantity_Color
-from OCP.Aspect import Aspect_TOL_SOLID
-
-from OCP.Interface import Interface_Static
-
-from OCP.ShapeCustom import ShapeCustom, ShapeCustom_RestrictionParameters
 
 from OCP.BRepAlgo import BRepAlgo, BRepAlgo_NormalProjection
-
-from OCP.ChFi2d import ChFi2d_FilletAPI  # For Wire.Fillet()
-
-from OCP.GeomConvert import GeomConvert_ApproxCurve
 
 from OCP.Approx import Approx_ParametrizationType
 
@@ -333,8 +267,6 @@ from OCP.BinTools import BinTools
 from OCP.Adaptor3d import Adaptor3d_IsoCurve, Adaptor3d_Curve
 
 from OCP.GeomAdaptor import GeomAdaptor_Surface
-
-from OCP.OSD import OSD_ThreadPool
 
 from math import pi, sqrt, inf, radians, cos
 
@@ -427,6 +359,8 @@ def fix(obj: TopoDS_Shape) -> TopoDS_Shape:
     Fix a TopoDS object to suitable specialized type
     """
 
+    from OCP.ShapeFix import ShapeFix_Shape
+
     sf = ShapeFix_Shape(obj)
     sf.Perform()
 
@@ -450,6 +384,8 @@ class Shape(object):
 
     def clean(self: T) -> T:
         """Experimental clean using ShapeUpgrade"""
+
+        from OCP.ShapeUpgrade import ShapeUpgrade_UnifySameDomain
 
         upgrader = ShapeUpgrade_UnifySameDomain(self.wrapped, True, True, True)
         upgrader.AllowInternalEdges(False)
@@ -514,6 +450,9 @@ class Shape(object):
             Setting this value to True may cause large features to become faceted, or small features dense.
         :param parallel: If True, OCCT will use parallel processing to mesh the shape. Default is True.
         """
+
+        from OCP.BRepMesh import BRepMesh_IncrementalMesh
+
         # The constructor used here automatically calls mesh.Perform(). https://dev.opencascade.org/doc/refman/html/class_b_rep_mesh___incremental_mesh.html#a3a383b3afe164161a3aa59a492180ac6
         BRepMesh_IncrementalMesh(
             self.wrapped, tolerance, relative, angularTolerance, parallel
@@ -550,6 +489,9 @@ class Shape(object):
             See OCCT documentation.
         :type precision_mode: int
         """
+
+        from OCP.STEPControl import STEPControl_Writer, STEPControl_AsIs
+        from OCP.Interface import Interface_Static
 
         # Handle the extra settings for the STEP export
         pcurves = 1
@@ -708,6 +650,9 @@ class Shape(object):
         subshapes. See the OCCT docs on BRepCheck_Analyzer::IsValid for a full
         description of what is checked.
         """
+
+        from OCP.BRepCheck import BRepCheck_Analyzer
+
         return BRepCheck_Analyzer(self.wrapped).IsValid()
 
     def BoundingBox(
@@ -1509,6 +1454,8 @@ class Shape(object):
         :returns: A list of intersected faces sorted by distance from point
         """
 
+        from OCP.gce import gce_MakeLin, gce_MakeDir
+
         oc_point = (
             gp_Pnt(*point.toTuple()) if isinstance(point, Vector) else gp_Pnt(*point)
         )
@@ -1609,6 +1556,8 @@ class Shape(object):
         Generate triangulation if none exists.
         """
 
+        from OCP.BRepMesh import BRepMesh_IncrementalMesh
+
         if not BRepTools.Triangulation_s(self.wrapped, tolerance):
             BRepMesh_IncrementalMesh(self.wrapped, tolerance, True, angularTolerance)
 
@@ -1676,6 +1625,8 @@ class Shape(object):
         :param nurbs: Use rational splines.
         """
 
+        from OCP.ShapeCustom import ShapeCustom, ShapeCustom_RestrictionParameters
+
         params = ShapeCustom_RestrictionParameters()
 
         result = ShapeCustom.BSplineRestriction_s(
@@ -1711,6 +1662,11 @@ class Shape(object):
         """
         Convert shape to vtkPolyData
         """
+
+        from OCP.IVtkOCC import IVtkOCC_Shape, IVtkOCC_ShapeMesher
+        from OCP.IVtkVTK import IVtkVTK_ShapeData
+        from OCP.Prs3d import Prs3d_IsoAspect
+        from OCP.Aspect import Aspect_TOL_SOLID
 
         # vtk must be loaded before getVtkPolyData(), which returns None otherwise
         from vtkmodules.vtkFiltersCore import vtkTriangleFilter, vtkPolyDataNormals
@@ -2186,6 +2142,8 @@ class Mixin1D(object):
         BRepAdaptor_CompCurve.
         """
 
+        from OCP.GeomConvert import GeomConvert_ApproxCurve
+
         rv = GeomConvert_ApproxCurve(
             self._geomAdaptor(), TOLERANCE, GeomAbs_C2, MaxSegments=100, MaxDegree=3
         ).Curve()
@@ -2345,6 +2303,8 @@ class Mixin1D(object):
         :return: normal vector
         """
 
+        from OCP.Geom import Geom_Plane
+
         curve = self._geomAdaptor()
         gtype = self.geomType()
 
@@ -2489,6 +2449,12 @@ class Mixin1D(object):
         :param planar: planar mode
         :return: A Location object representing local coordinate system at the specified distance.
         """
+
+        from OCP.GeomFill import (
+            GeomFill_Frenet,
+            GeomFill_CorrectedFrenet,
+            GeomFill_TrihedronLaw,
+        )
 
         curve, param = self._curve_and_param(d, mode)
 
@@ -2932,6 +2898,8 @@ class Edge(Shape, Mixin1D):
         :return: An edge
         """
 
+        from OCP.Geom import Geom_BezierCurve
+
         # Convert to a TColgp_Array1OfPnt
         arr = TColgp_Array1OfPnt(1, len(points))
         for i, v in enumerate(points):
@@ -3138,6 +3106,9 @@ class Wire(Shape, Mixin1D):
         the fourth parameter is set (the apex given in degree) a conical surface is used instead'
         """
 
+        from OCP.Geom import Geom_ConicalSurface, Geom_CylindricalSurface
+        from OCP.Geom2d import Geom2d_Line
+
         # 1. build underlying cylindrical/conical surface
         if angle == 360.0:
             geom_surf: Geom_Surface = Geom_CylindricalSurface(
@@ -3232,6 +3203,8 @@ class Wire(Shape, Mixin1D):
           all vertices are deleted except ends of open wires.
         :return: A wire with filleted corners
         """
+
+        from OCP.ChFi2d import ChFi2d_FilletAPI
 
         edges = list(self)
         all_vertices = self.Vertices()
@@ -3664,6 +3637,9 @@ class Face(Shape):
     @overload
     @classmethod
     def makeRuledSurface(cls, edgeOrWire1: Edge, edgeOrWire2: Edge) -> Face:
+
+        from OCP.BRepFill import BRepFill
+
         ...
 
     @overload
@@ -3705,6 +3681,8 @@ class Face(Shape):
         """
         Makes a planar face from one or more wires
         """
+
+        from OCP.ShapeFix import ShapeFix_Shape, ShapeFix_Face
 
         if innerWires and not outerWire.IsClosed():
             raise ValueError("Cannot build face(s): outer wire is not closed")
@@ -3831,6 +3809,8 @@ class Face(Shape):
         """
         Return a thickened face
         """
+
+        from OCP.BRepOffset import BRepOffset_MakeOffset, BRepOffset_Mode
 
         builder = BRepOffset_MakeOffset()
 
@@ -4248,6 +4228,8 @@ class Solid(Shape, Mixin3D):
         Makes a solid from a single shell.
         """
 
+        from OCP.ShapeFix import ShapeFix_Solid
+
         return cls(ShapeFix_Solid().SolidFromShell(shell.wrapped))
 
     @classmethod
@@ -4553,6 +4535,8 @@ class Solid(Shape, Mixin3D):
         cls, face: Face, vecNormal: VectorLike, taper: Real = 0,
     ) -> Solid:
 
+        from OCP.LocOpe import LocOpe_DPrism
+
         vecNormal_ = Vector(vecNormal)
 
         if taper == 0:
@@ -4804,6 +4788,8 @@ class Solid(Shape, Mixin3D):
         Add one or more cavities.
         """
 
+        from OCP.ShapeFix import ShapeFix_Solid
+
         builder = BRepBuilderAPI_MakeSolid(self.wrapped)
 
         # if a solid is provided only outer shell is added
@@ -4882,6 +4868,27 @@ class Compound(Shape, Mixin3D):
         """
         Create a 3D text
         """
+
+        from OCP.Font import (
+            Font_FontMgr,
+            Font_FA_Regular,
+            Font_FA_Italic,
+            Font_FA_Bold,
+            Font_SystemFont,
+            Font_StrictLevel_Aliases,
+        )
+        from OCP.StdPrs import (
+            StdPrs_BRepFont,
+            StdPrs_BRepTextBuilder as Font_BRepTextBuilder,
+        )
+        from OCP.Graphic3d import (
+            Graphic3d_HTA_LEFT,
+            Graphic3d_HTA_CENTER,
+            Graphic3d_HTA_RIGHT,
+            Graphic3d_VTA_BOTTOM,
+            Graphic3d_VTA_CENTER,
+            Graphic3d_VTA_TOP,
+        )
 
         font_kind = {
             "regular": Font_FA_Regular,
@@ -5920,6 +5927,8 @@ def _update_history(
     Update history based on specified shapes and builders.
     """
 
+    from OCP.BRepOffset import BRepOffset_MakeOffset
+
     if history:
         # construct the history step
         op = Op()
@@ -6430,6 +6439,8 @@ def solid(
     Build solid from faces or shells.
     """
 
+    from OCP.ShapeFix import ShapeFix_Solid
+
     ctx = ShapeBuild_ReShape()
     builder = ShapeFix_Solid()
     builder.SetContext(ctx)
@@ -6486,6 +6497,8 @@ def solid(
     """
     Build solid from a sequence of faces.
     """
+
+    from OCP.ShapeFix import ShapeFix_Solid
 
     builder = BRepBuilderAPI_MakeSolid()
     builder.Add(_get_one(shell(*s, tol=tol, history=history, name=name), Shell).wrapped)
@@ -6814,6 +6827,27 @@ def text(
     Create a flat text.
     """
 
+    from OCP.Font import (
+        Font_FontMgr,
+        Font_FA_Regular,
+        Font_FA_Italic,
+        Font_FA_Bold,
+        Font_SystemFont,
+        Font_StrictLevel_Aliases,
+    )
+    from OCP.StdPrs import (
+        StdPrs_BRepFont,
+        StdPrs_BRepTextBuilder as Font_BRepTextBuilder,
+    )
+    from OCP.Graphic3d import (
+        Graphic3d_HTA_LEFT,
+        Graphic3d_HTA_CENTER,
+        Graphic3d_HTA_RIGHT,
+        Graphic3d_VTA_BOTTOM,
+        Graphic3d_VTA_CENTER,
+        Graphic3d_VTA_TOP,
+    )
+
     builder = Font_BRepTextBuilder()
 
     font_kind = {
@@ -6974,6 +7008,8 @@ def setThreads(n: int) -> None:
     """
     Set number of threads to be used by boolean operations.
     """
+
+    from OCP.OSD import OSD_ThreadPool
 
     pool = OSD_ThreadPool.DefaultPool_s()
     pool.Init(n)
@@ -7153,6 +7189,8 @@ def clean(s: Shape) -> Shape:
     Clean superfluous edges and faces.
     """
 
+    from OCP.ShapeUpgrade import ShapeUpgrade_UnifySameDomain
+
     builder = ShapeUpgrade_UnifySameDomain(s.wrapped, True, True, True)
     builder.AllowInternalEdges(False)
     builder.Build()
@@ -7327,6 +7365,8 @@ def offset(
     """
     Offset or thicken faces or shells.
     """
+
+    from OCP.BRepOffset import BRepOffset_MakeOffset, BRepOffset_Mode
 
     def _offset(t: float):
 
@@ -8359,6 +8399,10 @@ def hlr(
     :raises ValueError: If ``dir`` or ``up`` is zero, or if ``up`` is parallel
         to ``dir``.
     """
+
+    from OCP.HLRAlgo import HLRAlgo_Projector
+    from OCP.HLRBRep import HLRBRep_Algo, HLRBRep_HLRToShape
+
     hlr = HLRBRep_Algo()
     hlr.Add(s.wrapped)
 
