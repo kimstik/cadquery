@@ -5,8 +5,6 @@ from ..geom import BoundBox
 from ..shapes import hlr
 
 
-from OCP.GCPnts import GCPnts_QuasiUniformDeflection
-
 DISCRETIZATION_TOLERANCE = 1e-3
 
 SVG_TEMPLATE = """<?xml version="1.0" encoding="UTF-8" standalone="no"?>
@@ -82,6 +80,8 @@ def makeSVGedge(e):
     """
     Creates an SVG edge from a OCCT edge.
     """
+
+    from OCP.GCPnts import GCPnts_QuasiUniformDeflection
 
     cs = StringIO.StringIO()
 

@@ -14,30 +14,7 @@ from typing import (
 from typing_extensions import Protocol, Self
 from math import degrees, radians
 
-from OCP.TCollection import TCollection_HAsciiString
-from OCP.TDocStd import TDocStd_Document
-from OCP.TCollection import TCollection_ExtendedString
-from OCP.XCAFDoc import (
-    XCAFDoc_DocumentTool,
-    XCAFDoc_ColorType,
-    XCAFDoc_ColorGen,
-    XCAFDoc_Material,
-    XCAFDoc_VisMaterial,
-)
-from OCP.XCAFApp import XCAFApp_Application
-from OCP.BinXCAFDrivers import BinXCAFDrivers
-from OCP.XmlXCAFDrivers import XmlXCAFDrivers
-from OCP.TDataStd import TDataStd_Name
-from OCP.TDF import TDF_Label
 from OCP.TopLoc import TopLoc_Location
-from OCP.Quantity import (
-    Quantity_ColorRGBA,
-    Quantity_Color,
-    Quantity_TOC_sRGB,
-    Quantity_TOC_RGB,
-)
-from OCP.BRepAlgoAPI import BRepAlgoAPI_Fuse
-from OCP.collections import List_TopoDS_Shape as TopTools_ListOfShape
 from OCP.BOPAlgo import BOPAlgo_GlueEnum, BOPAlgo_Builder
 from OCP.TopoDS import TopoDS_Shape
 from OCP.gp import gp_EulerSequence
@@ -50,6 +27,10 @@ from ..utils import BiDict
 
 if TYPE_CHECKING:
     from vtkmodules.vtkRenderingCore import vtkRenderer, vtkProp3D
+    from OCP.TDocStd import TDocStd_Document
+    from OCP.XCAFDoc import XCAFDoc_Material, XCAFDoc_VisMaterial
+    from OCP.TDF import TDF_Label
+    from OCP.Quantity import Quantity_ColorRGBA
 
 # type definitions
 AssemblyObjects = Union[Shape, Workplane, None]
@@ -62,8 +43,8 @@ class Material(object):
     XCAFDoc_VisMaterial is for visual properties to be used when rendering.
     """
 
-    wrapped: XCAFDoc_Material
-    wrapped_vis: XCAFDoc_VisMaterial
+    wrapped: "XCAFDoc_Material"
+    wrapped_vis: "XCAFDoc_VisMaterial"
 
     def __init__(self, name: str | None = None, **kwargs):
         """
@@ -71,6 +52,9 @@ class Material(object):
         arguments defining some other characteristics of the material. If nothing is
         passed, arbitrary defaults are used.
         """
+
+        from OCP.TCollection import TCollection_HAsciiString
+        from OCP.XCAFDoc import XCAFDoc_Material, XCAFDoc_VisMaterial
 
         # Create the default material object and prepare to set a few defaults
         self.wrapped = XCAFDoc_Material()
@@ -168,6 +152,10 @@ class Material(object):
         """
         Allows pickling.
         """
+
+        from OCP.TCollection import TCollection_HAsciiString
+        from OCP.XCAFDoc import XCAFDoc_Material
+
         self.wrapped = XCAFDoc_Material()
         self.wrapped.Set(
             TCollection_HAsciiString(data[0]),
@@ -183,7 +171,7 @@ class Color(object):
     Wrapper for the OCCT color object Quantity_ColorRGBA.
     """
 
-    wrapped: Quantity_ColorRGBA
+    wrapped: "Quantity_ColorRGBA"
 
     @overload
     def __init__(self, name: str):
@@ -215,6 +203,13 @@ class Color(object):
         ...
 
     def __init__(self, *args, **kwargs):
+
+        from OCP.Quantity import (
+            Quantity_ColorRGBA,
+            Quantity_Color,
+            Quantity_TOC_sRGB,
+            Quantity_TOC_RGB,
+        )
 
         if len(args) == 0:
             self.wrapped = Quantity_ColorRGBA()
@@ -260,6 +255,9 @@ class Color(object):
         """
         Convert Color to RGB tuple.
         """
+
+        from OCP.Quantity import Quantity_TOC_sRGB
+
         a = self.wrapped.Alpha()
         rgb = self.wrapped.GetRGB().Values(Quantity_TOC_sRGB)
 
@@ -270,6 +268,8 @@ class Color(object):
         return self.toTuple()
 
     def __setstate__(self, data: Tuple[float, float, float, float]):
+
+        from OCP.Quantity import Quantity_ColorRGBA
 
         self.wrapped = Quantity_ColorRGBA(*data)
 
@@ -418,17 +418,24 @@ class AssemblyProtocol(Protocol):
         ...
 
 
-def setName(l: TDF_Label, name: str, tool):
+def setName(l: "TDF_Label", name: str, tool):
+
+    from OCP.TCollection import TCollection_ExtendedString
+    from OCP.TDataStd import TDataStd_Name
 
     TDataStd_Name.Set_s(l, TCollection_ExtendedString(name))
 
 
-def setColor(l: TDF_Label, color: Color, tool):
+def setColor(l: "TDF_Label", color: Color, tool):
+
+    from OCP.XCAFDoc import XCAFDoc_ColorType
 
     tool.SetColor(l, color.wrapped, XCAFDoc_ColorType.XCAFDoc_ColorSurf)
 
 
-def setMaterial(l: TDF_Label, material: Material, tool):
+def setMaterial(l: "TDF_Label", material: Material, tool):
+
+    from OCP.TCollection import TCollection_HAsciiString
 
     tool.SetMaterial(
         l,
@@ -447,7 +454,16 @@ def toCAF(
     tolerance: float = 1e-3,
     angularTolerance: float = 0.1,
     binary: bool = True,
-) -> Tuple[TDF_Label, TDocStd_Document]:
+) -> "Tuple[TDF_Label, TDocStd_Document]":
+
+    from OCP.TCollection import TCollection_ExtendedString
+    from OCP.TDocStd import TDocStd_Document
+    from OCP.XCAFDoc import XCAFDoc_DocumentTool, XCAFDoc_ColorGen
+    from OCP.XCAFApp import XCAFApp_Application
+    from OCP.BinXCAFDrivers import BinXCAFDrivers
+    from OCP.XmlXCAFDrivers import XmlXCAFDrivers
+    from OCP.TDataStd import TDataStd_Name
+    from OCP.TDF import TDF_Label
 
     # prepare a doc
     app = XCAFApp_Application.GetApplication_s()
@@ -758,7 +774,7 @@ def toJSON(
 
 def toFusedCAF(
     assy: AssemblyProtocol, glue: bool = False, tol: Optional[float] = None,
-) -> Tuple[TDF_Label, TDocStd_Document]:
+) -> "Tuple[TDF_Label, TDocStd_Document]":
     """
     Converts the assembly to a fused compound and saves that within the document
     to be exported in a way that preserves the face colors. Because of the use of
@@ -766,6 +782,14 @@ def toFusedCAF(
 
     :param assy: Assembly that is being converted to a fused compound for the document.
     """
+
+    from OCP.TCollection import TCollection_ExtendedString
+    from OCP.TDocStd import TDocStd_Document
+    from OCP.XCAFDoc import XCAFDoc_DocumentTool, XCAFDoc_ColorGen
+    from OCP.XCAFApp import XCAFApp_Application
+    from OCP.TDataStd import TDataStd_Name
+    from OCP.BRepAlgoAPI import BRepAlgoAPI_Fuse
+    from OCP.collections import List_TopoDS_Shape as TopTools_ListOfShape
 
     # Prepare the document
     app = XCAFApp_Application.GetApplication_s()

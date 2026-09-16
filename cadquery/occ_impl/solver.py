@@ -28,7 +28,6 @@ from OCP.gp import (
 )
 
 from OCP.BRepTools import BRepTools
-from OCP.Precision import Precision
 
 from .geom import Location, Vector, Plane
 from .shapes import Shape, Face, Edge, Wire
@@ -218,6 +217,8 @@ class ConstraintSpec(object):
         return rv
 
     def _getPnt(self, arg: Shape) -> gp_Pnt:
+
+        from OCP.Precision import Precision
 
         # check for infinite face
         if isinstance(arg, Face) and any(

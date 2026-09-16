@@ -1,10 +1,6 @@
 from math import pi
 from typing import List, Literal
 
-import OCP.IFSelect
-from OCP.STEPControl import STEPControl_Reader
-from OCP.Interface import Interface_Static
-
 from ... import cq
 from ..shapes import Shape
 from .dxf import _importDXF
@@ -87,6 +83,10 @@ def _importStep(fileName: str, unit: UnitLiterals = "MM") -> list["Shape"]:
     """
     Private helper for implementing different STEP importers.
     """
+
+    import OCP.IFSelect
+    from OCP.STEPControl import STEPControl_Reader
+    from OCP.Interface import Interface_Static
 
     # Set the target cascade unit - OCCT scales from the file's declared unit to this unit
     Interface_Static.SetCVal_s("xstep.cascade.unit", unit.upper())

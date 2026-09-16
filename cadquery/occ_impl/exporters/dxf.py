@@ -14,9 +14,7 @@ from typing import (
     runtime_checkable,
 )
 
-from OCP.GeomConvert import GeomConvert
 from OCP.gp import gp_Dir
-from OCP.GC import GC_MakeArcOfEllipse
 from typing_extensions import Self
 
 from ...units import RAD2DEG
@@ -287,6 +285,9 @@ class DxfDocument:
 
         :return: dictionary of DXF entity attributes for creating an ellipse
         """
+
+        from OCP.GC import GC_MakeArcOfEllipse
+
         geom = edge._geomAdaptor()
         ellipse = geom.Ellipse()
 
@@ -332,6 +333,9 @@ class DxfDocument:
 
         :return: dictionary of ezdxf.math.BSpline parameters
         """
+
+        from OCP.GeomConvert import GeomConvert
+
         adaptor = edge._geomAdaptor()
         curve = GeomConvert.CurveToBSplineCurve_s(adaptor.Curve().Curve())
 

@@ -1,8 +1,6 @@
 from typing import IO, Optional, Union, cast, Dict, Any, Iterable
 from typing_extensions import Literal
 
-from OCP.VrmlAPI import VrmlAPI
-
 from ..shapes import Shape, compound
 from ...types import UnitLiterals
 
@@ -60,6 +58,8 @@ def export(
     :type outputUnit: UnitLiterals or None
     :param opt: additional options passed to the specific exporter. Default None.
     """
+
+    from OCP.VrmlAPI import VrmlAPI
 
     shape: Shape
     f: IO

@@ -1,6 +1,15 @@
 from math import pi, radians, degrees
 
-from typing import overload, Sequence, Union, Tuple, Type, Optional, Iterator
+from typing import (
+    overload,
+    Sequence,
+    Union,
+    Tuple,
+    Type,
+    Optional,
+    Iterator,
+    TYPE_CHECKING,
+)
 
 from io import BytesIO
 
@@ -19,15 +28,14 @@ from OCP.gp import (
     gp_Quaternion,
     gp_Extrinsic_XYZ,
 )
-from OCP.Bnd import Bnd_Box
-from OCP.BRepBndLib import BRepBndLib
-from OCP.BRepMesh import BRepMesh_IncrementalMesh
 from OCP.TopoDS import TopoDS_Shape
 from OCP.TopLoc import TopLoc_Location
-from OCP.BinTools import BinTools_LocationSet
 
 from ..types import Real
 from ..utils import multidispatch
+
+if TYPE_CHECKING:
+    from OCP.Bnd import Bnd_Box
 
 TOL = 1e-2
 
@@ -871,7 +879,7 @@ class Plane(object):
 class BoundBox(object):
     """A BoundingBox for an object or set of objects. Wraps the OCP one"""
 
-    wrapped: Bnd_Box
+    wrapped: "Bnd_Box"
 
     xmin: float
     xmax: float
@@ -888,7 +896,7 @@ class BoundBox(object):
     center: Vector
     DiagonalLength: float
 
-    def __init__(self, bb: Bnd_Box) -> None:
+    def __init__(self, bb: "Bnd_Box") -> None:
         self.wrapped = bb
         XMin, YMin, ZMin = bb.CornerMin().Coord()
         XMax, YMax, ZMax = bb.CornerMax().Coord()
@@ -923,6 +931,8 @@ class BoundBox(object):
         This bounding box is not changed.
         """
 
+        from OCP.Bnd import Bnd_Box
+
         tol = TOL if tol is None else tol  # tol = TOL (by default)
 
         tmp = Bnd_Box()
@@ -946,6 +956,9 @@ class BoundBox(object):
         of the bounding box are reduced by the absolute value of tol, while
         the maximum values are increased by the same amount.
         """
+
+        from OCP.Bnd import Bnd_Box
+
         tmp = Bnd_Box()
         tmp.Add(self.wrapped)
         tmp.SetGap(self.wrapped.GetGap())
@@ -994,6 +1007,11 @@ class BoundBox(object):
         """
         Constructs a bounding box from a TopoDS_Shape
         """
+
+        from OCP.Bnd import Bnd_Box
+        from OCP.BRepBndLib import BRepBndLib
+        from OCP.BRepMesh import BRepMesh_IncrementalMesh
+
         tol = TOL if tol is None else tol  # tol = TOL (by default)
         bbox = Bnd_Box()
 
@@ -1161,6 +1179,8 @@ class Location(object):
 
     def __getstate__(self) -> BytesIO:
 
+        from OCP.BinTools import BinTools_LocationSet
+
         rv = BytesIO()
 
         ls = BinTools_LocationSet()
@@ -1172,6 +1192,8 @@ class Location(object):
         return rv
 
     def __setstate__(self, data: BytesIO):
+
+        from OCP.BinTools import BinTools_LocationSet
 
         ls = BinTools_LocationSet()
         ls.Read(data)
