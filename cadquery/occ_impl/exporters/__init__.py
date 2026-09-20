@@ -1,3 +1,4 @@
+from importlib import import_module
 from typing import IO, Optional, Union, cast, Dict, Any, Iterable
 from typing_extensions import Literal
 
@@ -10,7 +11,6 @@ from .svg import getSVG, exportSVG
 from .json import JsonMesh
 from .amf import AmfWriter
 from .threemf import ThreeMFWriter
-from .dxf import exportDXF, exportDXFProjection, DxfDocument
 from .vtk import exportVTP
 
 
@@ -110,6 +110,8 @@ def export(
             tmfw.write3mf(f)
 
     elif exportType == ExportTypes.DXF:
+        from .dxf import exportDXF
+
         exportDXF(w, fname, **opt)
 
     elif exportType == ExportTypes.STEP:
@@ -138,3 +140,11 @@ def export(
 
     else:
         raise ValueError("Unknown export type")
+
+
+# lazy: importing dxf here would load ezdxf with cadquery
+def __getattr__(name):
+    if name in ("dxf", "exportDXF", "exportDXFProjection", "DxfDocument"):
+        dxf = import_module(".dxf", __name__)
+        return dxf if name == "dxf" else getattr(dxf, name)
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
