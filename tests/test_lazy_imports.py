@@ -5,13 +5,14 @@ import sys
 import cadquery
 
 
-def test_import_does_not_load_ezdxf():
-    # a fresh interpreter: this process has ezdxf loaded by other tests
+def test_import_does_not_load_ezdxf_or_vtk():
+    # a fresh interpreter: this process has ezdxf and vtk loaded by other tests
     code = (
         "import sys, cadquery as cq;"
-        "print({m.split('.')[0] for m in sys.modules} & {'ezdxf'});"
+        "print({m.split('.')[0] for m in sys.modules} & {'ezdxf', 'vtkmodules'});"
         # the submodules stay reachable through the packages
-        "cq.exporters.assembly.ExportModes, cq.exporters.dxf, cq.importers.dxf"
+        "cq.exporters.assembly.ExportModes, cq.exporters.dxf, cq.exporters.vtk, cq.importers.dxf;"
+        "print('ok')"
     )
     # run next to the package under test; only stdout is checked, since the
     # interpreter may crash on exit on Windows (#1911)
@@ -22,4 +23,4 @@ def test_import_does_not_load_ezdxf():
         text=True,
     )
 
-    assert out.stdout.strip() == "set()", out.stdout + out.stderr
+    assert out.stdout.split() == ["set()", "ok"], out.stdout + out.stderr
