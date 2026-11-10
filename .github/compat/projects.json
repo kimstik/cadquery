@@ -1,21 +1,589 @@
 [
   {
+    "id": 1,
+    "name": "apply_to_each_face",
+    "repo": "CadQuery/cadquery-plugins",
+    "ref": "364500a1adeb7b99bf06135245850f5ba70b9ae6",
+    "dependencies": [
+      "pytest"
+    ],
+    "runner": "compat_plugins.py"
+  },
+  {
+    "id": 2,
+    "name": "cq_cache",
+    "repo": "CadQuery/cadquery-plugins",
+    "ref": "364500a1adeb7b99bf06135245850f5ba70b9ae6",
+    "dependencies": [
+      "pytest"
+    ],
+    "runner": "compat_plugins.py",
+    "notes": "Existing cache tests perform BREP round trips and type preservation, in a disposable runner temp directory."
+  },
+  {
+    "id": 3,
+    "name": "fragment",
+    "repo": "CadQuery/cadquery-plugins",
+    "ref": "364500a1adeb7b99bf06135245850f5ba70b9ae6",
+    "dependencies": [
+      "pytest"
+    ],
+    "runner": "compat_plugins.py"
+  },
+  {
+    "id": 4,
+    "name": "freecad_import",
+    "repo": "CadQuery/cadquery-plugins",
+    "ref": "364500a1adeb7b99bf06135245850f5ba70b9ae6",
+    "dependencies": [
+      "pytest"
+    ],
+    "runner": "compat_plugins.py",
+    "notes": "Static FCStd-to-BREP import and parameter inspection require no FreeCAD. Parametric FreeCAD execution is outside selected scenarios."
+  },
+  {
+    "id": 5,
+    "name": "gear_generator",
+    "repo": "CadQuery/cadquery-plugins",
+    "ref": "364500a1adeb7b99bf06135245850f5ba70b9ae6",
+    "dependencies": [],
+    "runner": "compat_plugins.py",
+    "notes": "README straight gear build, valid positive-volume solid and STEP export."
+  },
+  {
+    "id": 6,
+    "name": "heatserts",
+    "repo": "CadQuery/cadquery-plugins",
+    "ref": "364500a1adeb7b99bf06135245850f5ba70b9ae6",
+    "dependencies": [
+      "pytest"
+    ],
+    "runner": "compat_plugins.py"
+  },
+  {
+    "id": 7,
+    "name": "localselectors",
+    "repo": "CadQuery/cadquery-plugins",
+    "ref": "364500a1adeb7b99bf06135245850f5ba70b9ae6",
+    "dependencies": [],
+    "runner": "compat_plugins.py",
+    "notes": "README lowercase selectors, changed local workplane, extrusion and valid volume."
+  },
+  {
+    "id": 8,
+    "name": "more_selectors",
+    "repo": "CadQuery/cadquery-plugins",
+    "ref": "364500a1adeb7b99bf06135245850f5ba70b9ae6",
+    "dependencies": [
+      "pytest"
+    ],
+    "runner": "compat_plugins.py"
+  },
+  {
+    "id": 9,
+    "name": "sampleplugin",
+    "repo": "CadQuery/cadquery-plugins",
+    "ref": "364500a1adeb7b99bf06135245850f5ba70b9ae6",
+    "dependencies": [
+      "pytest"
+    ],
+    "runner": "compat_plugins.py"
+  },
+  {
+    "id": 10,
+    "name": "teardrop",
+    "repo": "CadQuery/cadquery-plugins",
+    "ref": "364500a1adeb7b99bf06135245850f5ba70b9ae6",
+    "dependencies": [
+      "pytest"
+    ],
+    "runner": "compat_plugins.py"
+  },
+  {
     "id": 11,
     "name": "CQ-editor",
     "repo": "CadQuery/CQ-editor",
     "ref": "62219e3e7a8715e3f2f7f61a08e0f934f0f83292",
-    "dependencies": ["PyQt5", "pyqtgraph", "qtawesome==1.4.0", "path", "logbook", "requests", "qtconsole>=5.5.1,<5.7.0", "packaging"],
+    "dependencies": [
+      "PyQt5",
+      "pyqtgraph",
+      "qtawesome==1.4.0",
+      "path",
+      "logbook",
+      "requests",
+      "qtconsole>=5.5.1,<5.7.0",
+      "packaging"
+    ],
     "runner": "compat_editor.py",
     "standalone": true,
     "install": true
   },
   {
+    "id": 12,
+    "name": "jupyter-cadquery",
+    "repo": "bernhard-42/jupyter-cadquery",
+    "ref": "f0f5cadac48ae3964f668382c093257ae5b5e153",
+    "dependencies": [
+      "cad-viewer-widget>=4.2.0,<4.3",
+      "ocp-viewer-core>=1.1.0,<1.2.0",
+      "ocp-tessellate",
+      "orjson",
+      "jupyterlab>=4.6.2,<5"
+    ],
+    "runner": "compat_integrations.py",
+    "install": false,
+    "scenario": "Own get_pick on real CQ Assembly twice. Notebook/frontend display not covered."
+  },
+  {
+    "id": 13,
+    "name": "cadquery-vscode (roipoussiere)",
+    "repo": "roipoussiere/cadquery-vscode",
+    "ref": "59f80287384b3097a41948156bf4118696962149",
+    "dependencies": [],
+    "runner": "compat_integrations.py",
+    "disposition": "not-applicable",
+    "reason": "JavaScript client delegates CAD to an external CQ server. The pinned repository has no own CQ backend to run against the two checkouts. External server and arbitrary user scripts are not this source snapshot."
+  },
+  {
+    "id": 14,
+    "name": "freecad-cadquery2-workbench",
+    "repo": "jpmlt/freecad-cadquery2-workbench",
+    "ref": "6c488df2b8bfb767c0a02bbf8e4de9d00fc114e8",
+    "dependencies": [],
+    "runner": "compat_integrations.py",
+    "install": false,
+    "scenario": "Original CQ_Model.build twice on real geometry. FreeCAD GUI and Part transfer remain outside this headless scenario."
+  },
+  {
+    "id": 15,
+    "name": "cadquery-gui",
+    "repo": "jmwright/cadquery-gui",
+    "ref": "317984142c35ca812bc3904a16ef5dd691318040",
+    "dependencies": [],
+    "runner": "compat_integrations.py",
+    "install": false,
+    "scenario": "Actual cq_process.py subprocess twice, CQGI box to nonempty mesh JSON."
+  },
+  {
+    "id": 16,
+    "name": "BlendQuery",
+    "repo": "uki-dev/blendquery",
+    "ref": "d50d0ed17e3960767b882730f3af3ad21387b8dd",
+    "dependencies": [
+      "build123d"
+    ],
+    "runner": "compat_integrations.py",
+    "install": false,
+    "scope": "upgrade-only",
+    "declared_cq": "requirements.txt: cadquery==2.3.1 and bpy==3.5.0",
+    "scenario": "Original parse.py pickle IPC tessellates box twice. setup_venv only creates a venv path, no installs/interpreter replacement. Uses comparison CQ instead of declared old pin. Blender host not exercised."
+  },
+  {
+    "id": 17,
+    "name": "yet-another-cad-viewer",
+    "repo": "yeicor-3d/yet-another-cad-viewer",
+    "ref": "1c4fe7a17069e6ac6e543372a9a50f9800bb23ee",
+    "dependencies": [],
+    "runner": "compat_integrations.py",
+    "disposition": "not-applicable",
+    "reason": "Pinned own backend uses OCP/build123d, not changed CadQuery imports. A user-supplied CQ model is a different consumer. No independent CQ-specific scenario identified."
+  },
+  {
+    "id": 18,
+    "name": "cadquery2web",
+    "repo": "30hours/cadquery2web",
+    "ref": "71f953413532dc396e004d1fb6fdbd320842191f",
+    "dependencies": [],
+    "runner": "compat_integrations.py",
+    "install": false,
+    "scenario": "Original Preview.preview on box twice, actual tessellation vertices/faces. Flask HTTP endpoints not covered."
+  },
+  {
+    "id": 19,
+    "name": "cadquery-browser",
+    "repo": "tempe-techie/cadquery-browser",
+    "ref": "cb8e0c4f76df658cfa70da1407d387cefe17bae5",
+    "dependencies": [
+      "fastapi>=0.115,<1",
+      "pydantic>=2,<3"
+    ],
+    "runner": "compat_integrations.py",
+    "install": false,
+    "scenario": "Actual _render_stl on Workplane and Assembly twice each, binary STL triangle validation."
+  },
+  {
+    "id": 20,
+    "name": "cq_warehouse",
+    "repo": "gumyr/cq_warehouse",
+    "ref": "a57bb7a24762d367d66369f280a24c38a64e73dd",
+    "dependencies": [],
+    "runner": "compat_libraries.py",
+    "install": false,
+    "scope": "Sprocket geometry, STEP roundtrip and assembly STEP. Source imports cq_warehouse.extensions and package CSV data directly."
+  },
+  {
+    "id": 21,
+    "name": "cq-kit",
+    "repo": "michaelgale/cq-kit",
+    "ref": "2b3897b694071419b5742f89ec5fef1f914bee32",
+    "dependencies": [
+      "rich"
+    ],
+    "runner": "compat_libraries.py",
+    "install": false,
+    "scope": "Drafted box and own STEP/STL exporter paths, STEP reimport."
+  },
+  {
+    "id": 22,
+    "name": "cqMore",
+    "repo": "JustinSDK/cqMore",
+    "ref": "a490603a18e87e65d9a8c5d52ea0b0ce402d261c",
+    "dependencies": [],
+    "runner": "compat_libraries.py",
+    "install": false,
+    "scope": "Plugin polygon extrusion, intersect2D and STEP roundtrip."
+  },
+  {
+    "id": 23,
+    "name": "sphinxcadquery",
+    "repo": "CadQuery/sphinxcadquery",
+    "ref": "0b7050c0204b8b2c6f7e6912eaee97ca02b9e776",
+    "dependencies": [
+      "pytest",
+      "sphinx<8",
+      "setuptools<81"
+    ],
+    "runner": "compat_plugins.py",
+    "notes": "Original Sphinx-build test. Existing old exporter API incompatibility may fail on both base and PR, not preclassified as passed."
+  },
+  {
+    "id": 24,
+    "name": "cq_gears",
+    "repo": "meadiode/cq_gears",
+    "ref": "e73874cf17a25447a99b1e7c22a4d5af38560e9c",
+    "dependencies": [],
+    "runner": "compat_libraries.py",
+    "install": false,
+    "scope": "Small SpurGear.build and STEP roundtrip."
+  },
+  {
+    "id": 25,
+    "name": "dl4to4ocp",
+    "repo": "yeicor-3d/dl4to4ocp",
+    "ref": "76c9edfd1afd58b2bc94dacf3b28b95f2ead1a61",
+    "dependencies": [],
+    "runner": "compat_libraries.py",
+    "install": false,
+    "disposition": "not-applicable",
+    "reason": "Pinned source has no own CadQuery consumer path. Geometry uses OCP/build123d; running it cannot certify compatibility with changed CadQuery imports."
+  },
+  {
+    "id": 26,
+    "name": "ocp-freecad-cam",
+    "repo": "voneiden/ocp-freecad-cam",
+    "ref": "af79be5cfed147c0d4f52f14907a87cd38423afb",
+    "dependencies": [],
+    "runner": "compat_libraries.py",
+    "install": false,
+    "disposition": "blocked",
+    "reason": "Requires an ABI-compatible FreeCAD host exposing FreeCAD, Part and Path modules. Python3.11 pip-only Ubuntu runner has none. Existing tests/test_profile.py provides real Job(profile)->to_gcode scenario for a future FreeCAD host job; do not substitute mocks or label compatible."
+  },
+  {
+    "id": 27,
+    "name": "assembly-mesh-plugin",
+    "repo": "CadQuery/assembly-mesh-plugin",
+    "ref": "a02e1972930bc0b899e9153679862c410021efd6",
+    "dependencies": [
+      "pytest",
+      "gmsh"
+    ],
+    "system_packages": [
+      "libglu1-mesa"
+    ],
+    "runner": "compat_plugins.py",
+    "notes": "Original simple assembly Gmsh mesh and physical-group assertions."
+  },
+  {
+    "id": 28,
+    "name": "argus-diff",
+    "repo": "mikelmyers/argus-diff",
+    "ref": "d381f2ea160dd6245176415b5baa8396364e4a4d",
+    "dependencies": [
+      "trimesh>=4",
+      "lxml",
+      "networkx",
+      "scipy",
+      "rtree"
+    ],
+    "runner": "compat_libraries.py",
+    "install": false,
+    "scope": "Actual STEP loader and identical geometric diff; optional PyVista renderer not exercised."
+  },
+  {
+    "id": 29,
+    "name": "cq-electronics",
+    "repo": "sethfischer/cq-electronics",
+    "ref": "bf4d39197b389878fab1facc5bdf3f3d83af16c8",
+    "dependencies": [],
+    "runner": "compat_libraries.py",
+    "install": false,
+    "scope": "PinHeader assembly creation and STEP save."
+  },
+  {
+    "id": 30,
+    "name": "KiCad Packages3D Generator",
+    "repo": "https://gitlab.com/kicad/libraries/kicad-packages3D-generator",
+    "ref": "e272fcc809d798323b3ae776611184cba5625342",
+    "archive_url": "https://gitlab.com/kicad/libraries/kicad-packages3D-generator/-/archive/e272fcc809d798323b3ae776611184cba5625342/kicad-packages3D-generator-e272fcc809d798323b3ae776611184cba5625342.tar.gz",
+    "dependencies": [
+      "PyYAML",
+      "path",
+      "typish"
+    ],
+    "runner": "compat_libraries.py",
+    "install": false,
+    "scope": "Generator-style fused assembly save plus actual _tools/export_tools union validation and STEP postprocessing. Not the entire component catalog. Declared cadquery2.3.1/OCP<7.8/numpy1.23.5 pins intentionally replaced by comparative CQ environment, no claim stock pinned install was tested."
+  },
+  {
+    "id": 31,
+    "name": "cq-gridfinity",
+    "repo": "michaelgale/cq-gridfinity",
+    "ref": "d317286ec15dc52587fadbd4f4c1e13f9cd8a8b2",
+    "dependencies": [
+      "cqkit @ https://github.com/michaelgale/cq-kit/archive/2b3897b694071419b5742f89ec5fef1f914bee32.tar.gz",
+      "rich"
+    ],
+    "runner": "compat_libraries.py",
+    "install": false,
+    "scope": "Small 1x1 box render, own STEP/STL save. Rugged-box assembly generation not covered."
+  },
+  {
+    "id": 32,
+    "name": "metric_threads",
+    "source_url": "https://svn.code.sf.net/p/nl10/code/cq-code/common/metric_threads.py",
+    "sha256": "ba7bcbac537f73c0f33d7746a1d1a6371e81f4d9ec2aad3b9269bc6bb1a9b22d",
+    "source_filename": "metric_threads.py",
+    "dependencies": [],
+    "runner": "compat_plugins.py",
+    "notes": "One-turn external and internal threads exercise helix/sweep, validity/volume and STEP export."
+  },
+  {
+    "id": 33,
+    "name": "cadqueryhelper",
+    "repo": "medicationforall/cadqueryhelper",
+    "ref": "5e70aa7a1da2d495905fe7c2217861cf2218aebf",
+    "dependencies": [],
+    "runner": "compat_libraries.py",
+    "install": false,
+    "scope": "Documented tapered cell_single geometry and STL, checks swallowed-exception empty geometry. Declared cadquery==2.8.0 replaced by source base/head via PYTHONPATH."
+  },
+  {
+    "id": 34,
+    "name": "cadquery-png-plugin",
+    "repo": "jmwright/cadquery-png-plugin",
+    "ref": "d2d1246edfc1ecdd6ba9d5f566af598f285f4d27",
+    "dependencies": [
+      "pytest",
+      "Pillow"
+    ],
+    "system_packages": [
+      "libgl1",
+      "xvfb"
+    ],
+    "runner": "compat_plugins.py",
+    "notes": "Original image test checks nonblank PNG and expected colored pixels. Execute with Xvfb.",
+    "xvfb": true
+  },
+  {
+    "id": 35,
+    "name": "cq-wild",
+    "repo": "thelegy/cq-wild",
+    "ref": "a7556dfaf4d96bad4544b97f046e3bc5c058b32f",
+    "dependencies": [],
+    "runner": "compat_plugins.py",
+    "notes": "Real steppedHoleDownwards operation on library Workplane subclass and STEP export."
+  },
+  {
+    "id": 36,
+    "name": "cadquery-freecad-import-plugin",
+    "repo": "jmwright/cadquery-freecad-import-plugin",
+    "ref": "a0f72aedafc80e40b486d991f8659ed4ce5eb147",
+    "dependencies": [
+      "pytest"
+    ],
+    "runner": "compat_plugins.py",
+    "notes": "Original static FCStd test checks dimensions and face/edge counts. No FreeCAD needed; parametric path remains outside selected scenarios."
+  },
+  {
+    "id": 37,
+    "name": "cadquery-direct-mesh-plugin",
+    "repo": "jmwright/cadquery-direct-mesh-plugin",
+    "ref": "302e469ab49caf70a25c61ac47d279ee45a5ebb1",
+    "dependencies": [
+      "pytest"
+    ],
+    "runner": "compat_plugins.py",
+    "notes": "Original assembly mesh tests verify vertices, triangle maps, BREP edges and BREP vertices."
+  },
+  {
     "id": 38,
-    "name": "paperclip-plugin-cad",
+    "name": "paperclip-plugin-cad (upgrade experiment)",
+    "scope": "upgrade-only: production pins CadQuery 2.7 and OCP 7, not a current consumer of this PR",
     "repo": "claudegoogl-sudo/paperclip-plugin-cad",
     "ref": "5eb773a085413277fa67092de87444319ade616b",
-    "dependencies": ["trimesh==4.12.2", "manifold3d==3.5.1"],
+    "dependencies": [
+      "trimesh==4.12.2",
+      "manifold3d==3.5.1"
+    ],
     "runner": "compat_paperclip.py",
     "standalone": true
+  },
+  {
+    "id": 39,
+    "name": "FreeCAD-CQ-Selector",
+    "repo": "wenqiushui/FreeCAD-CQ-Selector",
+    "ref": "2c573107b6b5a0defe333917c477169626bd28be",
+    "dependencies": [],
+    "runner": "compat_integrations.py",
+    "disposition": "not-applicable",
+    "reason": "FreeCAD selector implementation explicitly does not depend on CadQuery. Its host functionality cannot demonstrate compatibility or benefit from this CQ patch."
+  },
+  {
+    "id": 40,
+    "name": "opencode-cad",
+    "repo": "Ilyan-Margueritte/opencode-cad",
+    "ref": "a45637e3518bb1934a424f897a86f8977b0def98",
+    "dependencies": [],
+    "runner": "compat_integrations.py",
+    "install": false,
+    "scenario": "Own make_exports STEP/STL twice and STEP volume roundtrip. CLI preview rendering not covered."
+  },
+  {
+    "id": 41,
+    "name": "cadquery-jupyter-extension (legacy)",
+    "repo": "bernhard-42/cadquery-jupyter-extension",
+    "ref": "6b666b263a0fe5b27be0d6f1ab39f8b842f4bd08",
+    "dependencies": [],
+    "runner": "compat_integrations.py",
+    "disposition": "blocked",
+    "reason": "Archived extension requires pythonocc OCC.Display/OCC.Extend at package import and old CQ API; modern OCP checkout does not supply the OCC namespace. No matching legacy notebook/kernel environment is installed. Not a PR-specific regression or pass."
+  },
+  {
+    "id": 42,
+    "name": "cqnb (legacy)",
+    "repo": "adam-james-v/cqnb",
+    "ref": "f387e20ceadb1c3b3f7a18ccd3af64ba935d2642",
+    "dependencies": [],
+    "runner": "compat_integrations.py",
+    "disposition": "blocked",
+    "reason": "Pinned project targets Python 2.7/CQ1 and cqjupyter.py contains Python2 print statements. Neither CQ comparison checkout supports that interpreter/API. Cannot be a modern runtime compatibility pass."
+  },
+  {
+    "id": 43,
+    "name": "cq-annotate",
+    "repo": "jmwright/cq-annotate",
+    "ref": "b46fbe2aac0e47dfdc3fb97709e159ea2bd809c0",
+    "dependencies": [
+      "pytest",
+      "svgutils"
+    ],
+    "runner": "compat_plugins.py",
+    "notes": "Original safety-warning SVG export/overlay and circular dimension geometry tests."
+  },
+  {
+    "id": 44,
+    "name": "sphinxcontrib-cadquery",
+    "repo": "sethfischer/sphinxcontrib-cadquery",
+    "ref": "861d91f5b40cb1e0b70a305b03f98f2c7a83f561",
+    "scope": "upgrade-only",
+    "declared_cq": "Developer dependency cadquery ^2.4.0 permits CQ2.x, but dev OCP fixed7.7.2 and numpy^1.26.4 conflict with this comparison's CQ/OCP stack. Runtime dependencies do not pin CQ.",
+    "dependencies": [
+      "Sphinx>=6,<9",
+      "ipython>=7.31.1",
+      "jinja2>=3"
+    ],
+    "runner": "compat_integrations.py",
+    "install": true,
+    "scenario": "Original Cqgi plus SvgExporter and VtkJsonExporter twice. Full Sphinx directive/page pipeline not covered."
+  },
+  {
+    "id": 45,
+    "name": "vscode-cadquery (quado)",
+    "repo": "quado-technologies/vscode-cadquery",
+    "ref": "cdbf44f559e4fb66b852c01aef097cefbc44e94b",
+    "dependencies": [],
+    "runner": "compat_integrations.py",
+    "disposition": "not-applicable",
+    "reason": "JSON renderer prototype has no Python backend or CadQuery consumer. A synthetic CQ import would not test its behavior."
+  },
+  {
+    "id": 46,
+    "name": "CQ_GDML_Package",
+    "repo": "KeithSloan/CQ_GDML_Package",
+    "ref": "716ff0ae88e023cac23b6852277d512dda8e2502",
+    "dependencies": [
+      "lxml"
+    ],
+    "runner": "compat_libraries.py",
+    "install": false,
+    "disposition": "blocked",
+    "reason": "Legacy pythonocc OCC backend required. cqgdml.gVol.object2show casts an OCC.Core.TopoDS object into modern OCP-backed cq.Shape; unmodified source is not a supported modern-CQ integration. Ubuntu pip-only runner has no pythonocc. Not a PR regression."
+  },
+  {
+    "id": 47,
+    "name": "vscad",
+    "repo": "juliancoy/vscad",
+    "ref": "ad4b42147051f79bb4560626233e55380850e799",
+    "dependencies": [],
+    "runner": "compat_integrations.py",
+    "disposition": "not-applicable",
+    "reason": "Generic user-module mesh extractor with no own CadQuery dependency. Template contains a JS-expanded file path and expects vertices/faces mesh protocol, not a CQ-specific path. Arbitrary user code is outside this pinned source."
+  },
+  {
+    "id": 48,
+    "name": "cadscript",
+    "repo": "cadscriptHQ/cadscript",
+    "ref": "38d58de3c50fd6e39f82d9483ce9414ace61fc83",
+    "dependencies": [],
+    "runner": "compat_libraries.py",
+    "install": false,
+    "scope": "Actual DXF sketch export/import extent roundtrip and body STEP/STL. Consumer requests numpy<2 but this runner uses current CQ comparative environment, recorded as compatibility override if resolved numpy2."
+  },
+  {
+    "id": 49,
+    "name": "cadquery-contrib",
+    "repo": "CadQuery/cadquery-contrib",
+    "ref": "60e7f79b410166c44b06373b1a42e135be370ef6",
+    "declared_cq": "MCP package runtime cadquery>=2.8.0,<3",
+    "dependencies": [],
+    "runner": "compat_integrations.py",
+    "install": false,
+    "scenario": "Original core SVG/PNG render plus STEP/STL/DXF and Assembly STEP twice. MCP transport and unrelated examples not covered."
+  },
+  {
+    "id": 50,
+    "name": "vscode-ocp-cad-viewer",
+    "repo": "bernhard-42/vscode-ocp-cad-viewer",
+    "ref": "6847ae5a7679a2445968467d4bcf65a2d00bb9f4",
+    "dependencies": [],
+    "runner": "compat_integrations.py",
+    "disposition": "blocked",
+    "reason": "Real show pipeline requires ocp-viewer-core transport/session and a VS Code websocket viewer. Existing show tests use a running viewer/test transport not provided by this headless runner. Generic CQ conversion is separately tested under entry 51, not counted as an independent pass here."
+  },
+  {
+    "id": 51,
+    "name": "ocp-tessellate",
+    "repo": "bernhard-42/ocp-tessellate",
+    "ref": "08490053313d5b9186999a6298e0bbe736d90885",
+    "dependencies": [
+      "webcolors>=24.8.0",
+      "cachetools>=5.5,<8",
+      "imagesize",
+      "typing_extensions>=4",
+      "pytest>=7"
+    ],
+    "runner": "compat_integrations.py",
+    "install": true,
+    "scenario": "Four original CQ converter tests: box, multiple solids, faces, vector."
   }
 ]

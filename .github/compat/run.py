@@ -4,6 +4,7 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import shutil
 import subprocess
 import sys
 import tarfile
@@ -45,7 +46,7 @@ def fetch_source(project, destination):
         (destination / "metric_threads.py").write_bytes(data)
         return
     archive = WORK / (str(project["id"]) + ".tar.gz")
-    url = f"https://codeload.github.com/{project['repo']}/tar.gz/{project['ref']}"
+    url = project.get("archive_url") or f"https://codeload.github.com/{project['repo']}/tar.gz/{project['ref']}"
     with urllib.request.urlopen(url, timeout=90) as response:
         archive.write_bytes(response.read())
     # Inspect paths before extraction. No repository hooks or setup scripts run here.
@@ -99,30 +100,35 @@ def project_run(project_id):
         command([sys.executable, "-m", "pip", "freeze", "--all"], folder / "dependencies.txt")
         outcomes = {}
         for label in ["base", "pr"]:
+            consumer = WORK / ("consumer-" + label)
+            shutil.copytree(WORK / "consumer", consumer)
+            run_directory = WORK / ("run-" + label)
+            run_directory.mkdir()
             env = dict(os.environ)
-            env["PYTHONPATH"] = os.pathsep.join([str(WORK / label), str(WORK / "consumer"),
-                                                  str(WORK / "consumer" / "src")])
+            env["PYTHONPATH"] = os.pathsep.join([str(WORK / label), str(consumer),
+                                                  str(consumer / "src")])
             env["COMPAT_CQ_ROOT"] = str(WORK / label)
             env["COMPAT_RESULT_DIR"] = str(folder)
             env["CQ_COMPAT_VARIANT"] = label
             args = [sys.executable, HERE / project["runner"]]
             if not project.get("standalone"):
                 args.append(str(project_id))
-            args.append(str(WORK / "consumer"))
+            args.append(str(consumer))
+            if project.get("xvfb"):
+                args = ["xvfb-run", "-a", *args]
             check = command([sys.executable, "-c",
                              "import cadquery, os; from pathlib import Path; "
                              "print(cadquery.__file__); "
                              "assert Path(cadquery.__file__).resolve().is_relative_to("
                              "Path(os.environ['COMPAT_CQ_ROOT']).resolve())"],
-                            folder / (label + "-import.log"), env=env, cwd=WORK)
+                            folder / (label + "-import.log"), env=env, cwd=run_directory)
             if check:
                 outcomes[label] = check
                 continue
             outcomes[label] = command(args, folder / (label + ".log"), env=env,
-                                      cwd=WORK, timeout=600)
+                                      cwd=run_directory, timeout=600)
             if project.get("standalone") and project_id == 38:
-                import shutil
-                detail = WORK / ("paperclip-" + label)
+                detail = run_directory / ("paperclip-" + label)
                 if detail.exists():
                     shutil.copytree(detail, folder / (label + "-worker"))
         result["exit_codes"] = outcomes
