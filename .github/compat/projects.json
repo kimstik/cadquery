@@ -743,6 +743,7 @@
     "id": 104,
     "original_id": 27,
     "name": "assembly-mesh-plugin complete native suite",
+    "package_only_path": true,
     "repo": "CadQuery/assembly-mesh-plugin",
     "ref": "a02e1972930bc0b899e9153679862c410021efd6",
     "dependencies": [
@@ -758,7 +759,7 @@
     "timeout_seconds": 1200,
     "scope": "Default discovery including native tests/test_meshes.py and tests/smoke_test.py. No namespace patch, skips, filters or source edits.",
     "native_ci": ".github/workflows/tests.yml runs python -m pytest -v after pip install .[dev] and CadQuery master. Runtime dependencies in pyproject.toml: cadquery>=2.7.0 and gmsh. pytest runs source directly with the pinned CQ checkout.",
-    "environment": "Known native tests.sample_assemblies namespace can be shadowed by a third-party installed tests package because consumer tests lacks __init__.py. This run leaves native namespace behavior untouched and records any collection failure.",
+    "environment": "Expose only the unchanged cadquery package from each selected revision, not its repository tests directory. This matches installed-package namespace visibility. No tests module injection or consumer source edits.",
     "observe": false
   },
   {

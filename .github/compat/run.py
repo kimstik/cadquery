@@ -134,9 +134,15 @@ def project_run(project_id):
             run_directory = WORK / ("run-" + label)
             run_directory.mkdir()
             env = dict(os.environ)
-            env["PYTHONPATH"] = os.pathsep.join([str(WORK / label), str(consumer),
+            cq_root = WORK / label
+            if project.get("package_only_path"):
+                # Match an installed package: do not expose CadQuery's own tests.
+                cq_root = WORK / ("import-" + label)
+                cq_root.mkdir()
+                shutil.copytree(WORK / label / "cadquery", cq_root / "cadquery")
+            env["PYTHONPATH"] = os.pathsep.join([str(cq_root), str(consumer),
                                                   str(consumer / "src")])
-            env["COMPAT_CQ_ROOT"] = str(WORK / label)
+            env["COMPAT_CQ_ROOT"] = str(cq_root)
             env["COMPAT_RESULT_DIR"] = str(folder)
             env["CQ_COMPAT_VARIANT"] = label
             args = [sys.executable, HERE / project["runner"]]
@@ -180,7 +186,7 @@ def project_run(project_id):
                 observed_env = dict(env)
                 observed_env["COMPAT_OBSERVE"] = "1"
                 observed_env["CQ_COMPAT_VARIANT"] = label + "-observed"
-                observed_env["PYTHONPATH"] = os.pathsep.join([str(WORK / label),
+                observed_env["PYTHONPATH"] = os.pathsep.join([str(cq_root),
                                                             str(observed_consumer),
                                                             str(observed_consumer / "src")])
                 observed_args = [str(a).replace(str(consumer), str(observed_consumer)) for a in args]
