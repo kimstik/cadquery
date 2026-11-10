@@ -84,7 +84,10 @@ def project_run(project_id):
         if project.get("disposition"):
             result.update(status=project["disposition"], reason=project["reason"])
             return
-        fetch_source(project, WORK / "consumer")
+        if project.get("synthetic"):
+            (WORK / "consumer").mkdir()
+        else:
+            fetch_source(project, WORK / "consumer")
         source_scan = scan(WORK / "consumer")
         (folder / "source-risks.json").write_text(json.dumps(source_scan, indent=2) + "\n")
         result["source_audit"] = {"python_files": source_scan["python_files"],
@@ -146,6 +149,13 @@ def project_run(project_id):
                 totals = {key: sum(int(s.get(key, 0)) for s in suites.iter("testsuite"))
                           for key in ["tests", "failures", "errors", "skipped"]}
                 result.setdefault("native_tests", {})[label] = totals
+                test_inventory = [{"class": case.get("classname"), "name": case.get("name"),
+                                   "skipped": case.find("skipped") is not None}
+                                  for case in suites.iter("testcase")]
+                (folder / (label + "-test-inventory.json")).write_text(
+                    json.dumps(test_inventory, indent=2) + "\n")
+                if not test_inventory:
+                    outcomes[label] = 5
             if project.get("observe"):
                 # Observation is separate: it cannot turn an unchanged failure into a pass.
                 observed_consumer = WORK / ("consumer-" + label + "-observed")
@@ -199,6 +209,23 @@ def project_run(project_id):
                     controls[mode][label] = command(args, folder / f"{label}-{mode}.log",
                                                    env=env, cwd=run_directory, timeout=600)
             result["editor_controls"] = controls
+        if project.get("synthetic"):
+            result["contract_comparison"] = []
+            before = folder / "contracts-base" / "summary.json"
+            after = folder / "contracts-pr" / "summary.json"
+            if before.exists() and after.exists():
+                base_cases = {r["name"]: r for r in json.loads(before.read_text())["cases"]}
+                pr_cases = {r["name"]: r for r in json.loads(after.read_text())["cases"]}
+                for name in sorted(set(base_cases) | set(pr_cases)):
+                    a, b = base_cases.get(name, {}), pr_cases.get(name, {})
+                    result["contract_comparison"].append({
+                        "name": name, "scope": a.get("scope", b.get("scope")),
+                        "base": a.get("status", "missing"), "pr": b.get("status", "missing"),
+                        "meaning": "Finite observable behavior, not an ecosystem or supported-API verdict"})
+        inventories = [folder / (label + "-test-inventory.json") for label in ["base", "pr"]]
+        if all(path.exists() for path in inventories):
+            a, b = [json.loads(path.read_text()) for path in inventories]
+            result["same_test_cases_and_skips"] = a == b
         result["exit_codes"] = outcomes
         result["status"] = (
             "passed" if outcomes == {"base": 0, "pr": 0} else

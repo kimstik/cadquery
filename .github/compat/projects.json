@@ -585,5 +585,15 @@
     "runner": "compat_integrations.py",
     "install": true,
     "scenario": "Four original CQ converter tests: box, multiple solids, faces, vector."
+  },
+  {
+    "id": 150,
+    "name": "Finite import contracts (not a downstream project)",
+    "synthetic": true,
+    "dependencies": [],
+    "runner": "compat_contracts.py",
+    "standalone": true,
+    "scope": "21 fresh-process contracts: preserved interfaces, former incidental bindings, reflection, annotations, first/repeated exports and reduced lifecycle. Known old-behavior losses remain failures, not project-count evidence.",
+    "timeout_seconds": 1200
   }
 ]
