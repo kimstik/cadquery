@@ -22,6 +22,11 @@ def inventory():
     entries = json.loads((HERE / "projects.json").read_text())
     ids = [p["id"] for p in entries]
     assert len(ids) == len(set(ids)), "Duplicate inventory IDs"
+    selected = os.environ.get("COMPAT_PROJECTS", "").strip()
+    if selected:
+        requested = {int(value) for value in selected.split(",")}
+        assert requested <= set(ids), "Unknown inventory ID"
+        entries = [p for p in entries if p["id"] in requested]
     return entries
 
 
@@ -73,10 +78,10 @@ def project_run(project_id):
     result = {"id": project_id, "name": project["name"], "source": project,
               "base": BASE, "head": HEAD, "status": "blocked"}
     try:
-        fetch_source(project, WORK / "consumer")
         if project.get("disposition"):
             result.update(status=project["disposition"], reason=project["reason"])
             return
+        fetch_source(project, WORK / "consumer")
         for label, revision in [("base", BASE), ("pr", HEAD)]:
             code = command(["git", "worktree", "add", "--detach", WORK / label, revision],
                            folder / (label + "-checkout.log"), cwd=ROOT)
@@ -131,6 +136,30 @@ def project_run(project_id):
                 detail = run_directory / ("paperclip-" + label)
                 if detail.exists():
                     shutil.copytree(detail, folder / (label + "-worker"))
+        if project_id == 11:
+            controls = {}
+            for mode in ["no-cleanup", "consumer-patched"]:
+                controls[mode] = {}
+                for label in ["base", "pr"]:
+                    consumer = WORK / f"consumer-{label}-{mode}"
+                    shutil.copytree(WORK / "consumer", consumer)
+                    run_directory = WORK / f"run-{label}-{mode}"
+                    run_directory.mkdir()
+                    env = dict(os.environ)
+                    env["PYTHONPATH"] = os.pathsep.join([str(WORK / label), str(consumer),
+                                                       str(consumer / "src")])
+                    if mode == "consumer-patched":
+                        code = command([sys.executable, HERE / "patch_editor_consumer.py", consumer],
+                                       folder / f"{label}-{mode}-patch.log", env=env)
+                        if code:
+                            controls[mode][label] = code
+                            continue
+                    args = [sys.executable, HERE / project["runner"], consumer]
+                    if mode == "no-cleanup":
+                        args.append("--no-cleanup")
+                    controls[mode][label] = command(args, folder / f"{label}-{mode}.log",
+                                                   env=env, cwd=run_directory, timeout=600)
+            result["editor_controls"] = controls
         result["exit_codes"] = outcomes
         result["status"] = (
             "passed" if outcomes == {"base": 0, "pr": 0} else

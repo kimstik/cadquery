@@ -6,6 +6,7 @@ but does not create an OpenGL viewer. Run the editor's own GUI tests separately.
 """
 
 import argparse
+import faulthandler
 import json
 import os
 from pathlib import Path
@@ -88,7 +89,9 @@ def exercise(case, cleanup):
 
         for iteration in (1, 2):
             before = len(rendered)
+            print(json.dumps({"case": case, "phase": "render-start", "iteration": iteration}), flush=True)
             debugger.render()
+            print(json.dumps({"case": case, "phase": "render-return", "iteration": iteration}), flush=True)
             if errors:
                 raise AssertionError(
                     f"render {iteration} failed:\n"
@@ -108,6 +111,7 @@ def exercise(case, cleanup):
                     "its DxfDocument differs from exporters.DxfDocument"
                 )
 
+    print(json.dumps({"case": case, "phase": "checks-complete"}), flush=True)
     return {"startup_modules": startup_modules, "renders": len(rendered)}
 
 
@@ -118,6 +122,7 @@ def main():
     parser.add_argument("--no-cleanup", action="store_true")
     args = parser.parse_args()
     if args.case:
+        faulthandler.enable()
         sys.path.insert(0, str(args.source.resolve()))
         try:
             details = exercise(args.case, not args.no_cleanup)

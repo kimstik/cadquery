@@ -1,9 +1,15 @@
 name: Downstream compatibility
 
 on:
-  push:
-    branches: [compat_dxf_vtk]
   workflow_dispatch:
+    inputs:
+      projects:
+        description: Comma-separated inventory IDs, empty for all
+        required: false
+        default: ''
+
+env:
+  COMPAT_PROJECTS: ${{ inputs.projects }}
 
 permissions:
   contents: read
