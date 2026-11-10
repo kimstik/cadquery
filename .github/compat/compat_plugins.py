@@ -138,6 +138,16 @@ def main():
             sys.executable, "-m", "pytest", "-q", "--tb=short",
             "-p", "no:cacheprovider", *PYTEST_CASES[entry],
         ]
+        if entry == 27:
+            # Bind this repository's tests namespace before installed tests packages.
+            bootstrap = (
+                "import pathlib, sys, types; "
+                "tests = types.ModuleType('tests'); "
+                "tests.__path__ = [str(pathlib.Path.cwd() / 'tests')]; "
+                "sys.modules['tests'] = tests; "
+                "import pytest; raise SystemExit(pytest.main(sys.argv[1:]))"
+            )
+            command = [sys.executable, "-c", bootstrap, *command[3:]]
         result = subprocess.run(command, cwd=root, env=env, timeout=240)
         print(json.dumps({"id": entry, "scenario": "consumer tests", "tests": PYTEST_CASES[entry], "returncode": result.returncode}), flush=True)
         return result.returncode
