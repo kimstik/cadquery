@@ -7,6 +7,13 @@ on:
         description: Comma-separated inventory IDs, empty for all
         required: false
         default: ''
+      runner:
+        description: Environment for the selected scenarios
+        type: choice
+        options:
+          - ubuntu-22.04
+          - windows-2022
+        default: ubuntu-22.04
 
 env:
   COMPAT_PROJECTS: ${{ inputs.projects }}
@@ -32,8 +39,11 @@ jobs:
 
   compare:
     needs: inventory
-    runs-on: ubuntu-22.04
-    timeout-minutes: 35
+    runs-on: ${{ inputs.runner || 'ubuntu-22.04' }}
+    timeout-minutes: 110
+    defaults:
+      run:
+        shell: bash
     strategy:
       fail-fast: false
       max-parallel: 4
@@ -56,11 +66,17 @@ jobs:
         with:
           python-version: '3.11'
       - name: Install system libraries
+        if: runner.os == 'Linux'
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y --no-install-recommends libgl1 libglu1-mesa libegl1 libxrender1 libxkbcommon-x11-0 libxcb-xinerama0 libxcb-cursor0 libxkbcommon0 libfontconfig1 xvfb xauth
       - name: Compare unchanged consumer on base and PR
-        run: nice -n 19 python .github/compat/run.py project ${{ matrix.project }}
+        run: |
+          if [ "$RUNNER_OS" = Windows ]; then
+            python .github/compat/run.py project ${{ matrix.project }}
+          else
+            nice -n 19 python .github/compat/run.py project ${{ matrix.project }}
+          fi
       - name: Save results, dependency lock and full logs
         if: always()
         uses: actions/upload-artifact@v4

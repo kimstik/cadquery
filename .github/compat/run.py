@@ -9,6 +9,9 @@ import subprocess
 import sys
 import tarfile
 import urllib.request
+import xml.etree.ElementTree as ET
+
+from scan import scan, observations
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[1]
@@ -82,6 +85,11 @@ def project_run(project_id):
             result.update(status=project["disposition"], reason=project["reason"])
             return
         fetch_source(project, WORK / "consumer")
+        source_scan = scan(WORK / "consumer")
+        (folder / "source-risks.json").write_text(json.dumps(source_scan, indent=2) + "\n")
+        result["source_audit"] = {"python_files": source_scan["python_files"],
+                                  "risk_sites": len(source_scan["sites"]),
+                                  "parse_errors": len(source_scan["parse_errors"])}
         for label, revision in [("base", BASE), ("pr", HEAD)]:
             code = command(["git", "worktree", "add", "--detach", WORK / label, revision],
                            folder / (label + "-checkout.log"), cwd=ROOT)
@@ -131,7 +139,38 @@ def project_run(project_id):
                 outcomes[label] = check
                 continue
             outcomes[label] = command(args, folder / (label + ".log"), env=env,
-                                      cwd=run_directory, timeout=600)
+                                      cwd=run_directory, timeout=project.get("timeout_seconds", 600))
+            junit = folder / (label + "-native-tests.xml")
+            if junit.exists():
+                suites = ET.parse(junit).getroot()
+                totals = {key: sum(int(s.get(key, 0)) for s in suites.iter("testsuite"))
+                          for key in ["tests", "failures", "errors", "skipped"]}
+                result.setdefault("native_tests", {})[label] = totals
+            if project.get("observe"):
+                # Observation is separate: it cannot turn an unchanged failure into a pass.
+                observed_consumer = WORK / ("consumer-" + label + "-observed")
+                shutil.copytree(WORK / "consumer", observed_consumer)
+                observed_run = WORK / ("run-" + label + "-observed")
+                observed_run.mkdir()
+                observed_env = dict(env)
+                observed_env["COMPAT_OBSERVE"] = "1"
+                observed_env["CQ_COMPAT_VARIANT"] = label + "-observed"
+                observed_env["PYTHONPATH"] = os.pathsep.join([str(WORK / label),
+                                                            str(observed_consumer),
+                                                            str(observed_consumer / "src")])
+                observed_args = [str(a).replace(str(consumer), str(observed_consumer)) for a in args]
+                observed_code = command(observed_args, folder / (label + "-observed.log"),
+                                        env=observed_env, cwd=observed_run,
+                                        timeout=project.get("timeout_seconds", 600))
+                result.setdefault("observation_exit_codes", {})[label] = observed_code
+                coverage = folder / (label + "-observed-coverage.json")
+                if coverage.exists():
+                    mapped = observations(source_scan, coverage, observed_consumer)
+                    (folder / (label + "-risk-observation.json")).write_text(json.dumps(mapped, indent=2) + "\n")
+                    result.setdefault("risk_observation", {})[label] = {
+                        "total_sites": len(mapped),
+                        "executed_sites": sum(s["executed_in_observation"] for s in mapped),
+                        "meaning": "Executed lines only, not proof of branch reachability or contract success"}
             if project.get("standalone") and project_id == 38:
                 detail = run_directory / ("paperclip-" + label)
                 if detail.exists():
@@ -198,6 +237,11 @@ def report():
 
 
 if __name__ == "__main__":
+    if os.name == "nt":
+        import ctypes
+        # Inherited by children; keep shared Windows runners responsive.
+        kernel = ctypes.windll.kernel32
+        kernel.SetPriorityClass(kernel.GetCurrentProcess(), 0x40)
     if sys.argv[1] == "matrix":
         print("projects=" + json.dumps([p["id"] for p in inventory()]))
     elif sys.argv[1] == "project":
