@@ -1,0 +1,81 @@
+name: Downstream compatibility
+
+on:
+  push:
+    branches: [compat_dxf_vtk]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: downstream-compat-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  inventory:
+    runs-on: ubuntu-22.04
+    outputs:
+      projects: ${{ steps.matrix.outputs.projects }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - id: matrix
+        run: python .github/compat/run.py matrix >> "$GITHUB_OUTPUT"
+
+  compare:
+    needs: inventory
+    runs-on: ubuntu-22.04
+    timeout-minutes: 35
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+      matrix:
+        project: ${{ fromJSON(needs.inventory.outputs.projects) }}
+    name: Project ${{ matrix.project }}
+    env:
+      QT_QPA_PLATFORM: offscreen
+      LIBGL_ALWAYS_SOFTWARE: '1'
+      PYTHONUNBUFFERED: '1'
+      OMP_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      NUMBA_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install system libraries
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends libgl1 libglu1-mesa libegl1 libxrender1 libxkbcommon-x11-0 libxcb-xinerama0 libxcb-cursor0 libxkbcommon0 libfontconfig1
+      - name: Compare unchanged consumer on base and PR
+        run: nice -n 19 python .github/compat/run.py project ${{ matrix.project }}
+      - name: Save results, dependency lock and full logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: downstream-${{ matrix.project }}
+          path: compat-results/
+          if-no-files-found: error
+          retention-days: 14
+
+  report:
+    if: always() && needs.inventory.result == 'success'
+    needs: [inventory, compare]
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: downstream-*
+          path: compat-results
+          merge-multiple: true
+      - name: Summarize every inventory entry
+        run: python .github/compat/run.py report

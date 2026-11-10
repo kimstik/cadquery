@@ -1,0 +1,21 @@
+[
+  {
+    "id": 11,
+    "name": "CQ-editor",
+    "repo": "CadQuery/CQ-editor",
+    "ref": "62219e3e7a8715e3f2f7f61a08e0f934f0f83292",
+    "dependencies": ["PyQt5", "pyqtgraph", "qtawesome==1.4.0", "path", "logbook", "requests", "qtconsole>=5.5.1,<5.7.0", "packaging"],
+    "runner": "compat_editor.py",
+    "standalone": true,
+    "install": true
+  },
+  {
+    "id": 38,
+    "name": "paperclip-plugin-cad",
+    "repo": "claudegoogl-sudo/paperclip-plugin-cad",
+    "ref": "5eb773a085413277fa67092de87444319ade616b",
+    "dependencies": ["trimesh==4.12.2", "manifold3d==3.5.1"],
+    "runner": "compat_paperclip.py",
+    "standalone": true
+  }
+]
