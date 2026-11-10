@@ -175,12 +175,16 @@ def project_run(project_id):
                 result.setdefault("observation_exit_codes", {})[label] = observed_code
                 coverage = folder / (label + "-observed-coverage.json")
                 if coverage.exists():
-                    mapped = observations(source_scan, coverage, observed_consumer)
-                    (folder / (label + "-risk-observation.json")).write_text(json.dumps(mapped, indent=2) + "\n")
-                    result.setdefault("risk_observation", {})[label] = {
-                        "total_sites": len(mapped),
-                        "executed_sites": sum(s["executed_in_observation"] for s in mapped),
-                        "meaning": "Executed lines only, not proof of branch reachability or contract success"}
+                    try:
+                        mapped = observations(source_scan, coverage, observed_consumer)
+                        (folder / (label + "-risk-observation.json")).write_text(json.dumps(mapped, indent=2) + "\n")
+                        result.setdefault("risk_observation", {})[label] = {
+                            "total_sites": len(mapped),
+                            "executed_sites": sum(s["executed_in_observation"] is True for s in mapped),
+                            "unmeasured_sites": sum(not s["measured_file"] for s in mapped),
+                            "meaning": "Executed lines only, not proof of branch reachability or contract success"}
+                    except (ValueError, KeyError, OSError) as error:
+                        result.setdefault("observation_errors", {})[label] = str(error)
             if project.get("standalone") and project_id == 38:
                 detail = run_directory / ("paperclip-" + label)
                 if detail.exists():
@@ -225,13 +229,18 @@ def project_run(project_id):
         inventories = [folder / (label + "-test-inventory.json") for label in ["base", "pr"]]
         if all(path.exists() for path in inventories):
             a, b = [json.loads(path.read_text()) for path in inventories]
-            result["same_test_cases_and_skips"] = a == b
+            normalize = lambda cases: sorted(cases, key=lambda c: (c["class"] or "", c["name"] or "", c["skipped"]))
+            result["same_test_cases_and_skips"] = normalize(a) == normalize(b)
         result["exit_codes"] = outcomes
+        result["platform"] = sys.platform
+        result["python"] = sys.version
         result["status"] = (
             "passed" if outcomes == {"base": 0, "pr": 0} else
             "regression" if outcomes["base"] == 0 else
             "baseline-failed" if outcomes["pr"] != 0 else "pr-only-pass"
         )
+        if result["status"] == "passed" and result.get("same_test_cases_and_skips") is False:
+            result["status"] = "test-selection-difference"
     except Exception as error:
         result["reason"] = f"{type(error).__name__}: {error}"
     finally:

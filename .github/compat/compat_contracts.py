@@ -299,7 +299,7 @@ def cases():
 def run_case(spec, output, variant):
     folder = output / spec["name"]
     folder.mkdir(parents=True, exist_ok=True)
-    prefix = f"""import json, os, sys
+    prefix = f"""import json as _contract_json, os, sys
 from pathlib import Path
 variant = {variant!r}
 import cadquery
@@ -307,7 +307,7 @@ root = Path(os.environ['COMPAT_CQ_ROOT']).resolve()
 assert Path(cadquery.__file__).resolve().is_relative_to(root), cadquery.__file__
 observed = {{}}
 """
-    suffix = f"finally:\n    print({MARKER!r} + json.dumps(observed, sort_keys=True))\n"
+    suffix = f"finally:\n    print({MARKER!r} + _contract_json.dumps(observed, sort_keys=True))\n"
     code = prefix + "try:\n" + textwrap.indent(spec["code"], "    ") + suffix
     record = {key: value for key, value in spec.items() if key != "code"}
     record["script"] = code

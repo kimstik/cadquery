@@ -587,6 +587,235 @@
     "scenario": "Four original CQ converter tests: box, multiple solids, faces, vector."
   },
   {
+    "id": 52,
+    "name": "cq-cli",
+    "repo": "CadQuery/cq-cli",
+    "ref": "0461d0e995711d3c737fd6623720709212828c37",
+    "dependencies": [
+      "pytest",
+      "click==8.3.1",
+      "cadquery_freecad_import_plugin==1.0.0"
+    ],
+    "runner": "compat_new.py",
+    "install": false,
+    "scope": "Full native tests directory with the same FreeCAD exclusion as upstream .github/workflows/tests.yml. Real CLI child processes and codec output assertions. PYTHONPATH selects the compared CQ tree in children."
+  },
+  {
+    "id": 53,
+    "name": "cadquery-pydantic",
+    "repo": "sangl-spezialtransformatoren/cadquery-pydantic",
+    "ref": "01678363e475469a759b9094799bdc0758b2db8f",
+    "dependencies": [
+      "pytest",
+      "pydantic>=2.4.2",
+      "pydantic-core>=2.33.2"
+    ],
+    "runner": "compat_new.py",
+    "install": false,
+    "scope": "Full native tests directory, covering Pydantic Python/JSON serialization of CQ geometry, Shape, Sketch, Workplane and Assembly. No new skips or filtered test cases."
+  },
+  {
+    "id": 54,
+    "name": "tcqt",
+    "repo": "t-kozak/tcqt",
+    "ref": "177fa47f42859a4f96099b9cb99fdf07e939462b",
+    "dependencies": [
+      "numpy-stl>=3.2.0"
+    ],
+    "runner": "compat_new.py",
+    "install": false,
+    "scope": "Own Workplane geometry and Assembly material/export implementation. Repeated Bambu 3MF XML/ZIP validation and delegated STEP export. No GUI show() call, textures and every primitive not covered."
+  },
+  {
+    "id": 55,
+    "name": "cq-queryabolt",
+    "repo": "mmalecki/cq-queryabolt",
+    "ref": "2517509176cdcc5a739b63f79e843169d93eeaf3",
+    "dependencies": [],
+    "runner": "compat_new.py",
+    "install": false,
+    "scope": "Unmodified examples/simple.py complete fastener geometry, with host show_object collector, then solid validity, volume, STEP roundtrip. No native test suite in pinned tree."
+  },
+  {
+    "id": 56,
+    "name": "cq_enclosure_builder",
+    "repo": "raphael-isvelin/cq_enclosure_builder",
+    "ref": "264af08306a96b1a8c0db342f96d479a8b433d70",
+    "dependencies": [
+      "cq_warehouse @ git+https://github.com/gumyr/cq_warehouse@a57bb7a24762d367d66369f280a24c38a64e73dd"
+    ],
+    "runner": "compat_new.py",
+    "install": false,
+    "scope": "Unmodified examples/01_panel_with_button.py, part registry/build, panel assembly with actual buttons, STEP export. cq_warehouse snapshot is pinned and may fail the common baseline due to OCP8 removed types, not attributed to this PR."
+  },
+  {
+    "id": 57,
+    "name": "cq-studio",
+    "repo": "ccazabon/cq-studio",
+    "ref": "272ff363bd245755d540cbe4e8eca27e19363ae1",
+    "dependencies": [],
+    "runner": "compat_new.py",
+    "install": false,
+    "scope": "Own Reloader module management with the exact stdlib-prefix exclusions from Server.__init__. Geometry, DXF and VTP user modules loaded/unloaded/reloaded three times in separate child processes. Server/YACV/build123d viewer not instantiated. No patches or forced preload of DXF/VTK."
+  },
+  {
+    "id": 58,
+    "name": "mcp-cadquery (upgrade experiment)",
+    "repo": "bertvanbrakel/mcp-cadquery",
+    "ref": "eae44ca8f95a6f48cf450c147feaed404b1a8a79",
+    "dependencies": [
+      "pytest"
+    ],
+    "runner": "compat_new.py",
+    "install": false,
+    "scope": "Native tests/test_script_runner.py in full, original worker subprocess protocol and BREP artifacts. Consumer pins CQ2.5.2, replaced by common base/head deliberately. Upgrade experiment, not evidence about the pinned deployed installation. Server HTTP/workspace virtualenv creation not covered."
+  },
+  {
+    "id": 59,
+    "name": "microgen",
+    "repo": "3MAH/microgen",
+    "ref": "38e19120cd4d41fe110528b3bdb59e3c88627dcb",
+    "dependencies": [],
+    "runner": "compat_new.py",
+    "disposition": "not-applicable",
+    "reason": "Latest pinned tree has 114 Python files and no cadquery imports. pyproject.toml describes CAD as direct cadquery-ocp-novtk, not CadQuery. Historical README/search matches do not make it a current CQ consumer."
+  },
+  {
+    "id": 101,
+    "original_id": 2,
+    "name": "cq_cache complete plugin tests",
+    "repo": "CadQuery/cadquery-plugins",
+    "ref": "364500a1adeb7b99bf06135245850f5ba70b9ae6",
+    "dependencies": [
+      "pytest",
+      "coverage"
+    ],
+    "runner": "compat_selftests.py",
+    "pytest_args": [
+      "tests/test_cq_cache.py"
+    ],
+    "timeout_seconds": 1200,
+    "scope": "Every test in this plugin's only test module, not the entire shared cadquery-plugins repository. Previous probe selected three tests.",
+    "native_ci": "Repository test module tests/test_cq_cache.py, plugin setup.py test_suite. No tests deselected by the runner. Fresh CI home isolates the cache.",
+    "environment": "Pinned consumer source with comparative CQ base/head in the same modern OCP8 environment, not a recreation of historical dependency locks.",
+    "observe": false
+  },
+  {
+    "id": 102,
+    "original_id": 6,
+    "name": "heatserts complete plugin tests",
+    "repo": "CadQuery/cadquery-plugins",
+    "ref": "364500a1adeb7b99bf06135245850f5ba70b9ae6",
+    "dependencies": [
+      "pytest",
+      "coverage"
+    ],
+    "runner": "compat_selftests.py",
+    "pytest_args": [
+      "tests/test_heatserts.py"
+    ],
+    "timeout_seconds": 1200,
+    "scope": "Every test and parameterization in this plugin's only test module, not all plugins in the shared repository. Previous probe selected one parametrized method.",
+    "native_ci": "Repository test module tests/test_heatserts.py and plugin setup.py. No tests deselected by the runner.",
+    "environment": "Pinned consumer source with comparative CQ base/head in the same modern OCP8 environment, not a recreation of historical dependency locks.",
+    "observe": false
+  },
+  {
+    "id": 103,
+    "original_id": 22,
+    "name": "cqMore complete native suite",
+    "repo": "JustinSDK/cqMore",
+    "ref": "a490603a18e87e65d9a8c5d52ea0b0ce402d261c",
+    "dependencies": [
+      "pytest",
+      "coverage"
+    ],
+    "runner": "compat_selftests.py",
+    "pytest_args": [],
+    "timeout_seconds": 1200,
+    "scope": "Default discovery of all five native unittest modules: curve, matrix, plugin, polygon and polyhedron. pytest executes the unmodified unittest assertions.",
+    "native_ci": "Native tests/test_*.py unittest suites. No workflow or test selection substituted for full discovery.",
+    "environment": "CQ and its dependencies come from the paired modern comparative environment. Consumer setup.py declares no runtime dependency list.",
+    "observe": true
+  },
+  {
+    "id": 104,
+    "original_id": 27,
+    "name": "assembly-mesh-plugin complete native suite",
+    "repo": "CadQuery/assembly-mesh-plugin",
+    "ref": "a02e1972930bc0b899e9153679862c410021efd6",
+    "dependencies": [
+      "pytest",
+      "coverage",
+      "gmsh"
+    ],
+    "system_packages": [
+      "libglu1-mesa"
+    ],
+    "runner": "compat_selftests.py",
+    "pytest_args": [],
+    "timeout_seconds": 1200,
+    "scope": "Default discovery including native tests/test_meshes.py and tests/smoke_test.py. No namespace patch, skips, filters or source edits.",
+    "native_ci": ".github/workflows/tests.yml runs python -m pytest -v after pip install .[dev] and CadQuery master. Runtime dependencies in pyproject.toml: cadquery>=2.7.0 and gmsh. pytest runs source directly with the pinned CQ checkout.",
+    "environment": "Known native tests.sample_assemblies namespace can be shadowed by a third-party installed tests package because consumer tests lacks __init__.py. This run leaves native namespace behavior untouched and records any collection failure.",
+    "observe": false
+  },
+  {
+    "id": 105,
+    "original_id": 37,
+    "name": "direct-mesh-plugin complete native suite",
+    "repo": "jmwright/cadquery-direct-mesh-plugin",
+    "ref": "302e469ab49caf70a25c61ac47d279ee45a5ebb1",
+    "dependencies": [
+      "pytest",
+      "coverage"
+    ],
+    "runner": "compat_selftests.py",
+    "pytest_args": [],
+    "timeout_seconds": 1200,
+    "scope": "Default discovery of the complete native tests/test_assemblies.py. Previous probe selected four test functions.",
+    "native_ci": ".github/workflows/tests.yml runs python -m pytest -v after pip install .[dev]. pyproject.toml runtime requires cadquery>=2.7.0. Source-direct run uses the pinned comparative CQ checkout.",
+    "environment": "Modern OCP8 paired environment satisfies the consumer's open CadQuery requirement. No historical dependency lock recreated.",
+    "observe": false
+  },
+  {
+    "id": 106,
+    "original_id": 43,
+    "name": "cq-annotate complete native suite",
+    "repo": "jmwright/cq-annotate",
+    "ref": "b46fbe2aac0e47dfdc3fb97709e159ea2bd809c0",
+    "dependencies": [
+      "pytest",
+      "coverage",
+      "svgutils"
+    ],
+    "runner": "compat_selftests.py",
+    "pytest_args": [],
+    "timeout_seconds": 1200,
+    "scope": "Default discovery of assembly, dimensions and overlays tests. Previous probe omitted the whole tests/test_assembly.py module.",
+    "native_ci": ".github/workflows/tests.yml runs python -m pytest -v after editable package/dev installation. pyproject.toml runtime dependencies cadquery and svgutils. Source-direct run uses unchanged package code and native tests.",
+    "environment": "Modern comparative CQ/OCP dependencies, identical for base/head. No consumer dependency pins bypassed.",
+    "observe": true
+  },
+  {
+    "id": 107,
+    "original_id": 48,
+    "name": "cadscript complete native suite",
+    "repo": "cadscriptHQ/cadscript",
+    "ref": "38d58de3c50fd6e39f82d9483ce9414ace61fc83",
+    "dependencies": [
+      "pytest",
+      "coverage"
+    ],
+    "runner": "compat_selftests.py",
+    "pytest_args": [],
+    "timeout_seconds": 1200,
+    "scope": "Default discovery of every native module, including DXF, CQGI examples, text, transformations, patterns and geometric operations. No test filters or skips added.",
+    "native_ci": ".github/workflows/python-package.yml runs pytest for Python 3.10 and 3.11, with requirements.txt. This comparison uses Python 3.11 and exact source pins.",
+    "environment": "Explicit upgrade comparison: native setup.py and requirements.txt require numpy<2, but modern CQ/OCP8 paired environment may resolve numpy2. No claim that this recreates the consumer's declared dependency environment. Any baseline failures remain visible.",
+    "observe": true
+  },
+  {
     "id": 150,
     "name": "Finite import contracts (not a downstream project)",
     "synthetic": true,

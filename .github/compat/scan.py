@@ -114,8 +114,13 @@ def observations(scan_result, coverage_path, consumer_root):
     root = Path(consumer_root).resolve()
     indexed = {}
     for name, detail in files.items():
-        path = Path(name).resolve()
+        path = Path(name)
+        if not path.is_absolute():
+            raise ValueError("Coverage producer must report absolute file paths: " + name)
+        path = path.resolve()
         if path.is_relative_to(root):
             indexed[path.relative_to(root).as_posix()] = set(detail["executed_lines"])
-    return [{**site, "executed_in_observation": site["line"] in indexed.get(site["file"], set())}
+    return [{**site, "measured_file": site["file"] in indexed,
+             "executed_in_observation": (site["line"] in indexed[site["file"]]
+                                         if site["file"] in indexed else None)}
             for site in scan_result["sites"]]
