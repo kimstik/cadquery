@@ -48,19 +48,32 @@ def step_roundtrip(value, output):
     assert math.isclose(shape.Volume(), restored.Volume(), rel_tol=1e-5)
 
 
-def native(source, paths):
+def native(source, paths, *, child_only=False):
     env = dict(os.environ, PYTEST_DISABLE_PLUGIN_AUTOLOAD="1")
-    # Both pytest itself and its original CLI/worker children inherit CQ provenance.
     report_path = Path(os.environ.get("COMPAT_RESULT_DIR", str(Path.cwd()))) / (
         os.environ.get("CQ_COMPAT_VARIANT", "unknown") + "-native-tests.xml")
-    bootstrap = (
-        "import os,sys,pytest; from pathlib import Path; "
-        "code=pytest.main(sys.argv[1:]); "
-        "cq=sys.modules.get('cadquery'); assert cq is not None; "
-        "actual=Path(cq.__file__).resolve(); "
-        "assert actual.is_relative_to(Path(os.environ['COMPAT_CQ_ROOT']).resolve()), actual; "
-        "print('CadQuery source:', actual, flush=True); sys.exit(code)"
-    )
+    bootstrap = f"""import json, os, sys, pytest
+from pathlib import Path
+code = pytest.main(sys.argv[1:])
+cq = sys.modules.get('cadquery')
+actual = str(Path(cq.__file__).resolve()) if cq is not None else None
+expected = Path(os.environ['COMPAT_CQ_ROOT']).resolve()
+if actual is not None:
+    assert Path(actual).is_relative_to(expected), actual
+elif not {child_only!r} and code == 0:
+    raise AssertionError('Native suite did not load CadQuery in its pytest process')
+record = {{
+    'pytest_parent_cadquery_source': actual,
+    'expected_cadquery_root': str(expected),
+    'child_provenance': 'not directly observed; unmodified workers inherit PYTHONPATH',
+    'pythonpath': os.environ.get('PYTHONPATH'),
+}}
+output = Path(os.environ['COMPAT_RESULT_DIR'])
+variant = os.environ['CQ_COMPAT_VARIANT']
+(output / (variant + '-native-provenance.json')).write_text(json.dumps(record, indent=2) + '\\n')
+print(json.dumps(record), flush=True)
+sys.exit(code)
+"""
     result = subprocess.run(
         [sys.executable, "-c", bootstrap, "-ra", "--junitxml=" + str(report_path), *paths],
         cwd=source, env=env, timeout=560,
@@ -75,7 +88,7 @@ def native(source, paths):
 
 
 def cli(source):
-    return native(source, ["tests", "--ignore=tests/test_freecad.py"])
+    return native(source, ["tests", "--ignore=tests/test_freecad.py"], child_only=True)
 
 
 def pydantic(source):
@@ -198,7 +211,9 @@ def studio(source):
 
 
 def mcp(source):
-    return native(source, ["tests/test_script_runner.py"])
+    # These original tests import CQ only inside script_runner subprocesses.
+    # Do not preload CQ in pytest or modify their script strings to manufacture proof.
+    return native(source, ["tests/test_script_runner.py"], child_only=True)
 
 
 SCENARIOS = {52: cli, 53: pydantic, 54: tcqt, 55: queryabolt,

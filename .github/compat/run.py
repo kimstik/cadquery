@@ -65,7 +65,19 @@ def fetch_source(project, destination):
             relative = Path(member.name).relative_to(prefix)
             target = (destination / relative).resolve()
             assert target.is_relative_to(destination.resolve()), member.name
-            assert not member.issym() and not member.islnk(), member.name
+            if member.issym() or member.islnk():
+                # Materialize only an explicitly inspected, internal regular-file link.
+                allowed = project.get("archive_file_links", {})
+                assert member.issym() and allowed.get(relative.as_posix()) == member.linkname, member.name
+                linked = (target.parent / member.linkname).resolve()
+                assert linked.is_relative_to(destination.resolve()), member.linkname
+                archived = prefix + "/" + linked.relative_to(destination.resolve()).as_posix()
+                linked_member = source.getmember(archived)
+                assert linked_member.isfile(), archived
+                target.parent.mkdir(parents=True, exist_ok=True)
+                with source.extractfile(linked_member) as stream:
+                    target.write_bytes(stream.read())
+                continue
             if not relative.parts:
                 continue
             member.name = str(relative)
@@ -149,7 +161,9 @@ def project_run(project_id):
                 totals = {key: sum(int(s.get(key, 0)) for s in suites.iter("testsuite"))
                           for key in ["tests", "failures", "errors", "skipped"]}
                 result.setdefault("native_tests", {})[label] = totals
-                test_inventory = [{"class": case.get("classname"), "name": case.get("name"),
+                class_prefix = ".".join(consumer.relative_to(ROOT).parts) + "."
+                test_inventory = [{"class": (case.get("classname") or "").removeprefix(class_prefix),
+                                   "name": case.get("name"),
                                    "skipped": case.find("skipped") is not None}
                                   for case in suites.iter("testcase")]
                 (folder / (label + "-test-inventory.json")).write_text(

@@ -653,6 +653,7 @@
     "name": "cq-studio",
     "repo": "ccazabon/cq-studio",
     "ref": "272ff363bd245755d540cbe4e8eca27e19363ae1",
+    "archive_file_links": {"LICENSE": "COPYING"},
     "dependencies": [],
     "runner": "compat_new.py",
     "install": false,

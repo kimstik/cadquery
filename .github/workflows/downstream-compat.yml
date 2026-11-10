@@ -14,6 +14,13 @@ on:
           - ubuntu-22.04
           - windows-2022
         default: ubuntu-22.04
+      python:
+        description: Python version for both comparison variants
+        type: choice
+        options:
+          - '3.11'
+          - '3.12'
+        default: '3.11'
 
 env:
   COMPAT_PROJECTS: ${{ inputs.projects }}
@@ -64,7 +71,7 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: ${{ inputs.python || '3.11' }}
       - name: Install system libraries
         if: runner.os == 'Linux'
         run: |
