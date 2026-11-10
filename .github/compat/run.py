@@ -60,6 +60,7 @@ def fetch_source(project, destination):
     # Inspect paths before extraction. No repository hooks or setup scripts run here.
     with tarfile.open(archive) as source:
         members = source.getmembers()
+        originals = {member.name: member for member in members}
         prefix = members[0].name.split("/")[0]
         for member in members:
             relative = Path(member.name).relative_to(prefix)
@@ -72,7 +73,7 @@ def fetch_source(project, destination):
                 linked = (target.parent / member.linkname).resolve()
                 assert linked.is_relative_to(destination.resolve()), member.linkname
                 archived = prefix + "/" + linked.relative_to(destination.resolve()).as_posix()
-                linked_member = source.getmember(archived)
+                linked_member = originals[archived]
                 assert linked_member.isfile(), archived
                 target.parent.mkdir(parents=True, exist_ok=True)
                 with source.extractfile(linked_member) as stream:
