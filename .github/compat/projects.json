@@ -1057,6 +1057,16 @@
     "runner": "compat_batch_c.py",
     "dependencies": [],
     "timeout_seconds": 360,
+    "archive_file_links": {
+      "CLAUDE.md": "AGENTS.md",
+      "src/partcad/ai_agents/plugin.json": "../../../ai-agents/claude/.claude-plugin/plugin.json"
+    },
+    "archive_ignored_links": {
+      ".claude/skills/pc": "../../ai-agents/claude",
+      "ai-agents/claude/skills": "../common/skills",
+      "src/partcad/ai_agents/skills": "../../../ai-agents/common/skills",
+      "src/partcad_client/browsers": "../../browsers"
+    },
     "scope": "Unchanged wrapper_import_dxf.py protocol executed twice in fresh workers with a closed-square DXF, real ocp_serialize decoding and surface area assertion. Not the full PartCAD managed sandbox/zygote lifecycle or all native tests. Wrapper naturally imports the selected CQ checkout."
   },
   {
@@ -1112,5 +1122,262 @@
     "package_only_path": true,
     "timeout_seconds": 900,
     "scope": "Requires Python 3.12. Whole unchanged renderer/tests/test_worker.py, including repeated project/package execution and import-state restoration. CQ==2.6.1 project pin deliberately replaced by the two CQ2.9dev/OCP8 checkouts, so upgrade-only. Real parent CQ provenance checked; JUnit records actual collected cases/skips. No API HTTP service or browser."
+  },
+  {
+    "id": 78,
+    "name": "AeroSandbox native CadQuery airplane export test",
+    "repo": "peterdsharpe/AeroSandbox",
+    "ref": "edad83dd8bb6108dbb1b54aa76a6b34695844613",
+    "runner": "compat_major_engineering.py",
+    "install": true,
+    "package_only_path": true,
+    "dependencies": [
+      "pytest",
+      "casadi>=3.7.2",
+      "dill>=0.4.0",
+      "matplotlib>=3.10.7",
+      "neuralfoil>=0.3.0,<0.4.0",
+      "numpy>=2.2.6",
+      "pandas>=2.3.3",
+      "scipy>=1.15.3",
+      "seaborn>=0.13.2",
+      "sortedcontainers>=2.4.0",
+      "tqdm>=4.67.1"
+    ],
+    "timeout_seconds": 1200,
+    "scope": "One entire original native CAD-export test module: aerosandbox/geometry/test_geometry/test_cadquery_export.py. Builds two symmetric wings and a fuselage through actual Airplane.export_cadquery_geometry, exports STEP and checks retained part names. Not full AeroSandbox tests or aerodynamic optimization.",
+    "source_evidence": [
+      "aerosandbox/geometry/test_geometry/test_cadquery_export.py:63-86",
+      "aerosandbox/geometry/airplane.py:895-1050",
+      "aerosandbox/geometry/airplane.py:1052-1083",
+      "pyproject.toml:37-56"
+    ],
+    "startup_route": "Optional CadQuery CAD-generation/export route. Normal aerodynamic computations do not necessarily import CQ. Assembly.export itself may still trigger incidental VTK in this PR.",
+    "environment_notes": "Source package installed editable without dependencies by shared runner. Explicit dependencies reproduce declared runtime ranges, leaving optional visualization extras out. Same resolved environment and dependency freeze for both CQ variants. Native test may importorskip absent CQ, but runner rejects a skip-only pass."
+  },
+  {
+    "id": 79,
+    "name": "dactyl-keyboard actual CadQuery modeling/export helpers",
+    "repo": "joshreve/dactyl-keyboard",
+    "ref": "961dc469989b66d042b0d7cd5595b93b4509a020",
+    "runner": "compat_major_engineering.py",
+    "dependencies": [
+      "numpy",
+      "scipy"
+    ],
+    "timeout_seconds": 1200,
+    "scope": "Two repeated own-helper cycles: box and cylinder, bore difference, STEP export and own STEP importer, planar section DXF export and DXF parse. Actual src/helpers_cadquery.py untouched. This verifies backend helpers, not a complete keyboard build, chosen config, viewer or every geometry branch.",
+    "source_evidence": [
+      "src/dactyl_manuform.py:69-70",
+      "src/helpers_cadquery.py:1-3",
+      "src/helpers_cadquery.py:13-20",
+      "src/helpers_cadquery.py:77-82",
+      "src/helpers_cadquery.py:223-239"
+    ],
+    "startup_route": "CadQuery is selected as a keyboard backend. Helpers eagerly import CQ, numpy and scipy but not ezdxf/VTK themselves. DXF functionality genuinely needs ezdxf when selected.",
+    "environment_notes": "No root runtime requirements manifest found. scipy and numpy are actual helper imports; CadQuery dependencies supplied by paired base/head environment. No full-generator compatibility claim."
+  },
+  {
+    "id": 80,
+    "name": "turbodesigner real CAD package and ExtendedWorkplane geometry",
+    "repo": "OpenOrion/turbodesigner",
+    "ref": "b35ea52077179df0b1c3c590d95b54fc78622713",
+    "runner": "compat_major_engineering.py",
+    "dependencies": [
+      "click>=8.3.3",
+      "kaleido>=0.2.1",
+      "plotly>=5.11.0",
+      "numpy>=2.4.3",
+      "pydantic>=2.13.3",
+      "pandas>=3.0.2",
+      "cq_warehouse @ https://github.com/OpenOrion/cq_warehouse/archive/80b4e282479b24b9de4bc60d7de4c60e1bad8dbc.tar.gz"
+    ],
+    "timeout_seconds": 1200,
+    "scope": "Actual turbodesigner.cad package initialization and turbodesigner.cad.common.ExtendedWorkplane.ring geometry, colored_assembly and STEP roundtrip. Not complete compressor blade/shaft generation. Native exporter_test.py covers DataFrames rather than CAD, so it is not substituted as CAD proof.",
+    "source_evidence": [
+      "turbodesigner/cad/__init__.py:5-9",
+      "turbodesigner/cad/common.py:4-6",
+      "turbodesigner/cad/common.py:38-68",
+      "pyproject.toml:21-31",
+      ".gitmodules:4-6",
+      "libs/cq_warehouse gitlink 80b4e282479b24b9de4bc60d7de4c60e1bad8dbc"
+    ],
+    "startup_route": "Optional cq extra leads to own CAD package. Ring geometry itself does not need ezdxf/VTK. CAD package imports pinned cq_warehouse, whose OCP dependencies can already fail on base.",
+    "environment_notes": "GitHub root tarball does not contain git submodule content. Install exact declared cq_warehouse gitlink revision, not a newer substitute. Its src/cq_warehouse/extensions.py:81 imports TopTools_HSequenceOfShape, a known absent OCP8 binding in earlier baselines. This is left unchanged for honest baseline outcome. No jupyter viewer route selected."
+  },
+  {
+    "id": 81,
+    "name": "AWS VAMS real local-file Lambda CAD metadata handler (upgrade experiment)",
+    "repo": "awslabs/visual-asset-management-system",
+    "ref": "1661edfb17cffd936207555420a5e4861dd5d412",
+    "runner": "compat_major_engineering.py",
+    "dependencies": [
+      "aws-lambda-powertools==3.2.0",
+      "jmespath==1.0.1",
+      "numpy==2.0.1",
+      "trimesh==4.8.3",
+      "typing-extensions==4.12.2"
+    ],
+    "timeout_seconds": 1200,
+    "recommended_python": "3.12",
+    "scope": "Real metadata_extractors.cad_extractor.extract_cad_metadata and own common.logger on STEP/DXF files, separate fresh consumer processes. Fixtures created separately so DXF fixture generation cannot pre-import ezdxf in the handler process. Both format cases run even if one fails. No AWS credentials, mocks, Lambda deployment or thumbnail viewer.",
+    "source_evidence": [
+      "backendPipelines/conversion/meshCadMetadataExtraction/lambdaContainer/metadata_extractors/cad_extractor.py:12-52",
+      "backendPipelines/conversion/meshCadMetadataExtraction/lambdaContainer/metadata_extractors/cad_extractor.py:54-116",
+      "backendPipelines/conversion/meshCadMetadataExtraction/lambdaContainer/metadata_extractors/cad_extractor.py:170-212",
+      "backendPipelines/conversion/meshCadMetadataExtraction/lambdaContainer/common/logger.py:4-5,25-39",
+      "backendPipelines/conversion/meshCadMetadataExtraction/lambdaContainer/requirements.txt:1-6"
+    ],
+    "startup_route": "Metadata pipeline eagerly imports CQ; DXF handler genuinely needs ezdxf, STEP does not inherently. Independent thumbnail pipeline needs VTK itself and is outside this scenario.",
+    "environment_notes": "Pinned production requirements are Python>=3.12,<4 and cadquery==2.6.0. Replace only CQ with comparison CQ2.9dev/OCP8, so this is upgrade experiment, not current deployment proof. Use Python3.12 workflow input. Other declared dependencies retained. Existing native contract tests stub CQ and are deliberately not treated as geometry proof. Source review predicts STEP handler baseline failure: importStep returns Workplane while extract_step_metadata:71 calls model.ShapeType(); no .val() compatibility patch applied. DXF case remains independently observable in per-case summary."
+  },
+  {
+    "id": 82,
+    "name": "cad-skill",
+    "repo": "flowful-ai/cad-skill",
+    "ref": "ebc80490a67b566b30c4a22407acd9f569650958",
+    "dependencies": [
+      "pytest",
+      "trimesh>=4.0,<5"
+    ],
+    "runner": "compat_major_ai.py",
+    "install": false,
+    "timeout_seconds": 1500,
+    "scope": "Original run_cadquery_model.py subprocess wrapper with a fixed GridfinityBin model: strict watertight STL plus STEP, missing-STL rejection and user-error protocol. Then complete original tests/test_gridfinity.py without filters. No LLM, previews or print-printer operations. Selected headless routes need neither pyrender nor the repository's Pillow>=13 preview pin. Runtime CQ range is >=2.6.1,<3, no OCP pin override in this source. Actual generated-worker CQ source is asserted after its natural import."
+  },
+  {
+    "id": 83,
+    "name": "3dcodeverse standalone CadQuery wrapper",
+    "repo": "gaoypeng/3dcodeverse",
+    "ref": "69c1cb98035cf947fabf5e14c69cf6fa5f367242",
+    "dependencies": [
+      "trimesh>=4.0,<5"
+    ],
+    "runner": "compat_major_ai.py",
+    "install": false,
+    "timeout_seconds": 900,
+    "scope": "Unmodified harness/codeverse3d/languages/wrappers/run_cq.py and _wrapper_common.py. Fixed Workplane and named colored two-part Assembly inputs, actual tessellation, GLB/STEP/STL exports, build/census JSON and MissingResult report. The standalone wrapper explicitly has no Python3.12+ syntax, so can run on the shared interpreter; this does not certify the complete harness whose pyproject requires Python>=3.13, separate CLI, training or Blender runtime. Current optional CQ extra >=2.4, separate finetune environment pins CQ2.8/OCP7.9.3.1.1 and is not this route. Actual model/worker CQ provenance asserted."
+  },
+  {
+    "id": 84,
+    "name": "agentcad optional CQ runner (upgrade experiment)",
+    "repo": "jdilla1277/agentcad",
+    "ref": "f477991b0c1a839617070094414bd8475e65ce7e",
+    "dependencies": [],
+    "runner": "compat_major_ai.py",
+    "install": false,
+    "timeout_seconds": 900,
+    "scope": "Actual agentcad.runners.cadquery.execute with fixed generated model, parameter override, captured output, own export_step/export_stl and missing-output contract. No CLI daemon, LLM or build123d alternative. Source metadata optional CQ>=2.0 but kernel constraint OCP>=7.8,<7.9 is replaced by common CQ base/head OCP8: upgrade experiment only. Real runner preamble imports agentcad.helpers including TopTools_ListOfShape; if the common baseline cannot import it, report that failure without shims or replacing the preamble. Provenance recorded after natural in-process CQGI import/model entry."
+  },
+  {
+    "id": 85,
+    "name": "cadgenbench selected CQ subprocess backend",
+    "repo": "huggingface/cadgenbench",
+    "ref": "33304cf771fc5639144b1df9611e347251052cf8",
+    "dependencies": [
+      "trimesh",
+      "pyvista>=0.46,<0.49",
+      "Pillow",
+      "pyyaml",
+      "python-dotenv",
+      "litellm"
+    ],
+    "runner": "compat_major_ai.py",
+    "install": false,
+    "timeout_seconds": 900,
+    "requires_python": ">=3.12",
+    "scope": "Actual cadgenbench.baseline.agent.execute_code(backend='cadquery') with documented CADGENBENCH_CADQUERY_PYTHON=current interpreter, fixed local model and repeated STEP/STL plus invalid-model error/artifact protocol. Worker CQ source asserted after natural model import. Parent imports own normal agent graph including pyvista/litellm, not mocked. No run_agent, API calls, API keys, model downloads, fixture downloads, renderer invocation or full benchmark. Main project Python>=3.12. Separate CQ backend interpreter follows source design; selected own path does not import build123d/open3d, so those unrelated core-feature dependencies are not installed. HF offline and LiteLLM local cost map selected to avoid import-time remote metadata fetches."
+  },
+  {
+    "id": 86,
+    "name": "cad_to_dagmc",
+    "repo": "fusion-energy/cad_to_dagmc",
+    "ref": "68cfe70d510685082f37be8d227ac366471f81e8",
+    "dependencies": [
+      "pytest",
+      "numpy",
+      "trimesh",
+      "networkx",
+      "gmsh",
+      "h5py",
+      "cad-to-dagmc-mesher>=0.5.0"
+    ],
+    "install": true,
+    "install_env": {
+      "SETUPTOOLS_SCM_PRETEND_VERSION_FOR_CAD_TO_DAGMC": "0.16.0"
+    },
+    "runner": "compat_major_science.py",
+    "package_only_path": true,
+    "timeout_seconds": 1600,
+    "scope": "Ten unchanged native test cases: tests/test_get_volumes.py::test_get_volumes (three scale factors), three gmsh variants of test_file_creation.py H5M generation tests (single cube, curved extrusion, two disconnected volumes), and four own gmsh STEP import/surface-volume mesh tests. Default h5py H5M writer. Own native h5py reader asserts material tags and volume IDs. Additional nonempty H5M node/element and artifact checks. No neutron transport simulation.",
+    "notes": "Declared cadquery>=2.8.0 accepts selected source comparison. Same environment includes all declared runtime dependencies. Exact pinned source installed editable --no-deps, setuptools_scm metadata version explicitly 0.16.0 because GitHub archive has no .git. No installed release source fallback. Consumer/CQ source paths recorded after natural native imports. Tests intentionally select supported gmsh file-transfer route, not in-memory OCCT pointer sharing with independently built gmsh. h5py is project's supported default backend and requires no MOAB, pydagmc or OpenMC. This is bounded gmsh/h5py compatibility, not all meshers/transport. Native conftest may import declared cad-to-dagmc-mesher, not a harness preload. Dependency installation failures retained honestly. System gmsh needs libGLU on Linux; parent CI must provide it or retain host blocker. Selected source uses cq.assembly.Assembly, not removed incidental exporter bindings; no selected reload/get_type_hints contract identified. It writes legacy .vtk text itself rather than importing vtk. Core CQ route is potential startup beneficiary, no measured speedup claim. Native JUnit and real .h5m/.msh artifacts retained."
+  },
+  {
+    "id": 87,
+    "name": "ParaStell",
+    "repo": "svalinn/parastell",
+    "ref": "de7d2978ff314b060ca2e6b10745a034e8b2a3c4",
+    "dependencies": [],
+    "runner": "compat_major_science.py",
+    "disposition": "blocked",
+    "reason": "Genuine in-vessel CQ generation module requires scientific host dependencies at import time: parastell/invessel_build.py:13-14 imports pydagmc and pymoab; parastell/utils.py:11-12 also requires both; cubit_utils.py:3 requires pymoab. Generic pip-only paired CQ2.9dev/OCP8 environment does not prepare a compatible MOAB/PyDAGMC/OpenMC stack. No alternate providers, mocks, isolated exec or source edits substituted.",
+    "scope": "Source audit only, not compatibility success. Native tests/test_invessel_build.py::test_ivb_cadquery_construction and real generate_components_cadquery/export_step route identified for a future provisioned scientific host.",
+    "notes": "pyproject.toml declares cadquery, gmsh, pymoab>=5.5, cad_to_dagmc>=0.9.1, openmc>=0.15, matplotlib, numpy, scipy, netcdf4, pyyaml and pydagmc. Cubit import is lazy in cubit_utils.init_cubit, so do not falsely claim Cubit is mandatory for CQ-only generation. MOAB/PyDAGMC are nevertheless unconditional on this actual route. invessel_build.py:791 exports generated components with cq.exporters.export. No removed incidental cadquery.assembly exporter binding, CQ get_type_hints or reload use identified in audited generation/utilities source. Optional mesh routes write VTK through other tools, startup benefit is unmeasured and must not be counted as a pass or zero. Parent may provision real dependency stack in a separate authorized iteration, no silently changed CadQuery/OCP provider."
+  },
+  {
+    "id": 88,
+    "name": "CAD_to_OpenMC",
+    "repo": "openmsr/CAD_to_OpenMC",
+    "ref": "87bc6d1c8ff526637f95b142d438d910e95845cd",
+    "dependencies": [
+      "numpy"
+    ],
+    "runner": "compat_major_science.py",
+    "package_only_path": true,
+    "timeout_seconds": 600,
+    "scope": "Bounded genuine importable components only: CAD_to_OpenMC.cq_serialize.register provides BREP-backed pickle roundtrips of actual box/cylinder/compound, vector and rotated/translated Location. BREP artifacts persisted/reimported. CAD_to_OpenMC.assemblymesher_cq.MesherCQSTL.generate_stls meshes two actual solids through own per-face exporter/merge path, reads own STL and asserts positive triangle counts, finite coordinates and CAD bounds. No full Assembly-to-DAGMC/OpenMC transport certification.",
+    "notes": "Normal package/submodule imports, no bypass of __init__, AST extraction, dependency stubs or patches. Source __file__ for both components and CQ checked after natural consumer imports. Mesher input .solid protocol supplied by two simple geometry fixtures, not source assembly.Entity: importing full assembly.py requires pymoab unconditionally at19. That full route remains untested/host-dependent. Native test_transform/test_cqstl suites require full assembly/pymoab, so no misleading native-suite claim. Direct component scenario covers original BREP and real STL artifacts instead. Mesher refinement explicitly False through its supported public parameter, no external mmgs executable needed. Uses source's existing single_thread_override=True, no modification. pyproject.toml numpy<2.0a0 is deliberately not enforced in the shared selected CQ2.9dev/OCP8 environment. This is an explicitly upgraded-dependency component experiment, not a certificate for the old pinned installation. cadquery>=2 and cadquery-ocp>=7 metadata do not justify swapping selected OCP8 provider. Unrelated gmsh/trimesh/networkx/unidecode dependencies belong to full routes and are not installed for these dependency-light components. No removed incidental assembly exporter binding, typing or reload use identified in selected components. Potential avoided startup load applies only CQ component use, not all neutronics workflow execution."
+  },
+  {
+    "id": 89,
+    "name": "Semblage",
+    "repo": "7BIndustries/Semblage",
+    "ref": "ea6e03828820b4932dc2da3362a68c9a9fdbf5e6",
+    "disposition": "blocked",
+    "reason": "Own lib/cqgi_interface.py imports Godot exposed/export/signal/Node/resources at module scope and runs inside that host. Native .github/workflows/tests.yml installs Godot3.3.2 and godot-python0.50.0 embedded Python3.8. Common paired CQ2.9dev requires Python>=3.11. This harness supplies neither a real upgraded Godot/Python host nor a supported embedded-CQ environment. No fake godot module or extracted-function imitation is accepted as compatibility evidence.",
+    "scope": "Source verified own CQGI geometry and STEP/STL/DXF routes. lib/cqgi_interface.py:18-28 deletes newly loaded sys.modules in module_manager, used at lines50-56 around get_render_tree. Similar risk mechanism to CQ-editor, but no Semblage regression demonstrated and not counted as a test failure.",
+    "startup_route": "Own CQGI geometry can avoid format libraries before a format is requested, but real supported host not evaluated. Benefit unknown, not automatically zero and not a measured gain."
+  },
+  {
+    "id": 90,
+    "name": "pyvista-cad (optional CadQuery bridge)",
+    "repo": "codimensional/pyvista-cad",
+    "ref": "e1384051a07fe06c50de00d693f87f8d7c1e686b",
+    "dependencies": [
+      "pytest>=8.0",
+      "pytest-pyvista>=0.2",
+      "pyvista>=0.48.4",
+      "pooch>=1.8",
+      "ezdxf>=1.3",
+      "numpy>=1.24,<2.5",
+      "vtk>=9.4,!=9.7.2"
+    ],
+    "runner": "compat_major_misc.py",
+    "install": false,
+    "package_only_path": true,
+    "scope": "Exactly two unmodified native tests tests/test_bridges/test_cadquery.py: CQ box->PyVista PolyData validates cells/source metadata/bounds, and PyVista sphere->CQ Workplane. Original conftest retained and its pytest-pyvista plugin explicitly enabled despite ambient plugin autoload disabled. Test count must equal2 and skip count0. No import-only pass. Optional build123d/cascadio/IFC/etc extras deliberately not installed; paired CQ supplies single full cadquery-ocp8 provider, no cadquery-ocp-novtk namespace collision. numpy<2.5 and vtk!=9.7.2 match source uv environment constraints. If dependency provider cannot resolve, remains blocked rather than replacing OCP. No entire PyVista population/full formats/viewer claim.",
+    "startup_route": "Native bridge suite imports PyVista before CQ, so VTK already consumer-required. ezdxf is own declared dependency but not evidence of eager loading on these bridge paths. No measured startup gain or population count inferred."
+  },
+  {
+    "id": 91,
+    "name": "claude-hardware-in-the-loop (enclosure template)",
+    "repo": "Kemerd/claude-hardware-in-the-loop",
+    "ref": "e8ef234c4e63d6b13bb225430f5311f6ec60374a",
+    "dependencies": [],
+    "runner": "compat_major_misc.py",
+    "install": false,
+    "timeout_seconds": 900,
+    "scope": "Run original skills/hardware-in-the-loop/templates/cad/examples/enclosure/build_enclosure.py main with its supported --out argument. Original __file__/HERE/parts directory and cad_plugins preserved, original supplied gasket.py and gland_access.py required. No substituted resources or mocked plugin paths. Native base/lid/gasket, groove cuts, keepout/interference and plugin compression checks must pass. Verify parts.json/enclosure_cad.json, positive masses/volumes, every STEP imports valid solid with corresponding volume, and each STL triangle structure. Source setup_tools.ps1 lists unpinned cadquery in own CQ venv; paired comparison selects CQ2.9dev/OCP8. Not the entire hardware platform, renderer, KiCad, Windows setup or physical hardware.",
+    "startup_route": "Enclosure builder and its two supplied plugins use ordinary CQ geometry with generic STEP/STL exports. No own ezdxf/VTK need identified on this bounded route. Expected avoidance, not measured startup benefit; separate render.py uses trimesh/matplotlib and is not a VTK requirement here."
   }
 ]

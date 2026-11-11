@@ -67,13 +67,19 @@ def fetch_source(project, destination):
             target = (destination / relative).resolve()
             assert target.is_relative_to(destination.resolve()), member.name
             if member.issym() or member.islnk():
-                # Materialize only an explicitly inspected, internal regular-file link.
+                # Only exact, inspected internal links are accepted.
                 allowed = project.get("archive_file_links", {})
-                assert member.issym() and allowed.get(relative.as_posix()) == member.linkname, member.name
+                ignored = project.get("archive_ignored_links", {})
+                assert member.issym(), member.name
+                assert (allowed.get(relative.as_posix()) == member.linkname or
+                        ignored.get(relative.as_posix()) == member.linkname), member.name
                 linked = (target.parent / member.linkname).resolve()
                 assert linked.is_relative_to(destination.resolve()), member.linkname
                 archived = prefix + "/" + linked.relative_to(destination.resolve()).as_posix()
                 linked_member = originals[archived]
+                if ignored.get(relative.as_posix()) == member.linkname:
+                    assert linked_member.isdir(), archived
+                    continue
                 assert linked_member.isfile(), archived
                 target.parent.mkdir(parents=True, exist_ok=True)
                 with source.extractfile(linked_member) as stream:
