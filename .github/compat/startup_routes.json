@@ -13,5 +13,225 @@
     "id": 48,
     "startup_import": "import cadscript",
     "startup_scope": "Public cadscript package import; no modeling or documentation viewer."
+  },
+  {
+    "id": 52,
+    "startup_import": "import cq_cli.main",
+    "startup_scope": "CLI module initialization only; src/cq_cli/__init__.py is empty, while src/cq_cli/main.py:15-20 naturally imports CQ/CQGI and its codec loader. No argument parsing, input script, FreeCAD operation or export."
+  },
+  {
+    "id": 53,
+    "startup_import": "import cadquery_pydantic",
+    "startup_scope": "Natural package initialization and its CQ serialization schema modules, no geometry or serialization calls. src/cadquery_pydantic/__init__.py:1-26 imports CQ classes and own schemas. Existing exact-color native-test failures do not determine this import's result."
+  },
+  {
+    "id": 54,
+    "startup_import": "import tcqt",
+    "startup_scope": "Natural full package initialization, no geometry. src/tcqt/__init__.py:7-17 imports own Assembly, display fallback, textures and Workplane. Own assembly exporter and display imports may retain VTK; do not label this as VTK avoidance."
+  },
+  {
+    "id": 55,
+    "startup_import": "import cq_queryabolt",
+    "startup_scope": "Natural fastener module initialization, including its own data setup and CQ import at cq_queryabolt.py:4. No fastener construction or example execution."
+  },
+  {
+    "id": 56,
+    "startup_import": "import cq_enclosure_builder",
+    "startup_scope": "Natural full package initialization; src/cq_enclosure_builder/__init__.py:1-12 imports own panels, enclosure, registry and parts. Retain pinned cq_warehouse dependency; any baseline dependency import failure stays blocked. No example/model execution."
+  },
+  {
+    "id": 57,
+    "startup_import": "import cq_studio.reloader",
+    "startup_scope": "Real Reloader component import through normal cq_studio package initialization. cq_studio/__init__.py:9 imports utils, whose line3 imports CQ. No forced parent CQ preload, Server/YACV/build123d viewer startup, reload cycle or user geometry."
+  },
+  {
+    "id": 58,
+    "startup_import": "import mcp_cadquery_server.script_runner",
+    "startup_scope": "Natural worker module initialization only. script_runner.py imports CQ/CQGI locally inside run() at lines98-99, not at module import. Expected no attributable CQ unless another natural import loads it; this is only the module route, not a verdict on the whole consumer. Future actual-worker instrumentation can stop the timer immediately after script_runner.run() lines98-99, before cqgi.parse/build; it requires valid ordinary stdin workspace/result/script fields first. No need to construct geometry before that boundary, but do not execute the worker merely to manufacture a parent-import benefit. CQ2.5.2 replacement remains an upgrade experiment."
+  },
+  {
+    "id": 59,
+    "startup_reason": "Not applicable: pinned microgen source has no own CadQuery import and uses direct cadquery-ocp-novtk. No attributable CQ startup route in this inventory entry.",
+    "startup_scope": "Source-only nonconsumer disposition; not a zero-duration CQ measurement."
+  },
+  {
+    "id": 60,
+    "startup_import": "import paramak",
+    "startup_scope": "Natural src/paramak/__init__.py initialization of its own workplane/assembly modules and importlib.metadata version lookup. No geometry or transport. Preserve existing editable install and metadata-only SETUPTOOLS_SCM_PRETEND_VERSION_FOR_PARAMAK=0.11.0 from the manifest."
+  },
+  {
+    "id": 61,
+    "startup_import": "import cq_acis",
+    "startup_scope": "Natural package/native extension/parser/converter initialization, not analytic authoring execution. authoring.from_cadquery imports CQ locally at line129; cadquery.py imports CQ under TYPE_CHECKING or inside _load_cadquery at line202. No attributable CQ is a legitimate result; do not call private loader or manufacture a model to force it. Preserve pinned source native-extension build and Windows dependency constraints."
+  },
+  {
+    "id": 62,
+    "startup_import": "import cq_cam",
+    "startup_scope": "Natural package initialization via src/cq_cam/__init__.py:1 importing fluent.Job; fluent.py:7 imports CQ. Includes own CAM/native dependency graph, no toolpath or geometry. Existing requirements.in dependency-upgrade scope retained; dependency resolution/import failure remains blocked."
+  },
+  {
+    "id": 63,
+    "startup_reason": "Genuine entrypoint imports wxPython/interface/AIS host at module scope. The generic paired environment does not provision this real wx viewer. No stubs, isolated-file bypass or geometry-only substitute.",
+    "startup_scope": "Host startup benefit unknown, not zero. A future provisioned host should use normal import cq_viewer."
+  },
+  {
+    "id": 64,
+    "startup_import": "import cadquery_massembly",
+    "startup_scope": "Natural package initialization via Mate and MAssembly imports, no assembly creation, show callback or editor host. Merely importing/constructing Assembly is not Assembly.export."
+  },
+  {
+    "id": 65,
+    "startup_import": "import cqterrain",
+    "startup_scope": "Natural package initialization via src/cqterrain/__init__.py Ladder/Board/support/obelisk imports, no Ladder construction or STEP export. Retain cadqueryhelper2.2.6 and named CQ2.8.0 pin override from manifest. Shared dependency startup savings are not additive across terrain/helper/fantasy in one interpreter."
+  },
+  {
+    "id": 66,
+    "startup_import": "from cqfantasy.arch import BasicArch",
+    "startup_scope": "Natural import of the library's own BasicArch component used by example/arch/basic_arch.py; src/cqfantasy/arch/__init__.py loads arch/BasicArch/StoneArch, and BasicArch.py:16 imports CQ. cqfantasy is a namespace root, so bare import would miss the real component. No example execution or arch construction. Preserve cqterrain3.8.9/cadqueryhelper2.2.6 and named CQ2.8.0 override."
+  },
+  {
+    "id": 67,
+    "startup_import": "import cqdome",
+    "startup_scope": "Natural root initialization imports Dome, whose module lines16-18 imports CQ, helper.Base and own greeble. No geometry or rendering. Preserve original cqterrain2.0.2/helper1.3.0 exact source pins and explicit legacy CQ2.4/nlopt/numpy upgrade replacements; baseline failure stays blocked."
+  },
+  {
+    "id": 68,
+    "startup_import": "import cqgothic",
+    "startup_scope": "Natural root initialization of Bunker, roofs, Catwalk, SeriesHelper and Tower. No construction, STL/STEP export or examples. Preserve cqterrain3.8.0/helper2.2.0 and named CQ2.7.0 override. Import blockage from those originals must not be repaired for timing."
+  },
+  {
+    "id": 69,
+    "startup_import": "import cq_gears",
+    "startup_scope": "Natural root initialization includes core/api/geometry/cq_bridge and plotting/visualization at cq_gears/__init__.py:1-3. Own visualization imports cadquery.vis and PyVista, so VTK remains consumer-required. No gear construction, video or rendering."
+  },
+  {
+    "id": 70,
+    "startup_import": "from vendor_models.waveshare import Ddsm115",
+    "startup_scope": "Natural own model class import, not Ddsm115 construction or asset import. Empty root only supplies version; waveshare.py:8 imports utilities, whose lines8-9 import CQ Workplane/importStep. Preserve explicit old Python/casadi dependency-upgrade caveats in manifest."
+  },
+  {
+    "id": 71,
+    "startup_import": "import app",
+    "startup_cwd": ".",
+    "startup_scope": "Actual FastAPI ASGI app initialization, including own model import, Jinja template wrapper and decorators. app.py:9 imports CQ. No TestClient requests, stand construction, uvicorn host or export. Source root cwd supplies original relative templates path."
+  },
+  {
+    "id": 72,
+    "startup_reason": "Selected DXF worker is an executable protocol script, not an import-safe module: wrapper_import_dxf.py:122-127 unconditionally reads input, processes DXF and writes output. No natural import-only statement completes without protocol/geometry or changing source.",
+    "startup_scope": "Worker startup benefit remains unknown, not zero and not parent-wide no-benefit. Future instrumentation at actual worker import boundary can time original pyexpat plus CQ DXF/shape and wrapper imports at lines21-33, before handle_input at122. This worker genuinely requires ezdxf; no bare-CQ substitute or VTK/DXF-avoidance assumption."
+  },
+  {
+    "id": 73,
+    "startup_import": "import soma.build",
+    "startup_paths": [
+      "python"
+    ],
+    "startup_scope": "Natural SOMA build component initialization, including CQ at python/soma/build.py:16 and own compatibility/mesher/registry modules. Bare soma root is lazy. No run_model, build lock, user model, export, desktop or LLM API."
+  },
+  {
+    "id": 74,
+    "startup_import": "import cq_repl.main",
+    "startup_scope": "Actual REPL main module initialization only; src/cq_repl/main.py:6-17 imports VTK before CQ at19, then constructs vtkRenderWindow/vtkRenderer/active camera at22-24. No init_vtkwindow, Render, event loop or input processing. This is headless module initialization, not interactive host startup; real module-side VTK objects are retained, and any headless/native import failure stays blocked. VTK is consumer-eager, not avoided."
+  },
+  {
+    "id": 75,
+    "startup_reason": "Steve desktop host requires its custom CQ fork and application services. Stock CQ replacement alone does not reproduce genuine host startup; no dependency shims or geometry-only substitute.",
+    "startup_scope": "Real host startup benefit unknown."
+  },
+  {
+    "id": 76,
+    "startup_import": "import partspec.engines.pycad",
+    "startup_scope": "Natural own Python CAD adapter initialization through normal partspec package. pycad.py defers CQ to adopt at300 and backend loading/model execution. A no-attributable-CQ module route is legitimate, not a whole-consumer verdict. There is no separate fixed CQ worker startup here; future timer may instrument the actual engine's first CQ import before geometry, not call adopt with a synthetic shape just to force it. Preserve build123d dependency."
+  },
+  {
+    "id": 77,
+    "startup_import": "import renderer.worker",
+    "startup_scope": "Natural original renderer worker module initialization. renderer/worker.py:22-24 imports CQ, SVG and exportGLTF before design types. No worker main, user code, render/export or original test execution. Direct exportGLTF intentionally retains VTK; CQ2.6.1 replacement remains an upgrade experiment."
+  },
+  {
+    "id": 78,
+    "startup_import": "import aerosandbox",
+    "startup_scope": "Natural complete AeroSandbox package initialization of geometry/optimization/aerodynamics modules. CQ is optional and first imported in geometry export methods; no attributable CQ on this module route is not a verdict on export startup or the whole consumer. No fixed CQ child worker; future instrumentation can isolate actual first export-method CQ initialization before model construction, but do not execute geometry to manufacture import benefit. Preserve manifest's full scientific dependencies."
+  },
+  {
+    "id": 79,
+    "startup_import": "import helpers_cadquery",
+    "startup_paths": [
+      "src"
+    ],
+    "startup_scope": "Actual dactyl CQ engine helper module initialization: src/helpers_cadquery.py:1-3 imports CQ, scipy ConvexHull and numpy and defines own helpers. No dactyl top-level configuration/model generation or export."
+  },
+  {
+    "id": 80,
+    "startup_import": "import turbodesigner.cad.common",
+    "startup_scope": "Natural own CAD helper import through normal turbodesigner root and cad package initialization. common.py:4-6 imports CQ and original cq_warehouse extensions/fasteners. No ExtendedWorkplane instantiation, compressor generation or visualization. Preserve exact OpenOrion warehouse source pin and declared scientific/UI dependencies; any baseline import failure stays blocked."
+  },
+  {
+    "id": 81,
+    "startup_import": "import metadata_extractors.cad_extractor",
+    "startup_paths": [
+      "backendPipelines/conversion/meshCadMetadataExtraction/lambdaContainer"
+    ],
+    "startup_scope": "Natural local Lambda CAD metadata component initialization; cad_extractor.py:12-15 imports CQ and original safeLogger and constructs its logger. No AWS credentials/API, file import or metadata extraction. Same bounded component used by native scenario, not full deployed Lambda cold start. Preserve declared dependencies, Python3.12 and named production CQ2.6.0 upgrade override. STEP and DXF execution outcomes are separate from this import."
+  },
+  {
+    "id": 82,
+    "startup_import": "import run_cadquery_model",
+    "startup_scope": "Natural original runner CLI module initialization, no main or argument parsing. Only stdlib is imported at run_cadquery_model.py:45-51; the model runs as subprocess [sys.executable, script_path] at227-233. A no-attributable-CQ module route is not a whole-consumer verdict. There is no fixed own CQ worker preamble: CQ imports belong to the supplied model script, so future timing must instrument that actual supplied script's first CQ import, not insert a bare-CQ child and call it runner startup."
+  },
+  {
+    "id": 83,
+    "startup_import": "from llm.executors import cadquery",
+    "startup_paths": [
+      "eval"
+    ],
+    "startup_scope": "Natural original executor module initialization through llm.executors, including sibling executor modules and config. Its CQ import is inside CQ_RUNNER string at eval/llm/executors/cadquery.py:25, not this process. No-attributable-CQ here is route-only. Real existing worker startup is separately measurable in future by instrumentation immediately after CQ_RUNNER line25 and before runpy.run_path at36; original fixed worker imports CQ before user model and needs no geometry/API before that boundary. Do not force parent CQ or execute generated code in this import route."
+  },
+  {
+    "id": 84,
+    "startup_import": "import agentcad.runners.cadquery",
+    "startup_scope": "Natural optional CQ runner initialization, keeping original import guards. CQ/CQGI imports occur at execute lines113-115 and _workplane_shape line95, not module import. No-attributable-CQ is only this route, not whole-consumer no-benefit. No fixed separate CQ worker here; future instrumentation can stop at execute's actual imports before cqgi.parse at118, without geometry or API calls. Preserve explicit OCP7.8 requirement replacement/upgrade scope."
+  },
+  {
+    "id": 85,
+    "startup_import": "import cadgenbench.baseline.agent",
+    "startup_scope": "Natural selected baseline component initialization, including own prompt/artifacts/LLM/viewer imports but no credentials, API, code execution or rendering. Module's CQ import is inside _resolve_cadquery_python at299, while native scenario uses documented CADGENBENCH_CADQUERY_PYTHON so CQ stays child-only. PyVista is independently parent-required. No-attributable-CQ is route-only. No fixed CQ worker preamble: _execute_python at242-248 runs supplied code directly, so actual child CQ startup needs instrumentation of that code's first CQ import. Resolver's fallback CQ probe is not the selected backend startup and must not be forced.",
+    "startup_env": {
+      "HF_HUB_OFFLINE": "1",
+      "LITELLM_LOCAL_MODEL_COST_MAP": "True"
+    }
+  },
+  {
+    "id": 86,
+    "startup_import": "import cad_to_dagmc",
+    "startup_scope": "Natural full package/core initialization, including own metadata lookup and core.py:12-19 CQ/gmsh/OCP imports. No meshing, Gmsh initialization, geometry, H5M or MOAB operation. Keep existing editable install and metadata-only SETUPTOOLS_SCM_PRETEND_VERSION_FOR_CAD_TO_DAGMC=0.16.0; existing missing native symbols can block this import independently of lazy imports."
+  },
+  {
+    "id": 87,
+    "startup_reason": "ParaStell selected scientific host needs source-only PyDAGMC/PyMOAB and stellarator distribution not provisioned in generic paired environment. No stub imports or bare-CQ/geometry-only replacement for genuine host startup.",
+    "startup_scope": "Real scientific-host startup benefit unknown."
+  },
+  {
+    "id": 88,
+    "startup_import": "from CAD_to_OpenMC import cq_serialize; from CAD_to_OpenMC.assemblymesher_cq import MesherCQSTL",
+    "startup_scope": "Natural original CQ serializer and CQ STL mesher initialization used by the native scenario. cq_serialize.py:29 and assemblymesher_cq.py:1 import CQ; no serializer registration, model, mesher call, STEP/STL export, OpenMC transport or full host claim. Preserve native dependency failures and explicit numpy<2 override; do not repair original import faults for timing."
+  },
+  {
+    "id": 89,
+    "startup_reason": "Semblage genuine entrypoint requires Godot bridge/editor process and native host packages absent from generic paired environment. No bridge stubs or shape-only replacement.",
+    "startup_scope": "Real Godot/editor startup benefit unknown."
+  },
+  {
+    "id": 90,
+    "startup_import": "from pyvista_cad import from_cadquery, to_cadquery",
+    "startup_scope": "Natural public optional CQ bridge resolution through pyvista_cad.__getattr__, not a bare root import. Package eagerly initializes PyVista/accessor, bridge imports own conversion/errors, and actual CQ import is deferred to from_cadquery/to_cadquery bodies at65/116. No-attributable-CQ is route-only, not whole-consumer no-benefit; VTK is independently required. No separate fixed worker, and no mesh/shape conversion should be executed merely to force CQ. Future instrumentation may isolate the actual first bridge-call CQ import before conversion."
+  },
+  {
+    "id": 91,
+    "startup_import": "import build_enclosure",
+    "startup_paths": [
+      "skills/hardware-in-the-loop/templates/cad/examples/enclosure"
+    ],
+    "startup_scope": "Actual enclosure template module initialization only. build_enclosure.py:32-36 resolves its real cad_plugins path and imports CQ/plugins; module then defines constants/functions. main is guarded at168. No base/lid geometry, plugin load callbacks, export, rendering or design checks; not the separate render.py stack."
   }
 ]

@@ -301,6 +301,37 @@ def project_run(project_id):
                 stream.write(f"### {project_id}: {project['name']}\n\n{result['status']}\n")
 
 
+def startup_summary(results):
+    # Correct the completed CQ-import comparisons as one exploratory family.
+    tested = []
+    for result in results:
+        startup = result.get("startup", {})
+        if startup.get("classification") in {
+            "measured-import-beneficiary", "measured-import-slowdown", "inconclusive-timing"
+        }:
+            tested.append((startup["metrics"]["import_seconds"]["sign_test_two_sided_p"], result))
+    adjusted = 0.0
+    for rank, (p_value, result) in enumerate(sorted(tested, key=lambda row: row[0])):
+        adjusted = max(adjusted, min(1.0, p_value * (len(tested) - rank)))
+        result["startup"]["holm_adjusted_sign_p"] = adjusted
+        classification = result["startup"]["classification"]
+        result["startup"]["group"] = (
+            classification if adjusted <= 0.05 else "inconclusive-timing"
+        )
+    groups = {}
+    for result in results:
+        startup = result.get("startup", {})
+        group = startup.get("group", startup.get("classification", result["status"]))
+        groups.setdefault(group, []).append(result["id"])
+    return {
+        "groups": groups,
+        "compared_cq_import_routes": len(tested),
+        "method": "15 alternating fresh-process pairs after a warm-up pair; paired median differences and descriptive bootstrap intervals; two-sided exact sign tests with Holm correction across completed CQ-import routes in this batch. Exploratory CI measurements, not independent population samples.",
+        "additivity": "Do not sum plugin/library savings sharing one interpreter. A sum is meaningful only for explicitly independent process startups with specified frequencies. Do not sum percentage changes. No ecosystem usage weights were measured.",
+        "results": results,
+    }
+
+
 def report():
     lines = ["# Downstream comparison", "", f"Base: `{BASE}`", f"PR: `{HEAD}`", "",
              "Same dependency environment per project. Passing means only the listed scenarios passed.",
@@ -312,6 +343,12 @@ def report():
             "id": project["id"], "name": project["name"], "status": "missing-result"}
         results.append(result)
         lines.append(f"| {project['id']} | {project['name']} | {result['status']} |")
+    if os.environ.get("COMPAT_MODE") == "startup":
+        startup = startup_summary(results)
+        (OUT / "startup-summary.json").write_text(json.dumps(startup, indent=2) + "\n")
+        lines += ["", "## Import measurement groups", "", startup["method"], ""]
+        lines += [f"- {group}: {ids}" for group, ids in startup["groups"].items()]
+        lines += ["", startup["additivity"]]
     text = "\n".join(lines) + "\n"
     print(text)
     OUT.mkdir(exist_ok=True)
