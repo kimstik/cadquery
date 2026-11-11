@@ -1566,6 +1566,205 @@
     "notes": "Python>=3.9; parent Python3.12. Original unpinned CQ resolved via paired source/OCP8; mcp[cli,server] and google-cloud-storage are original unpinned dependencies and must be frozen in CI evidence. config.py reads GCS_BUCKET at import, but a local-only placeholder satisfies configuration without credentials or contacting Google. Do not treat AST allowlist as a security-audited sandbox. Source only prepared; target not executed."
   },
   {
+    "id": 111,
+    "name": "camlib original CadQuery pocket Job (native provisioning)",
+    "repo": "stevecad/camlib",
+    "ref": "78d3074225f9e1896c1b237970ff7394d3d39bd2",
+    "dependencies": [],
+    "install": true,
+    "install_env": {
+      "CARGO_BUILD_JOBS": "1"
+    },
+    "runner": "compat_additional.py",
+    "package_only_path": true,
+    "recommended_python": "3.12",
+    "timeout_seconds": 600,
+    "environment_notes": "Original setup.py invokes Cargo locked release workspace/all-features native module and cam-sim-stream build. Rust/Cargo provisioning can fail or time out; that is blocked, not a CadQuery incompatibility. Single Cargo job limits build concurrency. No CQ/OCP pin declared by inspected package.",
+    "scope": "Unchanged examples/cadquery_job.py build_job(width=10,revision=1): own pocket/floor resolution, CadSource.from_shape, real export_floor_region and Job construction. No compile, simulation or full CAM lifecycle. Native installation is required, never stubbed.",
+    "source_evidence": [
+      "setup.py:16-71",
+      "pyproject.toml",
+      "examples/cadquery_job.py:52-99",
+      "python/camlib/cadquery.py",
+      "python/camlib/jobs.py"
+    ]
+  },
+  {
+    "id": 112,
+    "name": "mesh2cad original plate roundtrip and parameter edit (OCP upgrade)",
+    "repo": "emirmrkaljevic/mesh2cad",
+    "ref": "2625304c886df91bb8591b919c70ef7a754a1c77",
+    "dependencies": [
+      "pytest",
+      "trimesh",
+      "rtree",
+      "networkx",
+      "numpy",
+      "scipy"
+    ],
+    "install": true,
+    "runner": "compat_additional.py",
+    "package_only_path": true,
+    "recommended_python": "3.12",
+    "timeout_seconds": 900,
+    "environment_notes": "Explicit OCP upgrade experiment: original source0.25.0 requires cadquery-ocp>=7.8,<8; no-deps consumer installation substitutes paired OCP8 while retaining declared non-kernel dependencies. Optional CQ extra is supplied by comparison environment. Not latest PyPI0.26.0 and not compatibility with original kernel pin.",
+    "scope": "Run unchanged existing test_script_reproduces_part[plate_with_hole-0.0] and test_edit_parameter_changes_part. Own conversion/code execution and original max_deviation/volume/parameter assertions; exactly2 native tests, zero skips, JUnit and observed native-process CQ provenance.",
+    "source_evidence": [
+      "pyproject.toml:11-24",
+      "tests/test_cadquery.py:33-49",
+      "tests/test_cadquery.py:74-80",
+      "src/mesh2cad/cadquery_code.py"
+    ]
+  },
+  {
+    "id": 113,
+    "name": "Metamaterial absorber original two geometry tests",
+    "repo": "zeshenbao/Metamaterial_absorber",
+    "ref": "078f40ac7b6602d60aa6926bc80f95a65e7d3390",
+    "dependencies": [
+      "pytest>=7.4"
+    ],
+    "install": true,
+    "runner": "compat_additional.py",
+    "package_only_path": true,
+    "recommended_python": "3.12",
+    "timeout_seconds": 600,
+    "scope": "Original test_absorber_build_creates_solids two block tiles and test_absorber_export_custom_filename triangle STL. Exactly2 native tests, zero skips, own original oracles and JUnit; optional unpinned CQ extra supplied by comparison environment, no high-order Hilbert/full generator matrix claim.",
+    "source_evidence": [
+      "pyproject.toml",
+      "tests/test_geometry.py:8-35",
+      "src/metamaterial_absorber/core.py"
+    ]
+  },
+  {
+    "id": 114,
+    "name": "StencilForge actual three-aperture STL exporter (upgrade experiment)",
+    "repo": "11cookies11/StencilForge",
+    "ref": "a0fa51d47cd75864de56fbc28cf8c06aca3b8be5",
+    "dependencies": [
+      "numpy>=2.0,<3.0",
+      "shapely==2.1.2",
+      "trimesh==4.12.1",
+      "pcb-tools==0.1.6"
+    ],
+    "install": false,
+    "runner": "compat_additional.py",
+    "package_only_path": true,
+    "recommended_python": "3.12",
+    "timeout_seconds": 600,
+    "environment_notes": "Original requirements pin cadquery==2.7.0 and vtk==9.3.1; paired CQ/OCP/VTK environment explicitly replaces them as an upgrade experiment. Original pipeline package initializer also imports geometry.primitives/outline and gerber, so original pcb-tools==0.1.6 is retained even though this gate does not parse Gerbers. PySide6 and GUI are not installed or covered. Original numpy/shapely/trimesh requirements retained. Isolated XDG_CONFIG_HOME prevents reading/writing personal config.",
+    "scope": "StencilConfig.load_default plus actual export_cadquery_stl with one explicit small polygon and3 apertures; mesh watertightness, extents and area-times-effective-thickness volume. No dummy engine/fallback tests, Gerber ingestion, locator branches or Qt application coverage.",
+    "source_evidence": [
+      "requirements.txt",
+      "src/stencilforge/config.py:95-108",
+      "src/stencilforge/pipeline/cadquery.py:19-113",
+      "src/stencilforge/pipeline/geometry.py"
+    ]
+  },
+  {
+    "id": 115,
+    "name": "kicad-tools own gullwing family through real CadQuery backend",
+    "repo": "rjwalters/kicad-tools",
+    "ref": "a2829d0aba3b4c41fe3349eea41cfca681dcf3c4",
+    "dependencies": [
+      "rich>=13.0",
+      "pyyaml>=6.0",
+      "numpy>=1.24",
+      "pydantic>=2.0",
+      "shapely>=2.0",
+      "rtree>=1.0"
+    ],
+    "install": true,
+    "runner": "compat_additional.py",
+    "package_only_path": true,
+    "recommended_python": "3.12",
+    "timeout_seconds": 600,
+    "environment_notes": "Original optional modelgen CQ>=2.4 has Python<3.14 marker; Python3.12 honors it. Original core dependencies retained; no service extras or KiCad host provisioned.",
+    "scope": "Original FAMILIES[gullwing]/build_body example pins8,pitch1.27,L4.9,W3.9,E6.0 through real build_shapes and write_step. Geometry validity, BodySpec extent/height agreement and STEP volume/solid roundtrip. No unavailable-CQ monkeypatch or unrelated board pipeline claimed.",
+    "source_evidence": [
+      "pyproject.toml",
+      "tests/test_modelgen.py:178-192",
+      "src/kicad_tools/modelgen/families.py",
+      "src/kicad_tools/modelgen/cadquery_backend.py:82-142"
+    ]
+  },
+  {
+    "id": 116,
+    "name": "storage_grid actual shelled dovetail tray",
+    "repo": "Roger-random/storage_grid",
+    "ref": "a57d748104c2e89a926c69bda904ae9f80ffed0e",
+    "dependencies": [],
+    "install": false,
+    "runner": "compat_additional.py",
+    "package_only_path": true,
+    "recommended_python": "3.12",
+    "timeout_seconds": 600,
+    "scope": "DovetailStorageGrid().basic_tray(x=1,y=1,wall_thickness=0.8) with all4 own dovetails and real shell. Validate positive volume and containment in own bounding_volume; STEP roundtrip. No package/Python/CQ pin found in inspected source; no guessed compatibility floor.",
+    "source_evidence": [
+      "dovetailstoragegrid.py:25-90",
+      "dovetailstoragegrid.py:208-283"
+    ]
+  },
+  {
+    "id": 117,
+    "name": "DIN rail enclosure unchanged dual configuration integration",
+    "repo": "infradom/parametric_din_rail_enclosure",
+    "ref": "3e7cdf279e628bad83751418b86025d543d39652",
+    "dependencies": [],
+    "install": false,
+    "runner": "compat_additional.py",
+    "package_only_path": true,
+    "recommended_python": "3.12",
+    "timeout_seconds": 1200,
+    "scope": "Run original dual/config.py exactly once; it itself calls generate_enclosure(config). Full own case/lid/clip/Wago supports/text and both original assembly/compound STEP exports. Original config then calls show(), using its own no-op show_object fallback outside cq-editor; no display host is launched. Validate nonempty valid finite shapes and matching export volume/solid counts, without invented baseline count. Fonts/native/timeouts remain explicit failures; no CQ/Python pins established.",
+    "source_evidence": [
+      "dual/config.py",
+      "din_declarations.py",
+      "din_enclosure.py:15-23",
+      "din_enclosure.py:460-481"
+    ]
+  },
+  {
+    "id": 118,
+    "name": "oasis own clipped honeycomb circle",
+    "repo": "justbuchanan/oasis",
+    "ref": "3462f162f80e11c78705218441af37639d87bfdc",
+    "dependencies": [
+      "mpmath"
+    ],
+    "install": false,
+    "runner": "compat_additional.py",
+    "package_only_path": true,
+    "recommended_python": "3.12",
+    "timeout_seconds": 600,
+    "environment_notes": "Original requirements use unpinned git CadQuery/cq-cli. Selected honeycomb helper uses CQ,math,mpmath only; no cq-cli or hardware/controller extras installed. Load module by path under non-conflicting name, never put repository cadquery directory on sys.path.",
+    "scope": "Original gen_honeycombed_circle(6,2,1,(0,0,0),10), nonempty valid tiles, circle-prism bounds and STEP compound roundtrip. Empty clipped intersections counted and excluded explicitly. No full terrarium or blower/controller claim.",
+    "source_evidence": [
+      "requirements.txt",
+      "cadquery/honeycomb.py:4-90"
+    ]
+  },
+  {
+    "id": 119,
+    "name": "freecad-ocp-viewer real BREP serializer only (host unprovisioned)",
+    "repo": "madushan1000/freecad-ocp-viewer",
+    "ref": "1fe2ff85dd1d391ba8d273584c14d3a02371be89",
+    "dependencies": [],
+    "install": true,
+    "runner": "compat_additional.py",
+    "package_only_path": true,
+    "recommended_python": "3.12",
+    "timeout_seconds": 600,
+    "environment_notes": "Declared Python>=3.11 and dependencies=[]; CQ/OCP supplied by comparison. FreeCAD/FreeCADGui/Part/PySide6 and usable GUI host are not provisioned. Serializer success cannot be promoted to full host compatibility.",
+    "scope": "Actual get_brep module dispatch and get_cadquery_brep Workplane/Assembly branch with tiny explicit contract inputs, BREP bytes and geometry-preserving reimport. Only serializer gate; separate full-host status blocked-unprovisioned, no load_file/reload/document lifecycle coverage.",
+    "source_evidence": [
+      "pyproject.toml",
+      "src/freecad_ocp_viewer/__init__.py",
+      "src/freecad_ocp_viewer/show.py:1-40",
+      "src/freecad_ocp_viewer/app.py:7-49"
+    ]
+  },
+  {
     "id": 150,
     "name": "Finite import contracts (not a downstream project)",
     "synthetic": true,

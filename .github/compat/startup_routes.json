@@ -591,5 +591,53 @@
       "GCS_BUCKET": "compat-local-no-upload"
     },
     "startup_scope": "Natural server module import with local noncredential bucket placeholder, FastMCP/tool registration and original google/mcp imports. Own server does not import CQ at entry; user CAD script imports it later in a child. Report no attributable CQ entry startup benefit if absent, do not force import. No running transport, auth checks, GCS client/upload, generated CAD child or PNG rendering. Separate local-validator/export-child comparison is partial host coverage only."
+  },
+  {
+    "id": 111,
+    "startup_import": "import camlib.cadquery",
+    "startup_paths": [
+      "python"
+    ],
+    "startup_scope": "Own CQ adapter module initialization only. CQ/OCP imports are deferred inside adapter operations, so this route may produce no-attributable-CQ; not a whole-consumer no-benefit verdict. No build_job/model execution during timing."
+  },
+  {
+    "id": 112,
+    "startup_import": "import mesh2cad.cadquery_code",
+    "startup_scope": "Own generated-CQ-code subsystem initialization, not generated model execution. CQ is optional/function-local; absence in this route is not evidence against benefit of actual reconstruction/script workload. Explicit OCP<8 upgrade experiment retained."
+  },
+  {
+    "id": 113,
+    "startup_import": "import metamaterial_absorber",
+    "startup_scope": "Own public package initialization and guarded core CQ/exporters import; no Absorber.build or export during timing."
+  },
+  {
+    "id": 114,
+    "startup_import": "import stencilforge.pipeline.cadquery",
+    "startup_scope": "Actual application backend module initialization, no extrusion/export or Qt launch. CQ import is inside exporter; no-attributable-CQ applies only to this route. Explicit original CQ2.7/VTK9.3.1 upgrade scope."
+  },
+  {
+    "id": 115,
+    "startup_import": "import kicad_tools.modelgen.cadquery_backend",
+    "startup_scope": "Own optional modelgen backend import. available() uses find_spec and CQ imports are function-local; module-only no-CQ is not a whole-consumer no-benefit verdict. No model synthesis/STEP during timing."
+  },
+  {
+    "id": 116,
+    "startup_import": "import dovetailstoragegrid",
+    "startup_scope": "Own public tray-library module initialization naturally imports CQ; no tray construction during timing."
+  },
+  {
+    "id": 117,
+    "startup_import": "import din_enclosure",
+    "startup_scope": "Own enclosure-generator module initialization naturally imports CQ and cadquery.func. Do not import dual.config during timing: unchanged config builds and exports a complete model as a module side effect."
+  },
+  {
+    "id": 118,
+    "startup_import": "import importlib.util,os,pathlib,sys; p=pathlib.Path(os.environ['COMPAT_CONSUMER_ROOT'])/'cadquery/honeycomb.py'; s=importlib.util.spec_from_file_location('startup_oasis_honeycomb',p); m=importlib.util.module_from_spec(s); sys.modules[s.name]=m; s.loader.exec_module(m)",
+    "startup_scope": "Own honeycomb helper module loaded by original path under non-conflicting name; its natural CQ import only. Repository cadquery directory is never prepended and no demo/generator/show_object branch executed."
+  },
+  {
+    "id": 119,
+    "startup_import": "import freecad_ocp_viewer.show",
+    "startup_scope": "Actual host-free serializer module initialization. CQ imports occur only in serialization branch; module-only no-CQ is not a whole-consumer no-benefit verdict. Full FreeCAD/Qt host startup unavailable and explicitly unmeasured."
   }
 ]

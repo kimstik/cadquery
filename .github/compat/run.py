@@ -108,7 +108,8 @@ def project_run(project_id):
               "base": BASE, "head": HEAD, "status": "blocked"}
     try:
         if project.get("disposition"):
-            result.update(status=project["disposition"], reason=project["reason"])
+            result.update(status=project["disposition"],
+                          reason=project.get("reason", project.get("notes", "See project scope")))
             return
         if os.environ.get("COMPAT_MODE") == "startup" and not project.get("startup_import"):
             result.update(status="startup-unavailable", reason=project["startup_reason"])
