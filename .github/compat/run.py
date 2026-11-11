@@ -27,6 +27,9 @@ def inventory():
         routes = {row["id"]: row for row in json.loads((HERE / "startup_routes.json").read_text())}
         entries = [{**project, **routes[project["id"]]}
                    for project in entries if project["id"] in routes]
+    if os.environ.get("COMPAT_MODE") == "worker-startup":
+        from worker_startup import ROUTES
+        entries = [project for project in entries if project["id"] in ROUTES]
     ids = [p["id"] for p in entries]
     assert len(ids) == len(set(ids)), "Duplicate inventory IDs"
     selected = os.environ.get("COMPAT_PROJECTS", "").strip()
@@ -149,6 +152,12 @@ def project_run(project_id):
                 result["reason"] = "Consumer installation failed"
                 return
         command([sys.executable, "-m", "pip", "freeze", "--all"], folder / "dependencies.txt")
+        if os.environ.get("COMPAT_MODE") == "worker-startup":
+            from worker_startup import measure
+            result["worker_startup"] = measure(project, WORK, folder)
+            result.update(status=result["worker_startup"]["classification"],
+                          platform=sys.platform, python=sys.version)
+            return
         if project.get("startup_import"):
             from startup import measure
             result["startup"] = measure(project, WORK, folder)
@@ -301,33 +310,36 @@ def project_run(project_id):
                 stream.write(f"### {project_id}: {project['name']}\n\n{result['status']}\n")
 
 
-def startup_summary(results):
-    # Correct the completed CQ-import comparisons as one exploratory family.
+def startup_summary(results, worker=False):
+    # Import and actual-worker timings remain separate exploratory families.
+    field = "worker_startup" if worker else "startup"
+    key = None if worker else "import_seconds"
+    beneficiary = "measured-worker-startup-beneficiary" if worker else "measured-import-beneficiary"
+    slowdown = "measured-worker-startup-slowdown" if worker else "measured-import-slowdown"
+    inconclusive = "inconclusive-worker-startup-timing" if worker else "inconclusive-timing"
     tested = []
     for result in results:
-        startup = result.get("startup", {})
-        if startup.get("classification") in {
-            "measured-import-beneficiary", "measured-import-slowdown", "inconclusive-timing"
-        }:
-            tested.append((startup["metrics"]["import_seconds"]["sign_test_two_sided_p"], result))
+        startup = result.get(field, {})
+        if startup.get("classification") in {beneficiary, slowdown, inconclusive}:
+            metric = startup["metrics"] if worker else startup["metrics"][key]
+            tested.append((metric["sign_test_two_sided_p"], result))
     adjusted = 0.0
     for rank, (p_value, result) in enumerate(sorted(tested, key=lambda row: row[0])):
         adjusted = max(adjusted, min(1.0, p_value * (len(tested) - rank)))
-        result["startup"]["holm_adjusted_sign_p"] = adjusted
-        classification = result["startup"]["classification"]
-        result["startup"]["group"] = (
-            classification if adjusted <= 0.05 else "inconclusive-timing"
-        )
+        result[field]["holm_adjusted_sign_p"] = adjusted
+        classification = result[field]["classification"]
+        result[field]["group"] = classification if adjusted <= 0.05 else inconclusive
     groups = {}
     for result in results:
-        startup = result.get("startup", {})
+        startup = result.get(field, {})
         group = startup.get("group", startup.get("classification", result["status"]))
         result["status"] = group
         groups.setdefault(group, []).append(result["id"])
     return {
         "groups": groups,
-        "compared_cq_import_routes": len(tested),
-        "method": "15 alternating fresh-process pairs after a warm-up pair; paired median differences and descriptive bootstrap intervals; two-sided exact sign tests with Holm correction across completed CQ-import routes in this batch. Exploratory CI measurements, not independent population samples.",
+        "compared_routes": len(tested),
+        "measurement": "actual-worker startup to user code" if worker else "consumer import",
+        "method": "15 alternating fresh-process pairs after a warm-up pair; paired median differences and descriptive bootstrap intervals; two-sided exact sign tests with Holm correction across completed routes of this measurement type in this batch. Exploratory CI measurements, not independent population samples.",
         "additivity": "Do not sum plugin/library savings sharing one interpreter. A sum is meaningful only for explicitly independent process startups with specified frequencies. Do not sum percentage changes. No ecosystem usage weights were measured.",
         "results": results,
     }
@@ -345,12 +357,14 @@ def report():
         results.append(result)
     OUT.mkdir(exist_ok=True)
     startup = None
-    if os.environ.get("COMPAT_MODE") == "startup":
-        startup = startup_summary(results)
-        (OUT / "startup-summary.json").write_text(json.dumps(startup, indent=2) + "\n")
+    mode = os.environ.get("COMPAT_MODE")
+    if mode in {"startup", "worker-startup"}:
+        startup = startup_summary(results, worker=mode == "worker-startup")
+        filename = "worker-startup-summary.json" if mode == "worker-startup" else "startup-summary.json"
+        (OUT / filename).write_text(json.dumps(startup, indent=2) + "\n")
     lines += [f"| {result['id']} | {result['name']} | {result['status']} |" for result in results]
     if startup is not None:
-        lines += ["", "## Import measurement groups", "", startup["method"], ""]
+        lines += ["", "## Startup measurement groups", "", startup["measurement"], "", startup["method"], ""]
         lines += [f"- {group}: {ids}" for group, ids in startup["groups"].items()]
         lines += ["", startup["additivity"]]
     text = "\n".join(lines) + "\n"

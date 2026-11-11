@@ -9,6 +9,7 @@ on:
         options:
           - compatibility
           - startup
+          - worker-startup
         default: compatibility
       projects:
         description: Comma-separated inventory IDs, empty for all
@@ -124,5 +125,6 @@ jobs:
           path: |
             compat-results/summary.json
             compat-results/startup-summary.json
+            compat-results/worker-startup-summary.json
           if-no-files-found: error
           retention-days: 14
