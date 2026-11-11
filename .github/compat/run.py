@@ -78,6 +78,9 @@ def fetch_source(project, destination):
                 allowed = project.get("archive_file_links", {})
                 ignored = project.get("archive_ignored_links", {})
                 assert member.issym(), member.name
+                # Exact inspected external links are omitted, never followed.
+                if project.get("archive_skipped_links", {}).get(relative.as_posix()) == member.linkname:
+                    continue
                 assert (allowed.get(relative.as_posix()) == member.linkname or
                         ignored.get(relative.as_posix()) == member.linkname), member.name
                 linked = (target.parent / member.linkname).resolve()

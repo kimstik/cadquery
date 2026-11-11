@@ -1737,7 +1737,16 @@
       "tests/test_modelgen.py:178-192",
       "src/kicad_tools/modelgen/families.py",
       "src/kicad_tools/modelgen/cadquery_backend.py:82-142"
-    ]
+    ],
+    "archive_file_links": {
+      "tests/fixtures/historical_demo_boards/03-usb-joystick/output/usb_joystick_routed.kicad_pcb": "../../../../../boards/03-usb-joystick/regression-fixture/usb_joystick_routed.kicad_pcb",
+      "tests/fixtures/historical_demo_boards/05-bldc-motor-controller/output/bldc_controller_routed.kicad_pcb": "../../../../../boards/05-bldc-motor-controller/regression-fixture/bldc_controller_routed.kicad_pcb",
+      "tests/fixtures/historical_demo_boards/07-matchgroup-test/output/matchgroup_test.kicad_pcb": "../../../../../boards/07-matchgroup-test/regression-fixture/matchgroup_test.kicad_pcb"
+    },
+    "archive_skipped_links": {
+      "boards/external/chorus-test-revA": "../../../chorus/hardware/chorus-test-revA",
+      "boards/external/softstart": "../../../softstart/hardware/kicad"
+    }
   },
   {
     "id": 116,
