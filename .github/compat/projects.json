@@ -653,7 +653,9 @@
     "name": "cq-studio",
     "repo": "ccazabon/cq-studio",
     "ref": "272ff363bd245755d540cbe4e8eca27e19363ae1",
-    "archive_file_links": {"LICENSE": "COPYING"},
+    "archive_file_links": {
+      "LICENSE": "COPYING"
+    },
     "dependencies": [],
     "runner": "compat_new.py",
     "install": false,
@@ -843,7 +845,9 @@
     "name": "Startup: PNG plugin (measurement, not another consumer)",
     "repo": "jmwright/cadquery-png-plugin",
     "ref": "d2d1246edfc1ecdd6ba9d5f566af598f285f4d27",
-    "dependencies": ["Pillow"],
+    "dependencies": [
+      "Pillow"
+    ],
     "startup_import": "import cadquery_png_plugin.plugin",
     "scope": "Fresh-process real PNG plugin import, includes its mandatory VTK imports, no rendering"
   },
@@ -856,5 +860,257 @@
     "dependencies": [],
     "startup_import": "import cadscript",
     "scope": "Fresh-process cadscript package import, no geometry or optional DXF path, current common CQ environment replaces old numpy pin"
+  },
+  {
+    "id": 60,
+    "name": "Paramak",
+    "repo": "fusion-energy/paramak",
+    "ref": "7576b115c80b0bf8e9e8cc856d3928c095fbf100",
+    "dependencies": [
+      "pytest",
+      "numpy",
+      "scipy"
+    ],
+    "install": true,
+    "install_env": {
+      "SETUPTOOLS_SCM_PRETEND_VERSION_FOR_PARAMAK": "0.11.0"
+    },
+    "runner": "compat_batch_a.py",
+    "package_only_path": true,
+    "timeout_seconds": 1200,
+    "scope": "Unmodified native tests/test_assemblies/test_assembly.py and tests/test_workplanes/test_poloidal_field_coil.py. Real assembly remove/rename/nesting/split operations, coil geometry/volume and STEP export. Bounded core modules, not OpenMC/DAGMC transport.",
+    "notes": "Editable pinned source installed --no-deps for importlib.metadata.version('paramak'). Archive lacks git metadata so setuptools_scm version is explicitly supplied as metadata-only 0.11.0, not a tested release-source claim. Source package path asserted after natural test imports. Declared cadquery>=2.6.0 accepts comparison source. Core modules import cadquery without direct ezdxf/vtk preload, so startup is a potential lazy-import benefit route, not measured benefit. No affected incidental assembly re-export or reload use identified in selected source. Native JUnit and CQ/consumer provenance recorded. install_env must be applied by parent harness."
+  },
+  {
+    "id": 61,
+    "name": "cq-acis",
+    "repo": "monozukuri-ai/cq-acis",
+    "ref": "af08272b886504a3d7872f9d21216841bf8de538",
+    "dependencies": [
+      "pytest",
+      "casadi==3.7.2; sys_platform == 'win32'",
+      "nlopt==2.11.0; sys_platform == 'win32'"
+    ],
+    "install": true,
+    "runner": "compat_batch_a.py",
+    "package_only_path": true,
+    "timeout_seconds": 1200,
+    "scope": "Entire unchanged native tests/test_authoring.py. Analytic CadQuery box/cylinder/hole authoring into ACIS SAT/SAB followed by parse/convert geometry, topology and volume assertions. No external corpus required by this module.",
+    "notes": "Editable pinned source --no-deps builds cq_acis._native through maturin>=1.9,<2 and Rust. GitHub runner requires working Rust toolchain, install failure stays blocked. CadQuery optional extra >=2.8 is replaced by paired source; its explicit Windows casadi/nlopt constraints retained. Do not install separate occt extra with cadquery-ocp-novtk<7.10. Copied source package provenance asserted after tests. Verify built native extension is present in source copies; no release-wheel fallback. CQ route uses own explicit imports, no affected assembly incidental bindings/reload identified in selected module. Own RawEntity get_type_hints is not a CQ annotation contract. Core parser can avoid CQ entirely, so startup benefit applies only selected CQ conversion route, not all cq-acis use."
+  },
+  {
+    "id": 62,
+    "name": "cq-cam",
+    "repo": "voneiden/cq-cam",
+    "ref": "a627d405029bcb3d1e155b7b125db3ff960b636f",
+    "dependencies": [
+      "pytest",
+      "numpy",
+      "opencamlib",
+      "pyclipper",
+      "shapely"
+    ],
+    "runner": "compat_batch_a.py",
+    "package_only_path": true,
+    "timeout_seconds": 1200,
+    "scope": "Unmodified native src/cq_cam/tests and src/cq_cam/utils/tests suites, including drill/profile/surface geometry and exact G-code assertions. No tests deselected to manufacture passing results.",
+    "notes": "Uses project's unconstrained requirements.in rather than compiled requirements.txt numpy==1.24.2/opencamlib==2023.1.11/pyclipper==1.3.0.post4/shapely==2.0.1. This is explicitly an upgraded-dependency compatibility experiment, not a certificate for old pinned installation. Resolve once for both CQ variants, retain dependency/baseline failures honestly. test_fluent.py contains consumer's own cq_editor mock, runner adds none. Source direct CQ imports but no affected incidental export/typing/reload contract identified. Potential avoided startup imports in head, no measured claim."
+  },
+  {
+    "id": 63,
+    "name": "cq-viewer",
+    "repo": "voneiden/cq-viewer",
+    "ref": "ee706e44f6ca87004b8064dbca9caa20ec411de6",
+    "dependencies": [],
+    "runner": "compat_batch_a.py",
+    "disposition": "blocked",
+    "reason": "Host-bound genuine wxPython viewer workflow not prepared for generic headless CI. src/cq_viewer/__init__.py unconditionally imports interface.py, which imports wx. Sole tests/test_b123d.py tests build123d rather than the CQ viewer workflow. No wx stub, isolated-file import bypass or import-only pass substituted.",
+    "scope": "Source-only, no compatibility or startup certificate.",
+    "notes": "requirements.txt requires wxPython==4.2.4, numpy==2.3.5 and attrdict3==2.0.2. src/cq_viewer/managers.py ImportManager removes newly loaded sys.modules entries, a concrete cleanup/reimport risk relevant to changed lazy imports. Needs real host-backed import/reload/render experiment, not inference from headless geometry helpers. interface.py naturally imports CQ but UI startup may load VTK itself, so absence of measured startup benefit must not be counted as zero or success."
+  },
+  {
+    "id": 64,
+    "name": "cadquery-massembly",
+    "repo": "bernhard-42/cadquery-massembly",
+    "ref": "c9b0458dea54b1d08a32d86df8a929de06691ca1",
+    "dependencies": [
+      "numpy"
+    ],
+    "runner": "compat_batch_a.py",
+    "package_only_path": true,
+    "timeout_seconds": 600,
+    "scope": "Unmodified examples/cq-editor/1-disk_arm.py executed with documented host show_object callback collector. Builds three real solids and four mates, invokes own show_mates geometry, then actual MAssembly.assemble aligns disk/arm world-mate origins. Validity, unchanged volume and STEP roundtrip asserted. No native suite exists.",
+    "notes": "Host show_object is supplied only as display callback, no cq-editor module shim or consumer code patch. Source provenance checked. Does not certify actual editor UI/rendering. setup.py install_requires=[] imposes no old CQ pin. geom.py derives OCP symbols from CQ Vector, selected scenario does not use removed cadquery.assembly exporter bindings. No reload or get_type_hints CQ contract found. Core assembly route is potential lazy startup beneficiary, not measured performance."
+  },
+  {
+    "id": 65,
+    "name": "cqterrain",
+    "repo": "medicationforall/cqterrain",
+    "ref": "66042570a30a2bf0154682bc57820612127b2829",
+    "dependencies": [],
+    "dependencies_no_deps": [
+      "cadqueryhelper==2.2.6"
+    ],
+    "runner": "compat_batch_a.py",
+    "package_only_path": true,
+    "timeout_seconds": 600,
+    "scope": "Actual own Ladder(length=20,width=4,height=32/48,rail_width=2) make/build. Two rails, generated rungs, valid positive-volume solids and exact height checked, STEP exported/reimported with matching volume. No native suite exists. Does not cover all terrain components.",
+    "notes": "cqterrain declares cadqueryhelper>=2. Selected helper 2.2.6 declares cadquery==2.8.0, deliberately overridden by paired CQ source. Parent must install dependencies_no_deps once using --no-deps after base/dev dependencies. This is a named oldpin upgrade experiment, not an unchanged pinned environment certificate. Helper code remains unchanged, no source monkeypatch. Natural CQ/cqterrain source path asserted. Core Ladder geometry has no affected incidental assembly re-export, typing or reload use identified. Startup potential shared with helper, do not sum as independent gains in one process."
+  },
+  {
+    "id": 66,
+    "name": "cqfantasy (upgrade experiment)",
+    "repo": "medicationforall/cqfantasy",
+    "ref": "ac1b55b7d2d5c17be3a4a4c87a1e22ec4be70e46",
+    "dependencies": [],
+    "dependencies_no_deps": [
+      "cqterrain==3.8.9",
+      "cadqueryhelper==2.2.6"
+    ],
+    "runner": "compat_batch_b.py",
+    "install": false,
+    "scope": "Unchanged example/arch/basic_arch.py creates BasicArch solid and STL. Harness validates solid, STL structure and STEP volume roundtrip. Source pyproject.toml:23 requires cqterrain>=3, selected 3.8.9 requires cadqueryhelper>=2, selected helper2.2.6 pins CQ==2.8.0: only that CQ pin is overridden by paired CQ2.9dev source. dependencies_no_deps retains named terrain/helper versions. No full library claim.",
+    "startup_route": "example/arch/basic_arch.py imports cadquery and CQ fantasy geometry; no DXF or VTK output on this bounded STL/STEP route. Expected avoided eager ezdxf/vtk, not measured, not additive with terrain/helper in one process."
+  },
+  {
+    "id": 67,
+    "name": "cqdome (upgrade experiment)",
+    "repo": "medicationforall/cqdome",
+    "ref": "2dae7799f95d5ddbf22280573106cee0de03f604",
+    "dependencies": [],
+    "dependencies_no_deps": [
+      "cqterrain @ git+https://github.com/medicationforall/cqterrain@9d74b0c6b7e55341a852a27e0fa2fc4b30a026ef",
+      "cadqueryhelper @ git+https://github.com/medicationforall/cadqueryhelper@0073b0855dadd5b1444671fe712fc89616a4238a",
+      "cqmore @ git+https://github.com/JustinSDK/cqMore@a490603a18e87e65d9a8c5d52ea0b0ce402d261c"
+    ],
+    "runner": "compat_batch_b.py",
+    "install": false,
+    "scope": "Unchanged example/make_hexagon.py runs own greeble make_hexagon, original STL export, then solid/STL validation and STEP volume roundtrip. Exact declared cqterrain2.0.2, helper1.3.0 and cqMore a490603 revisions retained via no-deps install. Helper1.3.0 additionally pins CQ==2.4, nlopt==2.7.1 and numpy==1.23.5; those three are deliberately replaced by shared CQ2.9dev/OCP8/dev dependencies. Upgrade experiment, not evidence about historical installations. Source greeble/__init__.py also imports .Stairs although tree contains stairs.py; any resulting failure must remain baseline failure, not patched.",
+    "startup_route": "Own greeble construction and STL/STEP use CQ without DXF/VTK. Expected avoided eager libraries only if normal imports work. No full dome/frame/render claim."
+  },
+  {
+    "id": 68,
+    "name": "cqgothic (upgrade experiment)",
+    "repo": "medicationforall/cqgothic",
+    "ref": "3fe1dc70946a3ffded874bfe9d02884865b686a4",
+    "dependencies": [],
+    "dependencies_no_deps": [
+      "cqterrain==3.8.0",
+      "cadqueryhelper==2.2.0"
+    ],
+    "runner": "compat_batch_b.py",
+    "install": false,
+    "timeout_seconds": 900,
+    "scope": "Unchanged example/catwalk.py constructs native Catwalk with height4 and original STL, then validates solid/STL and STEP volume roundtrip. Exact declared cqterrain3.8.0 and its exact helper2.2.0 retained. Helper pins CQ==2.7.0: paired CQ2.9dev/OCP8 replaces only that CQ pin. No modifications to consumer render flags, no bunker/full library claim.",
+    "startup_route": "Catwalk geometry and STL/STEP need neither DXF nor VTK on their own path. Expected avoided eager libraries if route works, not a measured gain and not additive with shared dependencies."
+  },
+  {
+    "id": 69,
+    "name": "lwidm/cq_gears",
+    "repo": "lwidm/cq_gears",
+    "ref": "e1ead5de3509f24c46ff48d001325d377242d3ea",
+    "dependencies": [
+      "pytest",
+      "numpy",
+      "scipy",
+      "pyvista",
+      "matplotlib"
+    ],
+    "runner": "compat_batch_b.py",
+    "install": false,
+    "package_only_path": true,
+    "timeout_seconds": 1800,
+    "scope": "Complete original tests/ pytest suite including core/rack/API modules and real parametric/hobbed gear workplanes. Original conftest and tests untouched. JUnit collected/skipped inventory and CQ provenance use existing native runner. Independent lwidm package, isolated environment from meadiode/cq_gears. No headless video/viewer claim.",
+    "startup_route": "cq_gears/__init__.py eagerly imports visualization.py, whose lines3-4 import cadquery.vis.show and pyvista. VTK remains consumer-eager, so cannot count VTK avoidance. No own ezdxf use identified on native geometry test route; any startup gain unmeasured."
+  },
+  {
+    "id": 70,
+    "name": "vendor-models (upgrade experiment)",
+    "repo": "sethfischer/vendor-models",
+    "ref": "c07b75722fe4c4ed9481009f43e17f3f0d850727",
+    "dependencies": [],
+    "runner": "compat_batch_b.py",
+    "install": false,
+    "scope": "Own waveshare.Ddsm115 resolves bundled STEP resource, reads raw STEP and imports geometry via CqImport.cq_object; validate positive valid solids and STEP roundtrip. Declared Python>=3.9,<3.11 excludes this Python3.11 CI, so explicitly source-level upgrade experiment, not currently supported installation. Declared CQ^2.3.1 compatible major2, old casadi^3.5.6rc2 replaced by paired CQ dev dependencies. Optional CQ-editor dependency group not installed or tested.",
+    "startup_route": "src/vendor_models/utilities.py imports Workplane and importStep; own vendor STEP workflow needs neither ezdxf nor VTK. Expected avoidance conditional on upgrade probe working, not measured current-installation benefit."
+  },
+  {
+    "id": 71,
+    "name": "cq_fastapi",
+    "repo": "RaubCamaioni/cq_fastapi",
+    "ref": "126811fa703c38abd8dcd277f8902161e0939978",
+    "dependencies": [
+      "fastapi==0.115.12",
+      "httpx==0.28.1",
+      "jinja2==3.1.6"
+    ],
+    "runner": "compat_batch_b.py",
+    "install": false,
+    "scope": "Actual FastAPI ASGI TestClient POST /backend/stand twice invokes original model.create_stand and streaming STL exporter. Validate response/triangle data and unknown-model404. No source changes, no standalone synthetic substitute for endpoint. No original dependency manifest found; explicit tested server package versions chosen here, not inferred supported production versions. Linux required by unchanged /tmp STL path. Templates/browser and cached-model download not covered.",
+    "startup_route": "app.py:9 imports CQ; model.py constructs stand geometry, endpoint exports generic STL. No own DXF/VTK on selected endpoint. Expected avoid both eager libraries, not a measured server startup improvement."
+  },
+  {
+    "id": 72,
+    "name": "PartCAD DXF wrapper (paired upgrade probe)",
+    "repo": "partcad/partcad",
+    "ref": "9e7cf989d1f15af7c661edb7172f30c78f1a2f0d",
+    "runner": "compat_batch_c.py",
+    "dependencies": [],
+    "timeout_seconds": 360,
+    "scope": "Unchanged wrapper_import_dxf.py protocol executed twice in fresh workers with a closed-square DXF, real ocp_serialize decoding and surface area assertion. Not the full PartCAD managed sandbox/zygote lifecycle or all native tests. Wrapper naturally imports the selected CQ checkout."
+  },
+  {
+    "id": 73,
+    "name": "SOMA script registry and export",
+    "repo": "Kai-Jungsthoefel/SOMA",
+    "ref": "7f5001d396e108d62f4c50c327bafec7c163c82d",
+    "runner": "compat_batch_c.py",
+    "dependencies": [],
+    "scope": "Unchanged soma.build.run_model twice, own registration and CLI _export_one STEP/DXF export with geometry/readback checks. No GUI, network server or mesh-export workflow covered. CQ provenance asserted after natural soma.build import."
+  },
+  {
+    "id": 74,
+    "name": "cq-repl native command/render lifecycle",
+    "repo": "jmwright/cq-repl",
+    "ref": "9b6dab85bc02951108e6f03dff420e9da4911bd4",
+    "runner": "compat_batch_c.py",
+    "dependencies": [],
+    "xvfb": true,
+    "timeout_seconds": 360,
+    "scope": "Original replTimerCallback.execute fed real OS-pipe stdin. Repeated import of a model triggers the actual user-module eviction/reimport, DXF/VTP exports and show_object VTK renderer updates. No VTK event-loop/interactive keyboard automation. Consumer itself eagerly imports VTK before CQ."
+  },
+  {
+    "id": 75,
+    "name": "Steve Desktop custom-CQ host",
+    "repo": "stevecad/steve",
+    "ref": "4ff81bbf6b62a9acb70e241c52dffce8cd182d73",
+    "disposition": "blocked",
+    "reason": "Pinned Steve requires its custom 10-X-eng/cadquery commit 6a8cf4fb3edfc2da1575a3885a896da8b7924c75. Actual cad_kernel.py export path imports cadquery.occ_compat, absent from both upstream comparison revisions. Running a reduced topology-only test would bypass this host requirement and is not accepted as a working Steve hot-worker scenario.",
+    "scope": "Not a current upstream-CQ consumer comparison. No shim or consumer mutation applied."
+  },
+  {
+    "id": 76,
+    "name": "Partspec CadQuery adapter and model invalidation",
+    "repo": "heibench/partspec",
+    "ref": "c05922add084f3279168d1c1416c6175fbf5fdf0",
+    "runner": "compat_batch_c.py",
+    "dependencies": [
+      "build123d>=0.11,<0.12"
+    ],
+    "timeout_seconds": 360,
+    "scope": "Requires Python >=3.12. Real PyCADSource/build/adopt and invalidate_model_modules twice, model exports first/repeated DXF/VTP and returns a volume-checked shape. Uses declared build123d backend. Dependency solve/OCP provider conflict is blocked, not a consumer success or PR regression. Does not run full Partspec suite."
+  },
+  {
+    "id": 77,
+    "name": "Faktory whole native renderer worker test module (upgrade experiment)",
+    "repo": "rfhold/faktory",
+    "ref": "cd612465cde880e277a3bd0d3d4434c0810a3e77",
+    "runner": "compat_batch_c.py",
+    "dependencies": [
+      "pytest"
+    ],
+    "package_only_path": true,
+    "timeout_seconds": 900,
+    "scope": "Requires Python 3.12. Whole unchanged renderer/tests/test_worker.py, including repeated project/package execution and import-state restoration. CQ==2.6.1 project pin deliberately replaced by the two CQ2.9dev/OCP8 checkouts, so upgrade-only. Real parent CQ provenance checked; JUnit records actual collected cases/skips. No API HTTP service or browser."
   }
 ]

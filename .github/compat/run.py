@@ -119,10 +119,19 @@ def project_run(project_id):
         if code:
             result["reason"] = "Dependency installation failed"
             return
+        if project.get("dependencies_no_deps"):
+            code = command([sys.executable, "-m", "pip", "install", "--no-deps",
+                            *project["dependencies_no_deps"]],
+                           folder / "install-no-deps.log", timeout=1200)
+            if code:
+                result["reason"] = "Explicit no-deps dependency installation failed"
+                return
         if project.get("install"):
             source = WORK / "consumer" / project.get("install_subdir", "")
+            install_env = dict(os.environ)
+            install_env.update(project.get("install_env", {}))
             code = command([sys.executable, "-m", "pip", "install", "--no-deps", "-e", source],
-                           folder / "consumer-install.log")
+                           folder / "consumer-install.log", env=install_env)
             if code:
                 result["reason"] = "Consumer installation failed"
                 return
