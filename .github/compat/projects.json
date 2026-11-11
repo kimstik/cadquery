@@ -684,184 +684,6 @@
     "reason": "Latest pinned tree has 114 Python files and no cadquery imports. pyproject.toml describes CAD as direct cadquery-ocp-novtk, not CadQuery. Historical README/search matches do not make it a current CQ consumer."
   },
   {
-    "id": 101,
-    "original_id": 2,
-    "name": "cq_cache complete plugin tests",
-    "repo": "CadQuery/cadquery-plugins",
-    "ref": "364500a1adeb7b99bf06135245850f5ba70b9ae6",
-    "dependencies": [
-      "pytest",
-      "coverage"
-    ],
-    "runner": "compat_selftests.py",
-    "pytest_args": [
-      "tests/test_cq_cache.py"
-    ],
-    "timeout_seconds": 1200,
-    "scope": "Every test in this plugin's only test module, not the entire shared cadquery-plugins repository. Previous probe selected three tests.",
-    "native_ci": "Repository test module tests/test_cq_cache.py, plugin setup.py test_suite. No tests deselected by the runner. Fresh CI home isolates the cache.",
-    "environment": "Pinned consumer source with comparative CQ base/head in the same modern OCP8 environment, not a recreation of historical dependency locks.",
-    "observe": false
-  },
-  {
-    "id": 102,
-    "original_id": 6,
-    "name": "heatserts complete plugin tests",
-    "repo": "CadQuery/cadquery-plugins",
-    "ref": "364500a1adeb7b99bf06135245850f5ba70b9ae6",
-    "dependencies": [
-      "pytest",
-      "coverage"
-    ],
-    "runner": "compat_selftests.py",
-    "pytest_args": [
-      "tests/test_heatserts.py"
-    ],
-    "timeout_seconds": 1200,
-    "scope": "Every test and parameterization in this plugin's only test module, not all plugins in the shared repository. Previous probe selected one parametrized method.",
-    "native_ci": "Repository test module tests/test_heatserts.py and plugin setup.py. No tests deselected by the runner.",
-    "environment": "Pinned consumer source with comparative CQ base/head in the same modern OCP8 environment, not a recreation of historical dependency locks.",
-    "observe": false
-  },
-  {
-    "id": 103,
-    "original_id": 22,
-    "name": "cqMore complete native suite",
-    "repo": "JustinSDK/cqMore",
-    "ref": "a490603a18e87e65d9a8c5d52ea0b0ce402d261c",
-    "dependencies": [
-      "pytest",
-      "coverage"
-    ],
-    "runner": "compat_selftests.py",
-    "pytest_args": [],
-    "timeout_seconds": 1200,
-    "scope": "Default discovery of all five native unittest modules: curve, matrix, plugin, polygon and polyhedron. pytest executes the unmodified unittest assertions.",
-    "native_ci": "Native tests/test_*.py unittest suites. No workflow or test selection substituted for full discovery.",
-    "environment": "CQ and its dependencies come from the paired modern comparative environment. Consumer setup.py declares no runtime dependency list.",
-    "observe": true
-  },
-  {
-    "id": 104,
-    "original_id": 27,
-    "name": "assembly-mesh-plugin complete native suite",
-    "package_only_path": true,
-    "repo": "CadQuery/assembly-mesh-plugin",
-    "ref": "a02e1972930bc0b899e9153679862c410021efd6",
-    "dependencies": [
-      "pytest",
-      "coverage",
-      "gmsh"
-    ],
-    "system_packages": [
-      "libglu1-mesa"
-    ],
-    "runner": "compat_selftests.py",
-    "pytest_args": [],
-    "timeout_seconds": 1200,
-    "scope": "Default discovery including native tests/test_meshes.py and tests/smoke_test.py. No namespace patch, skips, filters or source edits.",
-    "native_ci": ".github/workflows/tests.yml runs python -m pytest -v after pip install .[dev] and CadQuery master. Runtime dependencies in pyproject.toml: cadquery>=2.7.0 and gmsh. pytest runs source directly with the pinned CQ checkout.",
-    "environment": "Expose only the unchanged cadquery package from each selected revision, not its repository tests directory. This matches installed-package namespace visibility. No tests module injection or consumer source edits.",
-    "observe": false
-  },
-  {
-    "id": 105,
-    "original_id": 37,
-    "name": "direct-mesh-plugin complete native suite",
-    "repo": "jmwright/cadquery-direct-mesh-plugin",
-    "ref": "302e469ab49caf70a25c61ac47d279ee45a5ebb1",
-    "dependencies": [
-      "pytest",
-      "coverage"
-    ],
-    "runner": "compat_selftests.py",
-    "pytest_args": [],
-    "timeout_seconds": 1200,
-    "scope": "Default discovery of the complete native tests/test_assemblies.py. Previous probe selected four test functions.",
-    "native_ci": ".github/workflows/tests.yml runs python -m pytest -v after pip install .[dev]. pyproject.toml runtime requires cadquery>=2.7.0. Source-direct run uses the pinned comparative CQ checkout.",
-    "environment": "Modern OCP8 paired environment satisfies the consumer's open CadQuery requirement. No historical dependency lock recreated.",
-    "observe": false
-  },
-  {
-    "id": 106,
-    "original_id": 43,
-    "name": "cq-annotate complete native suite",
-    "repo": "jmwright/cq-annotate",
-    "ref": "b46fbe2aac0e47dfdc3fb97709e159ea2bd809c0",
-    "dependencies": [
-      "pytest",
-      "coverage",
-      "svgutils"
-    ],
-    "runner": "compat_selftests.py",
-    "pytest_args": [],
-    "timeout_seconds": 1200,
-    "scope": "Default discovery of assembly, dimensions and overlays tests. Previous probe omitted the whole tests/test_assembly.py module.",
-    "native_ci": ".github/workflows/tests.yml runs python -m pytest -v after editable package/dev installation. pyproject.toml runtime dependencies cadquery and svgutils. Source-direct run uses unchanged package code and native tests.",
-    "environment": "Modern comparative CQ/OCP dependencies, identical for base/head. No consumer dependency pins bypassed.",
-    "observe": true
-  },
-  {
-    "id": 107,
-    "original_id": 48,
-    "name": "cadscript complete native suite",
-    "repo": "cadscriptHQ/cadscript",
-    "ref": "38d58de3c50fd6e39f82d9483ce9414ace61fc83",
-    "dependencies": [
-      "pytest",
-      "coverage"
-    ],
-    "runner": "compat_selftests.py",
-    "pytest_args": [],
-    "timeout_seconds": 1200,
-    "scope": "Default discovery of every native module, including DXF, CQGI examples, text, transformations, patterns and geometric operations. No test filters or skips added.",
-    "native_ci": ".github/workflows/python-package.yml runs pytest for Python 3.10 and 3.11, with requirements.txt. This comparison uses Python 3.11 and exact source pins.",
-    "environment": "Explicit upgrade comparison: native setup.py and requirements.txt require numpy<2, but modern CQ/OCP8 paired environment may resolve numpy2. No claim that this recreates the consumer's declared dependency environment. Any baseline failures remain visible.",
-    "observe": true
-  },
-  {
-    "id": 150,
-    "name": "Finite import contracts (not a downstream project)",
-    "synthetic": true,
-    "dependencies": [],
-    "runner": "compat_contracts.py",
-    "standalone": true,
-    "scope": "21 fresh-process contracts: preserved interfaces, former incidental bindings, reflection, annotations, first/repeated exports and reduced lifecycle. Known old-behavior losses remain failures, not project-count evidence.",
-    "timeout_seconds": 1200
-  },
-  {
-    "id": 201,
-    "original_id": 1,
-    "name": "Startup: apply_to_each_face (measurement, not another consumer)",
-    "repo": "CadQuery/cadquery-plugins",
-    "ref": "364500a1adeb7b99bf06135245850f5ba70b9ae6",
-    "dependencies": [],
-    "startup_import": "import plugins.apply_to_each_face.apply_to_each_face",
-    "scope": "Fresh-process consumer module import, no geometry, warm file caches"
-  },
-  {
-    "id": 202,
-    "original_id": 34,
-    "name": "Startup: PNG plugin (measurement, not another consumer)",
-    "repo": "jmwright/cadquery-png-plugin",
-    "ref": "d2d1246edfc1ecdd6ba9d5f566af598f285f4d27",
-    "dependencies": [
-      "Pillow"
-    ],
-    "startup_import": "import cadquery_png_plugin.plugin",
-    "scope": "Fresh-process real PNG plugin import, includes its mandatory VTK imports, no rendering"
-  },
-  {
-    "id": 203,
-    "original_id": 48,
-    "name": "Startup: cadscript (measurement, not another consumer)",
-    "repo": "cadscriptHQ/cadscript",
-    "ref": "38d58de3c50fd6e39f82d9483ce9414ace61fc83",
-    "dependencies": [],
-    "startup_import": "import cadscript",
-    "scope": "Fresh-process cadscript package import, no geometry or optional DXF path, current common CQ environment replaces old numpy pin"
-  },
-  {
     "id": 60,
     "name": "Paramak",
     "repo": "fusion-energy/paramak",
@@ -1382,25 +1204,6 @@
     "startup_route": "Enclosure builder and its two supplied plugins use ordinary CQ geometry with generic STEP/STL exports. No own ezdxf/VTK need identified on this bounded route. Expected avoidance, not measured startup benefit; separate render.py uses trimesh/matplotlib and is not a VTK requirement here."
   },
   {
-    "id": 108,
-    "original_id": 69,
-    "name": "lwidm/cq_gears focused native subset (not another consumer)",
-    "repo": "lwidm/cq_gears",
-    "ref": "e1ead5de3509f24c46ff48d001325d377242d3ea",
-    "dependencies": [
-      "pytest",
-      "numpy",
-      "scipy",
-      "pyvista",
-      "matplotlib"
-    ],
-    "runner": "compat_batch_b.py",
-    "install": false,
-    "package_only_path": true,
-    "timeout_seconds": 900,
-    "scope": "Explicit unmodified native core, cutter compatibility/grouping and spur geometry tests. Excludes costly helical sweep and hobbing. No export coverage claim. Original complete suite ID69 remains an incomplete timeout on both variants, not a passing suite or baseline incompatibility. This job deepens entry69 and adds no consumer."
-  },
-  {
     "id": 92,
     "name": "cad-coworker",
     "repo": "karaage0703/cad-coworker",
@@ -1531,5 +1334,277 @@
       "packages/machinome/machinome/node/brep_leaf.py",
       "packages/machinome/tests/test_brep_engine.py"
     ]
+  },
+  {
+    "id": 98,
+    "name": "hammerola (isolated template build blocked)",
+    "repo": "vvzvlad/hammerola",
+    "ref": "a403903f11f2e767ce36bd8e25dbdc9440fbf604",
+    "dependencies": [],
+    "install": false,
+    "runner": "compat_renewed_c.py",
+    "package_only_path": true,
+    "timeout_seconds": 900,
+    "disposition": "blocked-paired-child-isolation",
+    "scope": "Source-inspected own run_build(model_template copy, out_dir, pid=...) is the meaningful route, including the unchanged Linux wrapper, process-group cleanup, resource/output ceilings, early OCP thread cap, model checks, exports and artifact gates. Not executed or certified in this shared paired-PYTHONPATH harness.",
+    "notes": "Original pins cadquery==2.8.0, cadquery-ocp==7.9.3.1.1, cadquery-ocp-proxy==7.9.3.1.1 and VTK9.6.2 would be an explicit OCP8/CQ-source upgrade. Own src/buildproc/runner.py:483-533 child_environment is an allowlist that excludes PYTHONPATH/COMPAT_CQ_ROOT; run_build passes it unchanged into isolated child. Child would resolve the installed baseline, not paired source. Do not bypass that allowlist, Linux resource wrapper or _cap_occt_threads (child.py:264-301 uses OCP.OSD.OSD_ThreadPool.DefaultPool_s). Separate source-selected installations could address provenance later but are outside this task. Template lacks project.json by design; native tests/test_template.py:1194-1206 copy it and mint metadata before own build. All dependencies/UI/rendering/host checks remain unresolved for execution. Source only; not a compatibility failure measured against either variant."
+  },
+  {
+    "id": 99,
+    "name": "cadquery-simpleViewer (headless CQ adapter)",
+    "repo": "255ribeiro/cadquery-simpleViewer",
+    "ref": "f56c7d17272013ce324597888be345f6006889ce",
+    "dependencies": [
+      "plotly>=5.0.0"
+    ],
+    "install": false,
+    "runner": "compat_renewed_c.py",
+    "package_only_path": true,
+    "timeout_seconds": 900,
+    "scope": "Own _build_traces and adapter registry on the exact CQ box, line, polygon-wire and location fixtures used by pinned tests/test_viewer.py, plus pending-sketch and finite mesh/index/JSON checks. No monkeypatch or browser launch. This is a viewer adapter whose own source fixtures are intentionally primitive, not a substituted consumer model. Does not claim unchanged native tests, full show()/notebook rendering, build123d, IFC, interactive widgets or browser coverage.",
+    "notes": "Python>=3.11; parent Python3.12. Original optional CQ>=2.8.0 is resolved through paired CQ/OCP8; base package requires only plotly>=5.0.0. Do not install build123d just to collect native test_viewer.py (it importorskips both CAD frontends at module scope). Root import is deliberately CQ-lazy and must be measured/reported without attributing CQ startup benefit if CQ remains absent. Source only prepared; target not executed."
+  },
+  {
+    "id": 100,
+    "name": "3DPrintedClocks (bounded own single-gear demo; backlog)",
+    "repo": "MrBunsy/3DPrintedClocks",
+    "ref": "8d0d9bf81d0fc60354edaea12c6e353521236f35",
+    "dependencies": [],
+    "install": false,
+    "runner": "compat_renewed_c.py",
+    "package_only_path": true,
+    "timeout_seconds": 900,
+    "scope": "Own get_gear_demo(just_style=GearStyle.ARCS, one_gear=True), including real train ratio selection and gear generation, returning the actual second demo arbor. Require valid finite positive-volume solid geometry and STEP volume roundtrip. Eager clocks package imports are preserved. Not full clock assemblies, every gear style, native suite, GUI or physical print validation. Existing backlog consumer, not new discovery.",
+    "notes": "Critical source condition clocks/demos.py:144 is one_gear and just_style is not None: one_gear=True alone incorrectly runs all styles. Named ARCS selection takes the real one-gear path without source changes. No declared CQ/OCP/Python pins established in this source; paired Python3.12/CQ/OCP8 is an unverified environment rather than declared upstream support. Direct CQ dependencies already provide NumPy; utility's markdown_pdf import is guarded. Other eager-import or geometry failures must remain reported, never replaced with a box. Source only prepared; target not executed."
+  },
+  {
+    "id": 101,
+    "original_id": 2,
+    "name": "cq_cache complete plugin tests",
+    "repo": "CadQuery/cadquery-plugins",
+    "ref": "364500a1adeb7b99bf06135245850f5ba70b9ae6",
+    "dependencies": [
+      "pytest",
+      "coverage"
+    ],
+    "runner": "compat_selftests.py",
+    "pytest_args": [
+      "tests/test_cq_cache.py"
+    ],
+    "timeout_seconds": 1200,
+    "scope": "Every test in this plugin's only test module, not the entire shared cadquery-plugins repository. Previous probe selected three tests.",
+    "native_ci": "Repository test module tests/test_cq_cache.py, plugin setup.py test_suite. No tests deselected by the runner. Fresh CI home isolates the cache.",
+    "environment": "Pinned consumer source with comparative CQ base/head in the same modern OCP8 environment, not a recreation of historical dependency locks.",
+    "observe": false
+  },
+  {
+    "id": 102,
+    "original_id": 6,
+    "name": "heatserts complete plugin tests",
+    "repo": "CadQuery/cadquery-plugins",
+    "ref": "364500a1adeb7b99bf06135245850f5ba70b9ae6",
+    "dependencies": [
+      "pytest",
+      "coverage"
+    ],
+    "runner": "compat_selftests.py",
+    "pytest_args": [
+      "tests/test_heatserts.py"
+    ],
+    "timeout_seconds": 1200,
+    "scope": "Every test and parameterization in this plugin's only test module, not all plugins in the shared repository. Previous probe selected one parametrized method.",
+    "native_ci": "Repository test module tests/test_heatserts.py and plugin setup.py. No tests deselected by the runner.",
+    "environment": "Pinned consumer source with comparative CQ base/head in the same modern OCP8 environment, not a recreation of historical dependency locks.",
+    "observe": false
+  },
+  {
+    "id": 103,
+    "original_id": 22,
+    "name": "cqMore complete native suite",
+    "repo": "JustinSDK/cqMore",
+    "ref": "a490603a18e87e65d9a8c5d52ea0b0ce402d261c",
+    "dependencies": [
+      "pytest",
+      "coverage"
+    ],
+    "runner": "compat_selftests.py",
+    "pytest_args": [],
+    "timeout_seconds": 1200,
+    "scope": "Default discovery of all five native unittest modules: curve, matrix, plugin, polygon and polyhedron. pytest executes the unmodified unittest assertions.",
+    "native_ci": "Native tests/test_*.py unittest suites. No workflow or test selection substituted for full discovery.",
+    "environment": "CQ and its dependencies come from the paired modern comparative environment. Consumer setup.py declares no runtime dependency list.",
+    "observe": true
+  },
+  {
+    "id": 104,
+    "original_id": 27,
+    "name": "assembly-mesh-plugin complete native suite",
+    "package_only_path": true,
+    "repo": "CadQuery/assembly-mesh-plugin",
+    "ref": "a02e1972930bc0b899e9153679862c410021efd6",
+    "dependencies": [
+      "pytest",
+      "coverage",
+      "gmsh"
+    ],
+    "system_packages": [
+      "libglu1-mesa"
+    ],
+    "runner": "compat_selftests.py",
+    "pytest_args": [],
+    "timeout_seconds": 1200,
+    "scope": "Default discovery including native tests/test_meshes.py and tests/smoke_test.py. No namespace patch, skips, filters or source edits.",
+    "native_ci": ".github/workflows/tests.yml runs python -m pytest -v after pip install .[dev] and CadQuery master. Runtime dependencies in pyproject.toml: cadquery>=2.7.0 and gmsh. pytest runs source directly with the pinned CQ checkout.",
+    "environment": "Expose only the unchanged cadquery package from each selected revision, not its repository tests directory. This matches installed-package namespace visibility. No tests module injection or consumer source edits.",
+    "observe": false
+  },
+  {
+    "id": 105,
+    "original_id": 37,
+    "name": "direct-mesh-plugin complete native suite",
+    "repo": "jmwright/cadquery-direct-mesh-plugin",
+    "ref": "302e469ab49caf70a25c61ac47d279ee45a5ebb1",
+    "dependencies": [
+      "pytest",
+      "coverage"
+    ],
+    "runner": "compat_selftests.py",
+    "pytest_args": [],
+    "timeout_seconds": 1200,
+    "scope": "Default discovery of the complete native tests/test_assemblies.py. Previous probe selected four test functions.",
+    "native_ci": ".github/workflows/tests.yml runs python -m pytest -v after pip install .[dev]. pyproject.toml runtime requires cadquery>=2.7.0. Source-direct run uses the pinned comparative CQ checkout.",
+    "environment": "Modern OCP8 paired environment satisfies the consumer's open CadQuery requirement. No historical dependency lock recreated.",
+    "observe": false
+  },
+  {
+    "id": 106,
+    "original_id": 43,
+    "name": "cq-annotate complete native suite",
+    "repo": "jmwright/cq-annotate",
+    "ref": "b46fbe2aac0e47dfdc3fb97709e159ea2bd809c0",
+    "dependencies": [
+      "pytest",
+      "coverage",
+      "svgutils"
+    ],
+    "runner": "compat_selftests.py",
+    "pytest_args": [],
+    "timeout_seconds": 1200,
+    "scope": "Default discovery of assembly, dimensions and overlays tests. Previous probe omitted the whole tests/test_assembly.py module.",
+    "native_ci": ".github/workflows/tests.yml runs python -m pytest -v after editable package/dev installation. pyproject.toml runtime dependencies cadquery and svgutils. Source-direct run uses unchanged package code and native tests.",
+    "environment": "Modern comparative CQ/OCP dependencies, identical for base/head. No consumer dependency pins bypassed.",
+    "observe": true
+  },
+  {
+    "id": 107,
+    "original_id": 48,
+    "name": "cadscript complete native suite",
+    "repo": "cadscriptHQ/cadscript",
+    "ref": "38d58de3c50fd6e39f82d9483ce9414ace61fc83",
+    "dependencies": [
+      "pytest",
+      "coverage"
+    ],
+    "runner": "compat_selftests.py",
+    "pytest_args": [],
+    "timeout_seconds": 1200,
+    "scope": "Default discovery of every native module, including DXF, CQGI examples, text, transformations, patterns and geometric operations. No test filters or skips added.",
+    "native_ci": ".github/workflows/python-package.yml runs pytest for Python 3.10 and 3.11, with requirements.txt. This comparison uses Python 3.11 and exact source pins.",
+    "environment": "Explicit upgrade comparison: native setup.py and requirements.txt require numpy<2, but modern CQ/OCP8 paired environment may resolve numpy2. No claim that this recreates the consumer's declared dependency environment. Any baseline failures remain visible.",
+    "observe": true
+  },
+  {
+    "id": 108,
+    "original_id": 69,
+    "name": "lwidm/cq_gears focused native subset (not another consumer)",
+    "repo": "lwidm/cq_gears",
+    "ref": "e1ead5de3509f24c46ff48d001325d377242d3ea",
+    "dependencies": [
+      "pytest",
+      "numpy",
+      "scipy",
+      "pyvista",
+      "matplotlib"
+    ],
+    "runner": "compat_batch_b.py",
+    "install": false,
+    "package_only_path": true,
+    "timeout_seconds": 900,
+    "scope": "Explicit unmodified native core, cutter compatibility/grouping and spur geometry tests. Excludes costly helical sweep and hobbing. No export coverage claim. Original complete suite ID69 remains an incomplete timeout on both variants, not a passing suite or baseline incompatibility. This job deepens entry69 and adds no consumer."
+  },
+  {
+    "id": 109,
+    "name": "cloudcad (local parametric rebuild model)",
+    "repo": "ameritusweb/cloudcad",
+    "ref": "6481c48321e4a64d3627e1eee51bf34844141109",
+    "dependencies": [
+      "Flask==2.0.1",
+      "Flask-CORS==3.0.10",
+      "Werkzeug==2.3.7"
+    ],
+    "install": false,
+    "runner": "compat_renewed_c.py",
+    "package_only_path": true,
+    "timeout_seconds": 900,
+    "scope": "Own ParametricModel and create_cylinder/circular_cut feature functions: named parameters, rebuild, parameter update, visibility/color state and own cylinder/cut transitions, measured dimensions/volume and STEP roundtrip. Local model only, no server, Flask routes, frontend, external upload, credentials, or full-service claim.",
+    "notes": "Original backend requirements pin CQ==2.4.0, numpy==1.26.4, Flask==2.0.1, Flask-CORS==3.0.10, Werkzeug==2.3.7, pytest==6.2.4 and gunicorn==20.1.0. CQ2.4/OCP7 and NumPy1.26 are explicitly replaced by parent paired CQ/OCP8 dependency stack; not certification of original locked environment. Pinned Flask/CORS/Werkzeug retained because natural import app.models.parametric_model runs app/__init__.py; do not synthesize package or file-load around these dependencies. pytest/gunicorn excluded from local model route. Own add_feature does not rebuild, so call rebuild explicitly. Python3.12 compatibility not yet executed."
+  },
+  {
+    "id": 110,
+    "name": "mcp-cadquery-server-public (local validator and exporter child only)",
+    "repo": "mikekuniavsky/mcp-cadquery-server-public",
+    "ref": "8a1dbee1253367ddac26a7832b3fa132e795f345",
+    "dependencies": [
+      "mcp[cli,server]",
+      "google-cloud-storage"
+    ],
+    "install": false,
+    "runner": "compat_renewed_c.py",
+    "package_only_path": true,
+    "timeout_seconds": 900,
+    "scope": "Natural server module import with a noncredential local placeholder GCS_BUCKET, own validate_script and _build_export_script on exact tests/test_server.py through-hole model. Execute generated 3MF export script in a local fresh child, assert paired CQ source and validate ZIP/XML mesh. Never call generate_3mf/_run_cad_task or create GCS client/upload. No cloud, authentication, MCP transport, PNG/VTK rendering, Assembly/GLB or full-service coverage.",
+    "notes": "Python>=3.9; parent Python3.12. Original unpinned CQ resolved via paired source/OCP8; mcp[cli,server] and google-cloud-storage are original unpinned dependencies and must be frozen in CI evidence. config.py reads GCS_BUCKET at import, but a local-only placeholder satisfies configuration without credentials or contacting Google. Do not treat AST allowlist as a security-audited sandbox. Source only prepared; target not executed."
+  },
+  {
+    "id": 150,
+    "name": "Finite import contracts (not a downstream project)",
+    "synthetic": true,
+    "dependencies": [],
+    "runner": "compat_contracts.py",
+    "standalone": true,
+    "scope": "21 fresh-process contracts: preserved interfaces, former incidental bindings, reflection, annotations, first/repeated exports and reduced lifecycle. Known old-behavior losses remain failures, not project-count evidence.",
+    "timeout_seconds": 1200
+  },
+  {
+    "id": 201,
+    "original_id": 1,
+    "name": "Startup: apply_to_each_face (measurement, not another consumer)",
+    "repo": "CadQuery/cadquery-plugins",
+    "ref": "364500a1adeb7b99bf06135245850f5ba70b9ae6",
+    "dependencies": [],
+    "startup_import": "import plugins.apply_to_each_face.apply_to_each_face",
+    "scope": "Fresh-process consumer module import, no geometry, warm file caches"
+  },
+  {
+    "id": 202,
+    "original_id": 34,
+    "name": "Startup: PNG plugin (measurement, not another consumer)",
+    "repo": "jmwright/cadquery-png-plugin",
+    "ref": "d2d1246edfc1ecdd6ba9d5f566af598f285f4d27",
+    "dependencies": [
+      "Pillow"
+    ],
+    "startup_import": "import cadquery_png_plugin.plugin",
+    "scope": "Fresh-process real PNG plugin import, includes its mandatory VTK imports, no rendering"
+  },
+  {
+    "id": 203,
+    "original_id": 48,
+    "name": "Startup: cadscript (measurement, not another consumer)",
+    "repo": "cadscriptHQ/cadscript",
+    "ref": "38d58de3c50fd6e39f82d9483ce9414ace61fc83",
+    "dependencies": [],
+    "startup_import": "import cadscript",
+    "scope": "Fresh-process cadscript package import, no geometry or optional DXF path, current common CQ environment replaces old numpy pin"
   }
 ]

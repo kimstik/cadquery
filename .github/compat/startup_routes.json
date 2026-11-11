@@ -560,5 +560,36 @@
     "id": 97,
     "startup_import": "import importlib.util, os, sys; from pathlib import Path; _path = Path(os.environ['COMPAT_CONSUMER_ROOT']) / 'packages/machinome/machinome/manager/templates/project/root/cadquery.py'; _spec = importlib.util.spec_from_file_location('compat_machinome_demo', _path); _module = importlib.util.module_from_spec(_spec); sys.modules[_spec.name] = _module; _spec.loader.exec_module(_module)",
     "startup_scope": "Natural checked-in DemoProject template module initialization only: its own import cadquery followed by original CadQueryNode class definition; no node construction, render, BREP engine operation or model execution. Avoid importing template as bare cadquery, which would collide with the CQ package. Coherent pinned core/engine/node0.9.0 and explicit CQ2.7/OCP<7.9 overrides retained as upgrade experiment; no build123d or cq-editor host."
+  },
+  {
+    "id": 98,
+    "startup_import": "import src.buildproc.runner",
+    "startup_scope": "Natural own public isolated-build coordinator import only, no model execution, isolated child, resource setup or rendering. runner.py imports child constants, limits and stdlib KiCad-client metadata; child.py intentionally defers CQ until _run. If CQ is absent, report no attributable CQ startup benefit. Geometry comparison remains blocked because child_environment strips paired PYTHONPATH; this startup route must not be presented as successful isolated-build compatibility."
+  },
+  {
+    "id": 99,
+    "startup_import": "import cadquery_simpleviewer",
+    "startup_scope": "Natural public package import exposes show and interactive. CQ/build123d adapter imports are lazy by design; do not inject CQ import. If CQ remains absent report no attributable CQ entrypoint startup benefit. Not browser/notebook/widget rendering, geometry/tessellation or full application startup. Own bounded CQ adapter comparison is separate."
+  },
+  {
+    "id": 100,
+    "startup_import": "import clocks",
+    "startup_scope": "Natural public clocks package eager import of the actual whole module family, including gearing/utility CQ imports. No clock construction, ratio search, demo generation, export or GUI. Existing backlog project, not new inventory discovery; no declared pinned Python/CQ/OCP support established. Same-process dependency gains are non-additive."
+  },
+  {
+    "id": 109,
+    "startup_import": "from app.models.parametric_model import ParametricModel",
+    "startup_paths": [
+      "backend"
+    ],
+    "startup_scope": "Own public parametric-model class import with natural app/__init__.py Flask/CORS dependencies retained. Does not synthesize package or bypass initialization. parametric_model.py imports CQ. No create_app(), HTTP routes/server, frontend, feature creation or rebuild. Original CQ2.4/NumPy1.26 pins explicitly replaced by paired CQ/OCP8 stack; original Flask/CORS/Werkzeug pins retained in manifest."
+  },
+  {
+    "id": 110,
+    "startup_import": "import mcp_cadquery_server.server",
+    "startup_env": {
+      "GCS_BUCKET": "compat-local-no-upload"
+    },
+    "startup_scope": "Natural server module import with local noncredential bucket placeholder, FastMCP/tool registration and original google/mcp imports. Own server does not import CQ at entry; user CAD script imports it later in a child. Report no attributable CQ entry startup benefit if absent, do not force import. No running transport, auth checks, GCS client/upload, generated CAD child or PNG rendering. Separate local-validator/export-child comparison is partial host coverage only."
   }
 ]
