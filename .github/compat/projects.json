@@ -826,5 +826,35 @@
     "standalone": true,
     "scope": "21 fresh-process contracts: preserved interfaces, former incidental bindings, reflection, annotations, first/repeated exports and reduced lifecycle. Known old-behavior losses remain failures, not project-count evidence.",
     "timeout_seconds": 1200
+  },
+  {
+    "id": 201,
+    "original_id": 1,
+    "name": "Startup: apply_to_each_face (measurement, not another consumer)",
+    "repo": "CadQuery/cadquery-plugins",
+    "ref": "364500a1adeb7b99bf06135245850f5ba70b9ae6",
+    "dependencies": [],
+    "startup_import": "import plugins.apply_to_each_face.apply_to_each_face",
+    "scope": "Fresh-process consumer module import, no geometry, warm file caches"
+  },
+  {
+    "id": 202,
+    "original_id": 34,
+    "name": "Startup: PNG plugin (measurement, not another consumer)",
+    "repo": "jmwright/cadquery-png-plugin",
+    "ref": "d2d1246edfc1ecdd6ba9d5f566af598f285f4d27",
+    "dependencies": ["Pillow"],
+    "startup_import": "import cadquery_png_plugin.plugin",
+    "scope": "Fresh-process real PNG plugin import, includes its mandatory VTK imports, no rendering"
+  },
+  {
+    "id": 203,
+    "original_id": 48,
+    "name": "Startup: cadscript (measurement, not another consumer)",
+    "repo": "cadscriptHQ/cadscript",
+    "ref": "38d58de3c50fd6e39f82d9483ce9414ace61fc83",
+    "dependencies": [],
+    "startup_import": "import cadscript",
+    "scope": "Fresh-process cadscript package import, no geometry or optional DXF path, current common CQ environment replaces old numpy pin"
   }
 ]

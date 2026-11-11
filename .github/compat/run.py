@@ -127,6 +127,11 @@ def project_run(project_id):
                 result["reason"] = "Consumer installation failed"
                 return
         command([sys.executable, "-m", "pip", "freeze", "--all"], folder / "dependencies.txt")
+        if project.get("startup_import"):
+            from startup import measure
+            result["startup"] = measure(project, WORK, folder)
+            result.update(status="measured", platform=sys.platform, python=sys.version)
+            return
         outcomes = {}
         for label in ["base", "pr"]:
             consumer = WORK / ("consumer-" + label)
