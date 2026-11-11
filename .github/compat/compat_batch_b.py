@@ -54,6 +54,19 @@ def gears(source):
     return native(source, ["tests"])
 
 
+def gears_focused(source):
+    # The full suite remains a separate timeout result, not a passing suite.
+    return native(source, [
+        "tests/test_core.py",
+        "tests/test_rack_cutter.py::TestCuttersAreCompatible",
+        "tests/test_rack_cutter.py::TestFindCompatibleCutterGroups",
+        "tests/test_rack_cutter.py::TestCreateRackCutter::test_spur_produces_workplane",
+        "tests/test_rack_cutter.py::TestCreateRackCutter::test_b_override_changes_volume",
+        "tests/test_rack_cutter.py::TestCreateRackCutterForGroup",
+        "tests/test_api.py::TestBuildParametricGear::test_returns_parametric_gear[spur]",
+    ])
+
+
 def vendor(source):
     from vendor_models.waveshare import Ddsm115
 
@@ -90,7 +103,8 @@ def fastapi(source):
             "not_covered": "browser/template rendering, deployment and cached-model download"}
 
 
-SCENARIOS = {66: fantasy, 67: dome, 68: gothic, 69: gears, 70: vendor, 71: fastapi}
+SCENARIOS = {66: fantasy, 67: dome, 68: gothic, 69: gears, 70: vendor, 71: fastapi,
+             108: gears_focused}
 
 
 if __name__ == "__main__":

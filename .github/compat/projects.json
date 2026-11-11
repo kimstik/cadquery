@@ -1379,5 +1379,18 @@
     "timeout_seconds": 900,
     "scope": "Run original skills/hardware-in-the-loop/templates/cad/examples/enclosure/build_enclosure.py main with its supported --out argument. Original __file__/HERE/parts directory and cad_plugins preserved, original supplied gasket.py and gland_access.py required. No substituted resources or mocked plugin paths. Native base/lid/gasket, groove cuts, keepout/interference and plugin compression checks must pass. Verify parts.json/enclosure_cad.json, positive masses/volumes, every STEP imports valid solid with corresponding volume, and each STL triangle structure. Source setup_tools.ps1 lists unpinned cadquery in own CQ venv; paired comparison selects CQ2.9dev/OCP8. Not the entire hardware platform, renderer, KiCad, Windows setup or physical hardware.",
     "startup_route": "Enclosure builder and its two supplied plugins use ordinary CQ geometry with generic STEP/STL exports. No own ezdxf/VTK need identified on this bounded route. Expected avoidance, not measured startup benefit; separate render.py uses trimesh/matplotlib and is not a VTK requirement here."
+  },
+  {
+    "id": 108,
+    "original_id": 69,
+    "name": "lwidm/cq_gears focused native subset (not another consumer)",
+    "repo": "lwidm/cq_gears",
+    "ref": "e1ead5de3509f24c46ff48d001325d377242d3ea",
+    "dependencies": ["pytest", "numpy", "scipy", "pyvista", "matplotlib"],
+    "runner": "compat_batch_b.py",
+    "install": false,
+    "package_only_path": true,
+    "timeout_seconds": 900,
+    "scope": "Explicit unmodified native core, cutter compatibility/grouping and spur geometry tests. Excludes costly helical sweep and hobbing. No export coverage claim. Original complete suite ID69 remains an incomplete timeout on both variants, not a passing suite or baseline incompatibility. This job deepens entry69 and adds no consumer."
   }
 ]
