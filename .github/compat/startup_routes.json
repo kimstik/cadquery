@@ -527,5 +527,20 @@
       "skills/hardware-in-the-loop/templates/cad/examples/enclosure"
     ],
     "startup_scope": "Actual enclosure template module initialization only. build_enclosure.py:32-36 resolves its real cad_plugins path and imports CQ/plugins; module then defines constants/functions. main is guarded at168. No base/lid geometry, plugin load callbacks, export, rendering or design checks; not the separate render.py stack."
+  },
+  {
+    "id": 92,
+    "startup_import": "import cad_coworker.worker",
+    "startup_scope": "Own build-worker module import, not version-only package root, GUI/browser/HTTP server startup or job execution. worker.py:17-18 naturally imports cadquery/cqgi. No consumer installation or uv source resolution; original NumPy/nlopt override constraints are replaced by the common paired-CQ environment as explicitly described in manifest. Other worker tests are a separate geometry comparison, not a startup result."
+  },
+  {
+    "id": 93,
+    "startup_import": "from vibe_cading.lego.technic_beam import LegoTechnicBeam",
+    "startup_scope": "Own public mechanical class import only (technic_beam.py:17 imports CQ), no beam construction, test execution, STEP export or optional protocol interface. Root __init__.py is metadata-only by design. Shared interpreter/library stack gains are non-additive in one process."
+  },
+  {
+    "id": 94,
+    "startup_import": "import cq_model",
+    "startup_scope": "Own mold geometry-engine module import, including ordinary cq_utils/params/shape_loader imports. cq_model.py:8 imports CQ. Does not call build_mold, load DXF, render, import whole Qt/PyVista application or start GUI. No full application-startup compatibility claim."
   }
 ]
