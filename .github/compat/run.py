@@ -85,6 +85,16 @@ def fetch_source(project, destination):
                 archived = prefix + "/" + linked.relative_to(destination.resolve()).as_posix()
                 linked_member = originals[archived]
                 if ignored.get(relative.as_posix()) == member.linkname:
+                    seen = {relative.as_posix()}
+                    while linked_member.issym():
+                        step = Path(linked_member.name).relative_to(prefix)
+                        assert step.as_posix() not in seen, linked_member.name
+                        seen.add(step.as_posix())
+                        assert ignored.get(step.as_posix()) == linked_member.linkname, linked_member.name
+                        linked = (destination / step.parent / linked_member.linkname).resolve()
+                        assert linked.is_relative_to(destination.resolve()), linked_member.linkname
+                        archived = prefix + "/" + linked.relative_to(destination.resolve()).as_posix()
+                        linked_member = originals[archived]
                     assert linked_member.isdir(), archived
                     continue
                 assert linked_member.isfile(), archived
