@@ -3,6 +3,13 @@ name: Downstream compatibility
 on:
   workflow_dispatch:
     inputs:
+      mode:
+        description: Compatibility scenarios or separate paired consumer imports
+        type: choice
+        options:
+          - compatibility
+          - startup
+        default: compatibility
       projects:
         description: Comma-separated inventory IDs, empty for all
         required: false
@@ -24,6 +31,7 @@ on:
 
 env:
   COMPAT_PROJECTS: ${{ inputs.projects }}
+  COMPAT_MODE: ${{ inputs.mode || 'compatibility' }}
 
 permissions:
   contents: read

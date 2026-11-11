@@ -1,0 +1,17 @@
+[
+  {
+    "id": 1,
+    "startup_import": "import plugins.apply_to_each_face.apply_to_each_face",
+    "startup_scope": "Actual official apply_to_each_face plugin import; no geometry or editor host startup."
+  },
+  {
+    "id": 34,
+    "startup_import": "import cadquery_png_plugin.plugin",
+    "startup_scope": "Actual PNG plugin module import, including its own required VTK imports; no raster rendering."
+  },
+  {
+    "id": 48,
+    "startup_import": "import cadscript",
+    "startup_scope": "Public cadscript package import; no modeling or documentation viewer."
+  }
+]

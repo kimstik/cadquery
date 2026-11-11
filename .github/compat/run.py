@@ -23,6 +23,10 @@ HEAD = "02a0aa33de73ead142bbac02ee474b8892585082"
 
 def inventory():
     entries = json.loads((HERE / "projects.json").read_text())
+    if os.environ.get("COMPAT_MODE") == "startup":
+        routes = {row["id"]: row for row in json.loads((HERE / "startup_routes.json").read_text())}
+        entries = [{**project, **routes[project["id"]]}
+                   for project in entries if project["id"] in routes]
     ids = [p["id"] for p in entries]
     assert len(ids) == len(set(ids)), "Duplicate inventory IDs"
     selected = os.environ.get("COMPAT_PROJECTS", "").strip()
@@ -103,6 +107,9 @@ def project_run(project_id):
         if project.get("disposition"):
             result.update(status=project["disposition"], reason=project["reason"])
             return
+        if os.environ.get("COMPAT_MODE") == "startup" and not project.get("startup_import"):
+            result.update(status="startup-unavailable", reason=project["startup_reason"])
+            return
         if project.get("synthetic"):
             (WORK / "consumer").mkdir()
         else:
@@ -145,7 +152,8 @@ def project_run(project_id):
         if project.get("startup_import"):
             from startup import measure
             result["startup"] = measure(project, WORK, folder)
-            result.update(status="measured", platform=sys.platform, python=sys.version)
+            result.update(status=result["startup"]["classification"],
+                          platform=sys.platform, python=sys.version)
             return
         outcomes = {}
         for label in ["base", "pr"]:
