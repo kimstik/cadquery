@@ -542,5 +542,23 @@
     "id": 94,
     "startup_import": "import cq_model",
     "startup_scope": "Own mold geometry-engine module import, including ordinary cq_utils/params/shape_loader imports. cq_model.py:8 imports CQ. Does not call build_mold, load DXF, render, import whole Qt/PyVista application or start GUI. No full application-startup compatibility claim."
+  },
+  {
+    "id": 95,
+    "startup_import": "import fc_code_kernel.executor",
+    "startup_paths": [
+      "kernel"
+    ],
+    "startup_scope": "Natural own headless executor/collector/serializer module initialization, not FreeCAD host startup. Its own OCP/CQ imports are deferred until supplied script/serialization, so a no-attributable-CQ result is route-only. The original cq_pillow_block example imports CQ at its line11 before geometry; future worker instrumentation can observe that real first import without forcing parent preload or executing model geometry for an import-only measurement."
+  },
+  {
+    "id": 96,
+    "startup_import": "import autofab.executor",
+    "startup_scope": "Natural original Executor module initialization; only stdlib at module scope, CQ remains inside _RUNNER_TEMPLATE child. A no-attributable-CQ result is route-only, not whole-consumer no-benefit. Original worker executes supplied script before its own result-discovery CQ import, so its fixed later import is not a pregeometry startup boundary. Future instrumentation must observe the actual original T2_001 script's first CQ import, not insert a synthetic CQ-preload worker. No provider/API/pipeline initialization."
+  },
+  {
+    "id": 97,
+    "startup_import": "import importlib.util, os, sys; from pathlib import Path; _path = Path(os.environ['COMPAT_CONSUMER_ROOT']) / 'packages/machinome/machinome/manager/templates/project/root/cadquery.py'; _spec = importlib.util.spec_from_file_location('compat_machinome_demo', _path); _module = importlib.util.module_from_spec(_spec); sys.modules[_spec.name] = _module; _spec.loader.exec_module(_module)",
+    "startup_scope": "Natural checked-in DemoProject template module initialization only: its own import cadquery followed by original CadQueryNode class definition; no node construction, render, BREP engine operation or model execution. Avoid importing template as bare cadquery, which would collide with the CQ package. Coherent pinned core/engine/node0.9.0 and explicit CQ2.7/OCP<7.9 overrides retained as upgrade experiment; no build123d or cq-editor host."
   }
 ]

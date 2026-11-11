@@ -1444,5 +1444,92 @@
     "timeout_seconds": 900,
     "scope": "Unmodified cq_model.build_mold(params.MoldParams()) factory-default Male_Mold/Custom engine with its ordinary cutters, six guide holes and reinforcement-fillet option retained. Validate single solid, finite positive volume, expected75x115mm XY bounds, bounded Z and non-full-bounding-box volume; STEP export/import validates geometry and volume. No synthetic box fallback parameters. Not Female_Mold, other modes, DXF profile assets, text indicators, Qt/PyVista/VTK UI or packaging.",
     "notes": "Source requirements declare unpinned cadquery plus PySide6>=6.6.0, pyvista>=0.40.0, pyvistaqt>=0.11.0 and vtk. Selected cq_model/cq_utils/params/shape_loader imports have no Qt/VTK top-level dependency, so excluded UI packages are not installed and import is naturally attributable to own CQ route. Shared Python3.12/CQbase/head/OCP8 replaces only unpinned CQ resolution. Default AddIndicators=False avoids font dependence. Own build_mold catches certain fillet/boolean exceptions internally; scenario checks returned geometry, not a claim that every optional operation succeeded. No native suite selected for this engine. Source only prepared; target not executed."
+  },
+  {
+    "id": 95,
+    "name": "freecad-code-workbench actual headless kernel",
+    "repo": "jokroese/freecad-code-workbench",
+    "ref": "ba135415c6f5d454534c7f3ac9cf93b7341206ec",
+    "dependencies": [
+      "pytest",
+      "jedi>=0.19"
+    ],
+    "install": true,
+    "install_subdir": "kernel",
+    "runner": "compat_renewed_b.py",
+    "package_only_path": true,
+    "recommended_python": "3.12",
+    "timeout_seconds": 600,
+    "scope": "Unchanged examples/cq_pillow_block.py through own executor.run_script, show collector, BREP/base64 serialization and roundtrip. Default80x60x10 and real parameter injection90x60x12; validity, stock dimensions and22mm through-hole. Native original tests/test_executor.py and tests/test_serialize.py with JUnit; optional build123d test may skip because CQ-only cad selection intentionally does not install build123d. No FreeCAD GUI, managed-environment transport or _prefer_vtk_ocp repair claim.",
+    "source_evidence": [
+      "kernel/pyproject.toml",
+      "kernel/fc_code_kernel/executor.py:71-130",
+      "kernel/fc_code_kernel/serialize.py:17-70",
+      "examples/cq_pillow_block.py:11-43",
+      "tests/test_executor.py",
+      "tests/test_serialize.py"
+    ]
+  },
+  {
+    "id": 96,
+    "name": "CADSmith original dataset through actual executor worker",
+    "repo": "jabarkle/CADSmith",
+    "ref": "a856517e4e9449eb71dd6f7f83aa9fffa40f5bbb",
+    "dependencies": [
+      "trimesh>=4,<5"
+    ],
+    "install": false,
+    "runner": "compat_renewed_b.py",
+    "package_only_path": true,
+    "recommended_python": "3.12",
+    "timeout_seconds": 600,
+    "scope": "Own checked-in T2_001 washer reference_code through original Executor.execute and actual sys.executable worker. Provenance observation appended only after model's natural CQ import; no CQ preload. Original result geometry is checked for valid4-face washer20x20x2 with analytical volume; real STEP roundtrip and watertight STL validated. No native executor test module present in pinned tree. No LLM/provider API, complete generation pipeline or credential use; isolated output directory and ordinary worker protocol unchanged.",
+    "source_evidence": [
+      "requirements.txt:2",
+      "autofab/executor.py:36-102",
+      "autofab/executor.py:115-211",
+      "data/dataset_v2/t2_engineering_parts.jsonl:1"
+    ]
+  },
+  {
+    "id": 97,
+    "name": "machinome unchanged CQ demo and BREP engine (upgrade experiment)",
+    "repo": "machinome/machinome",
+    "ref": "abe18e9e1e8f8d53b8b0a0ba3d496a237996d313",
+    "dependencies": [
+      "pytest",
+      "watchdog",
+      "trimesh==4.4.*",
+      "httpx==0.27.*",
+      "fastapi==0.111.*",
+      "termcolor==2.4.*",
+      "asgiref==3.8.*",
+      "uvicorn==0.30.*",
+      "numpy==2.2.*",
+      "rtree",
+      "scipy",
+      "shapely==2.1.*"
+    ],
+    "dependencies_no_deps": [
+      "machinome @ git+https://github.com/machinome/machinome@abe18e9e1e8f8d53b8b0a0ba3d496a237996d313#subdirectory=packages/machinome",
+      "machinome-engine-brep @ git+https://github.com/machinome/machinome@abe18e9e1e8f8d53b8b0a0ba3d496a237996d313#subdirectory=packages/machinome-engine-brep",
+      "machinome-node-cadquery @ git+https://github.com/machinome/machinome@abe18e9e1e8f8d53b8b0a0ba3d496a237996d313#subdirectory=packages/machinome-node-cadquery"
+    ],
+    "install": false,
+    "runner": "compat_renewed_b.py",
+    "package_only_path": true,
+    "recommended_python": "3.12",
+    "timeout_seconds": 900,
+    "environment_notes": "Explicit integration upgrade experiment: original machinome-node-cadquery requires cadquery==2.7.* and original engine requires cadquery-ocp>=7.8.1,<7.9. These two kernel constraints alone are overridden by the paired CQ2.9dev/OCP8 environment via no-deps installs; coherent core/engine/node0.9.0 all come from this exact source revision, original declared core dependencies are retained. build123d/node-build123d/cadquery-ocp-novtk are not installed and no claim of their joint compatibility is made. A failed import/native symbol under OCP8 is blocked, not silently repaired.",
+    "scope": "Copy original DemoProject template byte-for-byte into isolated project with ordinary tool.machinome manifest. Real constructor/render/validate/CadQueryNode conversion and own BREP engine write/read/STL. Assert valid50mm cube minus radius10mm through-hole and analytical volume; independently cover own workplane_shape empty/multiple stack semantics. Original tests/test_brep_engine.py runs unchanged with JUnit. No cq-editor metaclass host, movie, studio, browser or full mechanical-project claim.",
+    "source_evidence": [
+      "packages/machinome-node-cadquery/pyproject.toml:25-39",
+      "packages/machinome-engine-brep/pyproject.toml",
+      "packages/machinome/pyproject.toml",
+      "packages/machinome-node-cadquery/machinome/node/cadquery.py:19-67",
+      "packages/machinome/machinome/manager/templates/project/root/cadquery.py",
+      "packages/machinome/machinome/node/brep_leaf.py",
+      "packages/machinome/tests/test_brep_engine.py"
+    ]
   }
 ]
