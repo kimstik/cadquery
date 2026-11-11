@@ -322,6 +322,7 @@ def startup_summary(results):
     for result in results:
         startup = result.get("startup", {})
         group = startup.get("group", startup.get("classification", result["status"]))
+        result["status"] = group
         groups.setdefault(group, []).append(result["id"])
     return {
         "groups": groups,
@@ -342,10 +343,13 @@ def report():
         result = json.loads(path.read_text()) if path.exists() else {
             "id": project["id"], "name": project["name"], "status": "missing-result"}
         results.append(result)
-        lines.append(f"| {project['id']} | {project['name']} | {result['status']} |")
+    OUT.mkdir(exist_ok=True)
+    startup = None
     if os.environ.get("COMPAT_MODE") == "startup":
         startup = startup_summary(results)
         (OUT / "startup-summary.json").write_text(json.dumps(startup, indent=2) + "\n")
+    lines += [f"| {result['id']} | {result['name']} | {result['status']} |" for result in results]
+    if startup is not None:
         lines += ["", "## Import measurement groups", "", startup["method"], ""]
         lines += [f"- {group}: {ids}" for group, ids in startup["groups"].items()]
         lines += ["", startup["additivity"]]

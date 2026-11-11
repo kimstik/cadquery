@@ -1,18 +1,312 @@
 [
   {
     "id": 1,
-    "startup_import": "import plugins.apply_to_each_face.apply_to_each_face",
-    "startup_scope": "Actual official apply_to_each_face plugin import; no geometry or editor host startup."
+    "startup_import": "import apply_to_each_face",
+    "startup_paths": [
+      "plugins/apply_to_each_face"
+    ],
+    "startup_scope": "Own plugin import only; no modeling. Pinned plugins/apply_to_each_face/apply_to_each_face.py:3 imports CadQuery."
+  },
+  {
+    "id": 2,
+    "startup_import": "import cq_cache",
+    "startup_paths": [
+      "plugins/cq_cache"
+    ],
+    "startup_scope": "Own cache decorator plugin import only; no cache hits or model generation. Module initializes its normal temporary cache directory."
+  },
+  {
+    "id": 3,
+    "startup_import": "import fragment",
+    "startup_paths": [
+      "plugins/fragment"
+    ],
+    "startup_scope": "Own plugin import only. Prior baseline import fails on missing OCP.TopTools.TopTools_ListOfShape; this is still unresolved, not a compatibility pass."
+  },
+  {
+    "id": 4,
+    "startup_import": "import freecad_importer",
+    "startup_paths": [
+      "plugins/freecad_import"
+    ],
+    "startup_scope": "Own FCStd importer module import only, not FreeCAD host startup or FCStd processing."
+  },
+  {
+    "id": 5,
+    "startup_import": "import gear_generator",
+    "startup_paths": [
+      "plugins/gear_generator"
+    ],
+    "startup_scope": "Own public Gear package import only, not gear construction."
+  },
+  {
+    "id": 6,
+    "startup_import": "import heatserts",
+    "startup_paths": [
+      "plugins/heatserts"
+    ],
+    "startup_scope": "Own plugin import only, not heatsert geometry."
+  },
+  {
+    "id": 7,
+    "startup_import": "import localselectors",
+    "startup_paths": [
+      "plugins/localselectors"
+    ],
+    "startup_scope": "Own selector plugin import including its ordinary selector registration; no modeling."
+  },
+  {
+    "id": 8,
+    "startup_import": "import more_selectors",
+    "startup_paths": [
+      "plugins/more_selectors"
+    ],
+    "startup_scope": "Own public selector package import only; no selector application."
+  },
+  {
+    "id": 9,
+    "startup_import": "import sampleplugin",
+    "startup_paths": [
+      "plugins/sampleplugin"
+    ],
+    "startup_scope": "Own sample plugin import including Workplane registration; no geometry."
+  },
+  {
+    "id": 10,
+    "startup_import": "import teardrop",
+    "startup_paths": [
+      "plugins/teardrop"
+    ],
+    "startup_scope": "Own plugin import including Workplane registration; no geometry."
+  },
+  {
+    "id": 11,
+    "startup_import": "import cq_editor.__main__",
+    "startup_env": {
+      "QT_QPA_PLATFORM": "offscreen"
+    },
+    "startup_scope": "Actual GUI entry module import, which imports MainWindow. Does not call main(), create QApplication, display a window, or run event loop. GUI startup compatibility remains a separate scenario."
+  },
+  {
+    "id": 12,
+    "startup_import": "import jupyter_cadquery",
+    "startup_scope": "Public notebook integration package import only, including normal package initialization. No notebook kernel, replay, viewer session, or model. Its eager viewer dependencies may already load VTK; no claim of avoided VTK is made."
+  },
+  {
+    "id": 13,
+    "startup_scope": "JavaScript extension client, not a Python consumer.",
+    "startup_reason": "No own Python/CadQuery backend exists in the pinned source. extension.js delegates CAD execution to an external server. Do not inject a CadQuery import or count that server as this client."
+  },
+  {
+    "id": 14,
+    "startup_import": "import importlib.util, os, sys; p=os.path.join(os.environ['COMPAT_CONSUMER_ROOT'],'freecad/cadquery2workbench/cadquery_model.py'); s=importlib.util.spec_from_file_location('cadquery_model',p); m=importlib.util.module_from_spec(s); sys.modules[s.name]=m; s.loader.exec_module(m)",
+    "startup_scope": "Workbench's own CQGI model module import only (cadquery_model.py:8-12). This standalone module has no FreeCAD import. Not InitGui, workbench activation, or full FreeCAD startup."
+  },
+  {
+    "id": 15,
+    "startup_import": "import cq_process",
+    "startup_paths": [
+      "assets/python"
+    ],
+    "startup_scope": "Own Python CAD worker module import only (cq_process.py:4 imports cadquery.cqgi). Does not call its command-line main or generate a model."
+  },
+  {
+    "id": 16,
+    "startup_import": "import parse",
+    "startup_scope": "Own documented Python worker entry module import only. parse.py imports only stdlib and interop_types at module scope; CadQuery is used while processing caller models, not forced at import. If absent, report no attributable CadQuery at this entry, not a BlendQuery modeling result."
+  },
+  {
+    "id": 17,
+    "startup_import": "import yacv_server",
+    "dependencies": [
+      "build123d>=0.10",
+      "pygltflib>=1.16",
+      "pillow>=11.0"
+    ],
+    "startup_scope": "Own backend public package import only. Pinned own CAD adapter uses OCP/build123d, not a fixed CadQuery dependency; user-supplied CadQuery code is excluded. Existing N/A CQ-compatibility classification remains. Missing ordinary backend dependencies must stay blocked rather than being replaced with a synthetic CQ import."
+  },
+  {
+    "id": 18,
+    "startup_import": "import importlib.util, os, sys; p=os.path.join(os.environ['COMPAT_CONSUMER_ROOT'],'cadquery/Preview.py'); s=importlib.util.spec_from_file_location('Preview',p); m=importlib.util.module_from_spec(s); sys.modules[s.name]=m; s.loader.exec_module(m)",
+    "startup_scope": "Own preview worker module import only (cadquery/Preview.py:7 imports CadQuery). File loading avoids conflating the repository's cadquery asset directory with the CadQuery library. No preview generation or web server."
+  },
+  {
+    "id": 19,
+    "startup_import": "import backend.main",
+    "startup_scope": "Actual FastAPI backend application module import, including normal route/static-file registration. Does not start ASGI server, serve requests, or generate geometry."
+  },
+  {
+    "id": 20,
+    "startup_import": "from cq_warehouse.sprocket import Sprocket",
+    "startup_scope": "Public Sprocket class import (src/cq_warehouse/sprocket.py:36-38), not construction. Root __init__.py only declares exports, so it would not measure this public component. Eager extensions import previously failed on TopTools_HSequenceOfShape; preserve that baseline blocker if still present."
+  },
+  {
+    "id": 21,
+    "startup_import": "import cqkit",
+    "startup_scope": "Public library import including its normal eager helper exports, no modeling. Prior baseline import failed on Poly_Array1OfTriangle then the legacy OCC fallback; no compatibility certification until that unmodified import succeeds."
+  },
+  {
+    "id": 22,
+    "startup_import": "import cqmore",
+    "startup_scope": "Own public Workplane/extend package import, no model construction or plugin calls."
+  },
+  {
+    "id": 23,
+    "startup_import": "import sphinxcadquery.sphinxcadquery",
+    "startup_scope": "Actual Sphinx extension module import (sphinxcadquery.py:20 imports CQ), not version-only package root. Does not call setup, run Sphinx, or build documentation. Prior exporters.toString scenario failure occurs later and is not cleared by a successful import."
+  },
+  {
+    "id": 24,
+    "startup_import": "import cq_gears",
+    "startup_scope": "Public gear package import including normal eager class exports, no gear generation. Prior baseline TopTools_HSequenceOfShape import failure remains unresolved if reproduced."
+  },
+  {
+    "id": 25,
+    "startup_import": "import dl4to4ocp",
+    "startup_scope": "Own ProblemSetup package import only. Own geometry path uses build123d/OCP; retain existing N/A CQ-compatibility classification. This normally imports its PyVista/Torch/topology-optimization stack, not a synthetic CQ workload; no optimization or model conversion is run.",
+    "startup_dependency_notes": "Manifest has no optional stack installed. Pinned pyproject requires dl4to (resolved from vendor/dl4to by tool.uv.sources), pyvista>=0.48.0, kaleido==1.5.0, pyglet>=1.5.28, jupyter>=1.0.0, ipywidgets>=8.1.2, sdftoolbox (Git source), pysdf>=0.1.9 and build123d>=0.10.0. Do not silently substitute an unrelated pip dl4to for the vendored source; unresolved dependency/host setup is a blocked measurement, not a pass."
+  },
+  {
+    "id": 26,
+    "startup_import": "import ocp_freecad_cam",
+    "startup_scope": "Public Job API package import only, no CAM job or FreeCAD application. Existing FreeCAD/Part/Path host requirement remains unresolved in the pip-only runner; do not stub those imports or relabel a failure as a CQ regression."
+  },
+  {
+    "id": 27,
+    "startup_import": "import assembly_mesh_plugin",
+    "startup_scope": "Own mesh plugin package import including normal registration; no meshing, gmsh execution, or geometry."
+  },
+  {
+    "id": 28,
+    "startup_import": "import argus_diff",
+    "startup_scope": "Own public diff/load API import only, no STEP parsing, comparison, or meshing. Prior Bnd_Box.Get conversion failure is a later scenario failure and is not cleared by this import."
+  },
+  {
+    "id": 29,
+    "startup_import": "from cq_electronics.connectors.headers import PinHeader",
+    "startup_scope": "Public connector class import (src/cq_electronics/connectors/headers.py:3 imports CQ), not connector construction. Version-only package root is not substituted for this real public component."
+  },
+  {
+    "id": 30,
+    "startup_import": "import _tools.export_tools",
+    "startup_scope": "Generator's own shared export module import (_tools/export_tools.py:3 imports CQ). No component generator, model creation, STEP reduction, or file export. This is a generator-library import, not complete KiCad generator startup."
+  },
+  {
+    "id": 31,
+    "startup_import": "import cqgridfinity",
+    "startup_scope": "Public Gridfinity package import including its normal object/box exports, no box construction. Existing cqkit transitive baseline import blocker must remain unresolved if reproduced."
+  },
+  {
+    "id": 32,
+    "startup_import": "import metric_threads",
+    "startup_scope": "Own standalone thread helper module import only (metric_threads.py:26 imports CQ). Source SHA256 was verified against the inventory pin; no thread generation."
+  },
+  {
+    "id": 33,
+    "startup_import": "import cadqueryhelper",
+    "startup_scope": "Public Base/HelperPlate package import, no helper construction or modeling."
   },
   {
     "id": 34,
     "startup_import": "import cadquery_png_plugin.plugin",
-    "startup_scope": "Actual PNG plugin module import, including its own required VTK imports; no raster rendering."
+    "startup_scope": "README-documented own plugin import, including mandatory eager VTK imports and normal Workplane registration. Root __init__.py is empty. No rendering; avoided-VTK claims are not applicable to this route."
+  },
+  {
+    "id": 35,
+    "startup_import": "import cqwild",
+    "startup_scope": "Own public package import, including eager CadQuery exports and own type/print helpers. No geometry or exporter invocation."
+  },
+  {
+    "id": 36,
+    "startup_import": "import cadquery_freecad_import_plugin.plugin",
+    "startup_scope": "Own plugin implementation import and normal registration (plugin.py:5 imports CQ), not empty package root. No FCStd loading or FreeCAD application startup."
+  },
+  {
+    "id": 37,
+    "startup_import": "import cadquery_direct_mesh_plugin",
+    "startup_scope": "Own public plugin package import including .plugin exports/registration. No mesh file parsing or shape construction."
+  },
+  {
+    "id": 38,
+    "startup_import": "import cad_worker",
+    "startup_paths": [
+      "src"
+    ],
+    "startup_scope": "Own Python worker module import only. Pinned src/cad_worker.py uses stdlib at module scope and imports CQ inside the execute handler around line 761; main is guarded. Do not invoke a model/job merely to force CQ. If CQ is absent, report no attributable CQ at import. Existing upgrade-only scenario restrictions remain separate."
+  },
+  {
+    "id": 39,
+    "startup_import": "import cq_selector",
+    "startup_scope": "Own public selector module import only. Pinned cq_selector.py:9-11 imports FreeCAD, Part and FreeCAD.Base, not CadQuery. Existing N/A CQ-compatibility classification remains; unavailable FreeCAD/Part host is a blocked measurement in the pip-only runner. If available and CQ remains absent, report no attributable CQ; do not inject CQ, stub host modules, or claim a CQ startup benefit."
+  },
+  {
+    "id": 40,
+    "startup_import": "import cad_runner",
+    "startup_paths": [
+      ".opencode/plugins/opencode-cad/cad"
+    ],
+    "startup_scope": "Own Python runner module import only. Pinned cad_runner.py imports CQ inside main around line 381, not at module import. No job execution or model; if CQ is absent, report no attributable CQ at this entry."
+  },
+  {
+    "id": 41,
+    "startup_import": "import cq_jupyter",
+    "startup_scope": "Own legacy notebook package import. Existing OCC.Display/OCC.Extend/pythonocc baseline requirement is unresolved; no stubs, monkeypatches, or legacy-to-modern conversion. A failed legacy import remains blocked, not a measured modern CQ beneficiary."
+  },
+  {
+    "id": 42,
+    "startup_import": "import cqjupyter",
+    "startup_scope": "Own legacy notebook module import only. Pinned file contains Python2 print statements and StringIO import; keep the existing Python2/CQ1 baseline blocker. Do not translate the source or certify modern compatibility."
+  },
+  {
+    "id": 43,
+    "startup_import": "from cq_annotate.dimensioning import add_circular_dimensions",
+    "startup_scope": "README-documented dimensioning API import (cq_annotate/dimensioning.py:2 imports CQ), not the empty package root. No annotation geometry or SVG overlay processing; other public submodules in the same process are non-additive, not separate beneficiaries."
+  },
+  {
+    "id": 44,
+    "startup_import": "import sphinxcontrib.cadquery",
+    "startup_scope": "Actual Sphinx extension package import including its cq_core/cqgi dependencies. No Sphinx application, directive execution, or document rendering. Existing exporters.toCompound modeling failure remains separate and is not cleared by a successful import."
+  },
+  {
+    "id": 45,
+    "startup_scope": "JavaScript/webview JSON mesh renderer, not a Python startup route.",
+    "startup_reason": "Pinned extension consumes precomputed JSON mesh data rather than loading a Python/CadQuery backend. Existing N/A classification remains; do not inject CQ."
+  },
+  {
+    "id": 46,
+    "startup_import": "import cqgdml",
+    "startup_scope": "Own public top-level GDML implementation module import (cqgdml.py:27 imports OCC before CQ:28), not empty cq_gdml package root. Existing legacy pythonocc requirement and OCC-to-modern-OCP cast incompatibility remain unresolved; do not bypass either or count a failed import as a beneficiary."
+  },
+  {
+    "id": 47,
+    "startup_scope": "JavaScript extension plus generated arbitrary-user-module extraction template, not an importable fixed Python consumer.",
+    "startup_reason": "Pinned src/extractor_script.py:12 contains the literal JavaScript ${filePath.replace(...)} template and executes the selected user's module at top level. Selecting a made-up CQ user model would be a synthetic workload. Existing N/A classification remains."
   },
   {
     "id": 48,
     "startup_import": "import cadscript",
-    "startup_scope": "Public cadscript package import; no modeling or documentation viewer."
+    "startup_scope": "Public package import, same real route as existing startup measurement 203; no geometry or optional DXF use. Current shared CQ environment replaces the project's old NumPy constraint. Do not count 203 as another consumer."
+  },
+  {
+    "id": 49,
+    "startup_import": "import cadquery_core",
+    "startup_paths": [
+      "mcp-server"
+    ],
+    "startup_scope": "Own modeling core module import only (cadquery_core.py:31-33 imports CQ, cqgi and SVG helper). No protocol server, user-model execution, geometry or export. Server transport startup is excluded."
+  },
+  {
+    "id": 50,
+    "startup_import": "import ocp_vscode",
+    "dependencies": [
+      "ocp-viewer-core[cli]>=1.1.2,<1.2.0"
+    ],
+    "startup_scope": "Own public viewer integration package import only, including normal eager show/config/comms exports and viewer-core dependencies. Pinned pyproject.toml declares ocp-viewer-core[cli]>=1.1.2,<1.2.0; extra dependency is required beyond the original manifest. No show call, viewer discovery/transport/session, or geometry. Existing transport-bound scenario remains blocked regardless of import success; no compatibility certification."
+  },
+  {
+    "id": 51,
+    "startup_import": "import ocp_tessellate",
+    "startup_scope": "Own public package import only. Root __init__.py imports its CAD containers and OCP helpers but not optional stepreader.py; no tessellation or file reading. Report actual CQ module presence, including absent CQ, rather than forcing it. Optional public STEP-reader route really imports CQ but is not this default startup route; library stack timings are non-additive when reused in one process."
   },
   {
     "id": 52,

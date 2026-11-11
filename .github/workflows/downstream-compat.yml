@@ -116,3 +116,13 @@ jobs:
           merge-multiple: true
       - name: Summarize every inventory entry
         run: python .github/compat/run.py report
+      - name: Save aggregate results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: aggregate-results
+          path: |
+            compat-results/summary.json
+            compat-results/startup-summary.json
+          if-no-files-found: error
+          retention-days: 14

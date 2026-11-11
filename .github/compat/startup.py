@@ -26,7 +26,14 @@ elapsed = time.perf_counter() - before
 cq = sys.modules.get("cadquery")
 if cq is not None:
     assert Path(cq.__file__).resolve().is_relative_to(Path(os.environ["COMPAT_CQ_ROOT"]).resolve())
+consumer_root = Path(os.environ["COMPAT_CONSUMER_ROOT"]).resolve()
+consumer_modules = {}
+for name, module in tuple(sys.modules.items()):
+    file = vars(module).get("__file__") if module is not None else None
+    if file and Path(file).resolve().is_relative_to(consumer_root):
+        consumer_modules[name] = str(Path(file).resolve())
 print("COMPAT_STARTUP=" + json.dumps({
+    "consumer_modules": consumer_modules,
     "import_seconds": elapsed,
     "cadquery_source": cq.__file__ if cq is not None else None,
     "ezdxf_loaded": "ezdxf" in sys.modules,
@@ -87,6 +94,11 @@ def measure(project, work, folder):
                 row.update(pair=pair, variant=label, process_seconds=wall)
                 rows.append(row)
             except (subprocess.TimeoutExpired, RuntimeError, AssertionError, ValueError) as exc:
+                if isinstance(exc, subprocess.TimeoutExpired):
+                    def text(value):
+                        return value.decode("utf-8", errors="replace") if isinstance(value, bytes) else value or ""
+                    (folder / f"startup-{pair}-{label}.log").write_text(
+                        text(exc.stdout) + text(exc.stderr) + "\nTIMEOUT\n", encoding="utf-8")
                 failures.append({"pair": pair, "variant": label, "error": str(exc)})
         if failures:
             # Keep both variants' first outcomes, without spending 15 pairs on a broken route.
@@ -126,10 +138,15 @@ def measure(project, work, folder):
                 "paired_saving_bootstrap_95_interval": [bootstraps[125], bootstraps[4874]],
             }
         result["metrics"] = metrics
-        loaded = all(row["cadquery_source"] is not None for row in measured)
+        loaded = [row["cadquery_source"] is not None for row in measured]
+        result["cq_presence_counts"] = {
+            label: sum(row["cadquery_source"] is not None for row in measured
+                       if row["variant"] == label) for label in ["base", "pr"]}
         interval = metrics["import_seconds"]["paired_saving_bootstrap_95_interval"]
-        if not loaded:
+        if not any(loaded):
             result["classification"] = "no-attributable-cq-import"
+        elif not all(loaded):
+            result["classification"] = "import-behavior-difference"
         elif interval[0] > 0:
             result["classification"] = "measured-import-beneficiary"
         elif interval[1] < 0:
