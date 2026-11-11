@@ -1284,6 +1284,7 @@
     ],
     "runner": "compat_major_ai.py",
     "install": false,
+    "package_only_path": true,
     "timeout_seconds": 900,
     "requires_python": ">=3.12",
     "scope": "Actual cadgenbench.baseline.agent.execute_code(backend='cadquery') with documented CADGENBENCH_CADQUERY_PYTHON=current interpreter, fixed local model and repeated STEP/STL plus invalid-model error/artifact protocol. Worker CQ source asserted after natural model import. Parent imports own normal agent graph including pyvista/litellm, not mocked. No run_agent, API calls, API keys, model downloads, fixture downloads, renderer invocation or full benchmark. Main project Python>=3.12. Separate CQ backend interpreter follows source design; selected own path does not import build123d/open3d, so those unrelated core-feature dependencies are not installed. HF offline and LiteLLM local cost map selected to avoid import-time remote metadata fetches."
